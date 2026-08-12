@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="my">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>University Finder Myanmar - Input</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <section class="landing-page" id="landingPage">
+      <div class="hero-card">
+        <div class="hero-header">
+          <h1 class="hero-title">🗽 UniFindex</h1>
+          <button type="button" class="theme-switch" aria-label="Toggle theme" aria-pressed="false">
+            <span class="switch-track">
+              <span class="switch-knob">
+                <span class="switch-icon sun">☀</span>
+                <span class="switch-icon moon">☾</span>
+              </span>
+            </span>
+          </button>
+        </div>
+        <p class="hero-subtitle">
+          Grade-12 အမှတ်၊ အကြိုက်ဆုံးတက္ကသိုလ်အမျိုးအစားနှင့် ဒေသလိုက်ဖြင့် သင့်အတွက် သင့်တော်သော တက္ကသိုလ်များကို ရှာဖွေပါ။
+        </p>
+
+        <form id="recommendationForm">
+          <div class="form-group">
+            <label for="score">Grade-12 တွင် ရရှိခဲ့သောအမှတ် (0-600)</label>
+            <input id="score" class="form-input" type="number" min="0" max="600" placeholder="Enter your score" required />
+          </div>
+
+          <div class="form-group">
+            <label>စိတ်ဝင်စားသော တက္ကသိုလ်အမျိုးအစားများ</label>
+            <div class="checkbox-grid">
+              <label class="checkbox-item"><input type="checkbox" value="medicine" /> ဆေးတက္ကသိုလ်များ</label>
+              <label class="checkbox-item"><input type="checkbox" value="technology" /> နည်းပညာတက္ကသိုလ်များ</label>
+              <label class="checkbox-item"><input type="checkbox" value="computer" /> ကွန်ပျူတာတက္ကသိုလ်များ</label>
+              <label class="checkbox-item"><input type="checkbox" value="economics" /> စီးပွားရေးတက္ကသိုလ်များ</label>
+              <label class="checkbox-item"><input type="checkbox" value="education" /> ပညာရေးတက္ကသိုလ်များ</label>
+              <label class="checkbox-item"><input type="checkbox" value="other" /> အခြားတက္ကသိုလ်များ</label>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="region">တက်ရောက်ချင်သည့် နယ်မြေ</label>
+            <select id="region" class="form-select" required>
+              <option value="">-- Select region --</option>
+              <option value="Yangon">ရန်ကုန်တိုင်းဒေသကြီး</option>
+              <option value="Mandalay">မန္တလေးတိုင်းဒေသကြီး</option>
+              <option value="Naypyidaw">နေပြည်တော်</option>
+              <option value="Other">Other regions of Myanmar</option>
+            </select>
+          </div>
+
+          <div class="button-row">
+            <button type="reset" class="btn btn-reset">အစကနေ ပြန်ရေးမည်</button>
+            <button type="submit" class="btn btn-submit">တက္ကသိုလ်များကို ရှာဖွေမည်</button>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <script src="script.js"></script>
+  </body>
+</html>
