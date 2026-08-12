@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="my">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>University Detail View</title>
+  <style>
+    :root {
+      --bg: #f5f7fb;
+      --surface: #ffffff;
+      --surface-2: #f2f6ff;
+      --primary: #1d4ed8;
+      --primary-dark: #163f95;
+      --text: #132238;
+      --muted: #667085;
+      --border: #dce5f2;
+      --accent: #eff6ff;
+      --sidebar-start: #11253f;
+      --sidebar-end: #163a63;
+      --shadow: rgba(19, 34, 56, 0.05);
+      --card-soft: #f9fbff;
+    }
+
+    :root[data-theme='dark'] {
+      --bg: #08151f;
+      --surface: #0f1724;
+      --surface-2: #1a2534;
+      --primary: #7aa7ff;
+      --primary-dark: #dfeaff;
+      --text: #edf6ff;
+      --muted: #b1bfd2;
+      --border: #233247;
+      --accent: #0c1d2d;
+      --sidebar-start: #0b1725;
+      --sidebar-end: #12314f;
+      --shadow: rgba(0, 0, 0, 0.35);
+      --card-soft: #101d2c;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      transition: background 0.25s ease, color 0.25s ease;
+    }
+
+    .main-app {
+      display: block;
+      min-height: 100vh;
+      background: var(--bg);
+    }
+
+    .app-shell {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* Sidebar (Left Column) */
+    .sidebar {
+      width: 20%;
+      min-width: 240px;
+      background: linear-gradient(180deg, #11253f 0%, #163a63 100%);
+      color: white;
+      padding: 24px 16px;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 28px;
+      font-size: 1.1rem;
+      font-weight: 700;
+    }
+
+    .brand-main {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+    }
+
+    .brand-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      display: grid;
+      place-items: center;
+      background: rgba(255, 255, 255, 0.16);
+      font-size: 1.2rem;
+    }
+
+    .theme-switch {
+      width: 46px;
+      height: 24px;
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.12);
+      display: flex;
+      align-items: center;
+      padding: 3px;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      flex-shrink: 0;
+    }
+
+    .theme-switch .switch-knob {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: #fff;
+      display: grid;
+      place-items: center;
+      font-size: 10px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.16);
+      transition: all 0.25s ease;
+      transform: translateX(0);
+    }
+
+    .theme-switch.is-dark {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    .theme-switch.is-dark .switch-knob {
+      transform: translateX(22px);
+      background: #e8f0ff;
+    }
+
+    .nav-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .nav-btn {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 14px;
+      border: none;
+      border-radius: 12px;
+      background: transparent;
+      color: white;
+      cursor: pointer;
+      transition: background 0.2s ease, transform 0.2s ease;
+      font-size: 0.98rem;
+      text-decoration: none;
+    }
+
+    .nav-btn:hover,
+    .nav-btn.active {
+      background: rgba(255, 255, 255, 0.16);
+      transform: translateX(3px);
+    }
+
+    /* Content Area (Right Column) */
+    .content-area {
+      flex: 1;
+      padding: 24px 24px 40px;
+      overflow-y: auto;
+    }
+
+    /* Horizontal Navigation Bar */
+    .horizontal-nav {
+      display: flex;
+      gap: 10px;
+      background: var(--surface);
+      padding: 10px;
+      border-radius: 16px;
+      border: 1px solid var(--border);
+      margin-bottom: 20px;
+      box-shadow: 0 4px 15px rgba(19, 34, 56, 0.03);
+      overflow-x: auto;
+    }
+
+    .horiz-btn {
+      background: transparent;
+      border: none;
+      padding: 10px 18px;
+      border-radius: 10px;
+      font-weight: 600;
+      color: var(--muted);
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s ease;
+    }
+
+    .horiz-btn:hover {
+      color: var(--primary);
+      background: var(--surface-2);
+    }
+
+    .horiz-btn.active {
+      background: var(--primary);
+      color: white;
+      box-shadow: 0 4px 12px rgba(29, 78, 216, 0.2);
+    }
+
+    /* Detail Sections Toggle */
+    .detail-section {
+      display: none;
+    }
+
+    .detail-section.active {
+      display: block;
+    }
+
+    .photocards {
+      display: flex;
+      overflow-x: auto;
+      gap: 16px;
+      padding: 16px 0;
+      scroll-snap-type: x mandatory;
+      scrollbar-width: none;
+    }
+
+    .photocards::-webkit-scrollbar {
+      display: none;
+    }
+
+    .photocards img {
+      flex: 0 0 280px;
+      height: 180px;
+      object-fit: cover;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      scroll-snap-align: start;
+    }
+
+    .intro-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 22px;
+      margin-bottom: 18px;
+      box-shadow: 0 10px 28px rgba(19, 34, 56, 0.05);
+    }
+
+    .intro-card h3 {
+      margin-top: 0;
+      margin-bottom: 10px;
+    }
+
+    .intro-card p,
+    .intro-card li {
+      color: var(--muted);
+      line-height: 1.7;
+    }
+
+    .step-list {
+      margin: 0;
+      padding-left: 18px;
+    }
+
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 14px;
+    }
+
+    .member-card {
+      background: #f9fbff;
+      padding: 12px;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+    }
+
+    .member-name {
+      font-weight: 700;
+      margin-bottom: 5px;
+    }
+
+    /* Site Footer Style */
+    .site-footer {
+      margin-top: 40px;
+      background: linear-gradient(135deg, #11253f 0%, #163a63 100%);
+      color: #ffffff;
+      border-radius: 20px;
+      padding: 30px;
+      box-shadow: 0 10px 30px rgba(19, 34, 56, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .footer-content {
+      max-width: 800px;
+    }
+
+    .footer-logo {
+      font-size: 1.2rem;
+      font-weight: 700;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .footer-desc {
+      color: #cbd5e1;
+      font-size: 0.95rem;
+      line-height: 1.6;
+      margin-bottom: 16px;
+    }
+
+    .footer-disclaimer {
+      background: rgba(255, 255, 255, 0.08);
+      border-left: 4px solid #3b82f6;
+      padding: 12px 16px;
+      border-radius: 0 12px 12px 0;
+      color: #e2e8f0;
+      font-size: 0.9rem;
+      line-height: 1.6;
+      margin-bottom: 20px;
+    }
+
+    .footer-disclaimer strong {
+      color: #ffffff;
+    }
+
+    .footer-bottom-bar {
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      padding-top: 14px;
+      font-size: 0.85rem;
+      color: #94a3b8;
+    }
+
+    @media (max-width: 960px) {
+      .app-shell {
+        flex-direction: column;
+      }
+
+      .sidebar {
+        width: 100%;
+        height: auto;
+        position: static;
+      }
+
+      .content-area {
+        padding: 18px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <section class="main-app">
+    <div class="app-shell">
+
+      <!-- Left Column (Sidebar with href="#" links) -->
+      <aside class="sidebar">
+        <div class="brand">
+          <div class="brand-main">
+            <div class="brand-icon">🗽</div>
+            <div>UniFindex</div>
+          </div>
+          <button class="theme-switch" type="button" aria-label="Toggle theme" aria-pressed="false">
+            <span class="switch-knob">☀</span>
+          </button>
+        </div>
+        <nav class="nav-list">
+          <a href="../main.html#dashh" class="nav-btn active"> Dashboard</a>
+          <a href="../main.html#recomm" class="nav-btn"> Recommended</a>
+          <a href="../main.html#alll" class="nav-btn"> All Universities</a>
+          <a href="../main.html#locc" class="nav-btn">Locations</a>
+        </nav>
+      </aside>
+
+
+      <main class="content-area">
+
+        <nav class="horizontal-nav">
+          <button class="horiz-btn active" data-target="about">About</button>
+          <button class="horiz-btn" data-target="degree">Degree</button>
+          <button class="horiz-btn" data-target="clubs">Opportunities & Activities</button>
+          <button class="horiz-btn" data-target="opportunities">Qualification</button>
+        </nav>
+
+        <div class="detail-content-container">
+
+          <section class="detail-section active" id="about">
+            <div class="intro-card">
+              <div class="photocards">
+                <img src="mmu1.jpg" alt="">
+                <img src="mmu3.jpg" alt="">
+                <img src="mmu4.jpg" alt="">
+                <img src="mmu5.jpg" alt="">
+                <img src="mmu2.jfif" alt="">
+                <img src="mmu6.jpg" alt="">
+                <img src="mmu7.jpg" alt="">
+               
+              </div>
+              <h3>About Myanmar Maritime University</h3>
+               <p>မြန်မာနိုင်ငံ ရေကြောင်းတက္ကသိုလ်သည် ပို့ဆောင်ရေးဝန်ကြီးဌာန၏ စီမံအုပ်ချုပ်မှုအောက်တွင် တည်ရှိပြီး ရေကြောင်းပို့ဆောင်ရေး၊ သင်္ဘောတည်ဆောက်ရေး၊ ဆိပ်ကမ်းနှင့် သင်္ဘောလိုင်းများ စီမံခန့်ခွဲရေး၊ ရေလမ်းကြောင်း ထိန်းသိမ်းရေးနှင့် ပင်လယ်ပြင် အသက်အန္တရာယ် ကင်းရှင်းရေးတို့အပြင် မြန်မာသင်္ဘောသားများ နိုင်ငံခြားထွက် သင်္ဘောများတွင် အလုပ်အကိုင် အခွင့်အလမ်း ရရှိရေးတို့အတွက် ဦးတည်ဆောင်ရွက်လျက်ရှိသော အဆင့်မြင့်ပညာရေး အဖွဲ့အစည်းဖြစ်ပါသည်။<br>
+
+                တက္ကသိုလ်ကို ၂၀၀၂ ခုနှစ် ဖေဖော်ဝါရီလ ၁၄ ရက်နေ့တွင် ပြဋ္ဌာန်းခဲ့သည့် မြန်မာနိုင်ငံ ရေကြောင်းတက္ကသိုလ် ဥပဒေ (ဥပဒေအမှတ် ၁/၂၀၀၂) နှင့်အညီ ၂၀၀၂ ခုနှစ် သြဂုတ်လ ၁ ရက်နေ့၌ ရန်ကုန်မြို့၊ ဆင်မလိုက်ရှိ ရေကြောင်းနည်းပညာသိပ္ပံ (IMT) ဝင်းအတွင်း ယာယီစတင်ဖွင့်လှစ်ခဲ့သည်။ <br>ထို့နောက် ၂၀၀၄ ခုနှစ် မတ်လ ၂၉ ရက်နေ့တွင် ခေတ်မီစံချိန်စံညွှန်းများနှင့်အညီ သီးသန့်တက္ကသိုလ်ကျောင်းဝန်းအဖြစ် တရားဝင် ဖွင့်လှစ်ခဲ့ပြီး ယခုအခါ ကျောင်းသား၊ ကျောင်းသူများအား စာတွေ့လက်တွေ့ ထိရောက်စွာ သင်ကြားပေးလျက် ရှိပါသည်။
+              </p>
+              <strong>တက္ကသိုလ်၏ ရည်ရွယ်ချက်များ (Aims)</strong>
+              <p><ul type="square"><li> ရေကြောင်းလုပ်ငန်းများဖြင့် နိုင်ငံတော် ခေတ်မီဖွံ့ဖြိုးတိုးတက်ရေးအတွက် အထောက်အကူပြုရန်။</li>
+
+              <li>ကျင့်ဝတ်သိက္ခာရှိပြီး ကျွမ်းကျင်မှုပြည့်ဝသော နာမည်ကောင်းရ ရေကြောင်းပညာရှင်များကို မွေးထုတ်ပေးရန်။</li>
+
+              <li> ရေကြောင်းသက်မွေးဝမ်းကျောင်း အတွက် အထောက်အကူဖြစ်စေမည့် သိပ္ပံနှင့် နည်းပညာရပ်များကို သင်ကြားပေးရန်။</li>
+
+              <li>ရေကြောင်းလုပ်ငန်းများ အစဉ်အမြဲ တိုးတက်ဖွံ့ဖြိုးစေရေးအတွက် အစီအစဉ်များနှင့် စီမံဆောင်ရွက်မှုများ ပြုလုပ်ရန်။</li>
+
+                <li>အပြည်ပြည်ဆိုင်ရာ ရေကြောင်းအဖွဲ့ချုပ် (IMO) မှ ပြဋ္ဌာန်းထားသော စံချိန်စံညွှန်းများနှင့် စည်းမျဉ်းများကို သိရှိလိုက်နာရန်။</li>
+
+                <li>ရေကြောင်းလုပ်ငန်း ဖွံ့ဖြိုးတိုးတက်ရေးအတွက် လိုအပ်သော သုတေသနလုပ်ငန်းများကို ဆောင်ရွက်ရန်။</li>
+              </ul></p>
+              <strong>ဦးတည်ချက်များနှင့် ရည်မှန်းချက်များ (Objectives)</strong>
+              <p>သိပ္ပံနည်းကျ သီအိုရီများနှင့် လက်တွေ့ကျသော ချဉ်းကပ်ဆောင်ရွက်မှုများကို အသုံးပြု၍ -<ul type="square">
+                <li>နိုင်ငံတော်အတွက် ဘက်စုံပြည့်စုံသော ရေကြောင်းပညာရေးစနစ်တစ်ရပ် ဖော်ထုတ်ရန်။</li>
+
+                <li>နိုင်ငံတကာ ရေကြောင်းအသိုက်အဝန်းက အသိအမှတ်ပြုသည့် ထိရောက်သော ရေကြောင်းပညာရေးနှင့် လေ့ကျင့်ရေးစနစ် ထူထောင်ရန်။</li>
+
+                  <li>လက်တွေ့ကျွမ်းကျင်မှုများနှင့် စီမံခန့်ခွဲမှု နည်းပညာများအကြား ထိရောက်စွာ ချိတ်ဆက်ဆောင်ရွက်နိုင်မည့် အရည်အသွေးများကို ပြုစုပျိုးထောင်ပေးရန်။</li>
+              </ul>
+              </p>
+            </div>
+          </section>
+
+          <section class="detail-section" id="degree">
+            <div class="intro-card">
+              <h2>Degree Programs</h3>
+
+              <p>
+                  Myanmar Maritime University offers degrees and diplomas with duration of Academic years are as follows.
+                  <ol type="1">
+
+                       <li> 	B.E. (Naval Architecture)	- 5years</li>
+                       <li> 	B.E. (Marine Engineering)	- 5years</li>
+                       <li> 	B.E. (Port and Harbour Engineering) - 	5years</li>
+                       <li>   B.E. (River and Coastal Engineering) -	5years</li>
+                       <li>   B.E. (Marine Electrical Systems and Electronics)	- 5years</li>
+                       <li> 	B.E. (Marine Mechanical Engineering) -	5years</li>
+                       <li> 	B. Sc. (Hons.) (Nautical Science) -	5years</li>
+                       <li> 	Dip. SM.(Postgraduate Diploma in Shipping Management) -	1 year</li>
+                       <li>  	Dip. PM. (Postgraduate Diploma in Port Management) -	1 year</li>
+                      <li>  	Dip. TLM. (Transport and Logistic Management)	 - 1 year</li>
+                      <li>    M.E (Port and Harbour Engineering) -	2 years</li>
+                       <li> 	M.E (River and Coastal Engineering)	- 2 years</li>
+                       <li> 	M.E (Naval Architecture)	- 2 years</li>
+                  </ol>
+                  </p>
+                    <h3> 1. Naval Architecture and Ocean Engineering (NA)</h3>
+                <p>ပင်လယ်ရေကြောင်း ကုန်သွယ်ရေးအတွက် သင်္ဘောနဲ့ ရေယာဉ်များကို ကိုယ်တိုင် ဒီဇိုင်းဆွဲ တည်ဆောက်နိုင်ဖို သင်ကြားပေးသည့် Major။
+              </p>
+              <h3>2. Marine Mechanical (MM)</h3>
+              <p>သင်္ဘောအင်ဂျင်နဲ့ စက်ပစ္စည်းစနစ်များကို ဒီဇိုင်းဆွဲ၊ တပ်ဆင်၊ ထိန်းသိမ်းမယ့် Mechanical Engineer များကို မွေးထုတ်ပေးပါသည်။</p>
+              <h3>3. Nautical Science (NS)</h3>
+              <p>သင်္ဘောကို ပင်လယ်ပြင်မှာ ဘေးအန္တရာယ်ကင်းကင်း ပဲ့ကိုင်မောင်းနှင်မယ့် ဦးဆောင်လမ်းပြ ရေကြောင်းအရာရှိ (Deck Officer) များအတွက် သင်ကြားပေးပါသည်။
+              </p>
+              <h3>4. Marine Engineering (ME)</h3>
+              <p>သင်္ဘောရဲ့ နှလုံးသား (Engine Room) ကို ကျွမ်းကျင်စွာ ကိုင်တွယ်မယ့် Marine Engineer များ ဖြစ်လာစေရန် သင်ကြားပေးပါသည်။</p>
+              <h3>5. Marine Electrical System and Electronics Engineering (MESE)</h3>
+              <p>သင်္ဘောပေါ်ရှိ လျှပ်စစ်စနစ်၊ ပါဝါဖြန့်ဖြူးမှု၊ Automation နဲ့ ဆက်သွယ်ရေးစနစ်များကို တာဝန်ယူမယ့် အင်ဂျင်နီယာများကို လေ့ကျင့်ပေးပါသည်။</p>
+              <h3>6.Port and Harbour Engineering (PH)</h3>
+              <p>ဆိပ်ကမ်းများကို စနစ်တကျ စီမံခန့်ခွဲခြင်း၊ ထိန်းသိမ်းခြင်းနဲ့ ဒီဇိုင်းဆွဲ တည်ဆောက်ခြင်းဆိုင်ရာ ပညာရပ်များကို သင်ကြားပေးပါသည်။</p>
+              <h3>7. River and Coastal Engineering (RC)</h3>
+              <p>သဘာဝဘေးအန္တရာယ်မှ ကာကွယ်ရန်နဲ့ ပတ်ဝန်းကျင် တာရှည်တည်တံ့အောင် ထိန်းသိမ်းရေးဆိုင်ရာ မြစ်၊ ချောင်း၊ ကမ်းရိုးတန်း နည်းပညာများကို သင်ကြားပေးပါသည်။</p>
+            </div>
+          </section>
+
+          <section class="detail-section" id="clubs">
+            <div class="intro-card">
+              <h3>Clubs & Activities</h3>
+              <p>ကျောင်းတွင်း event၊ activity တွေအနေနဲ့ MMUရဲ့ FunFair ကတော့ ကျောင်းသားတွေ ကိုယ်တိုင်ဖန်တီးထားသော creativeဖြစ်တဲ့ ဆိုင်ခန်းများ၊ အရသာရှိတဲ့အစားအသောက်များ၊ ကျောင်းသားတွေရဲ့ အကအလှများ၊ နာမည်ကြီး အနုပညာရှင်များရဲ့ ဖျော်ဖြေမှုများကြောင့် ရန်ကုန်တိုင်းမှာရှိတဲ့ အခြားသော တက္ကသိုလ်များကပါ လာရောက်ဆင်နွှဲကြတဲ့ MMU ရဲ့ Trademark ပွဲတစ်ခုဖြစ်ပါသည်။
+            <br><br>အခြားသော Music Club, Dancing Club, Football Club, Basketball Club,Badminton Club နှင့် Gym Club တွေလိုမျိုး Club တွေရှိလို ကိုယ်ဝါသနာပါရာမှာ ပါဝင်နိုင်ပါသည်။
+        <br>မိုးရာသီ အားကစားပြိုင်ပွဲများ၊ မေဂျာအလိုက် တံခွန်စိုက်ဖလားပြိုင်ပွဲများအပြင် စကားပြောစွမ်းရည်ပြိုင်ပွဲများကိုပါ ကျင်းပလေ့ရှိပါသည်။
+          <br>
+              </p>
+            <h3>Opportunities</h3><br>
+            <strong>⚓️ သင်္ဘောလိုက်ရန် အထူးပြု Major များ (NS, ME, MESE)</strong> 
+
+                <p>  အမျိုးသားများသာ တက်ရောက်ခွင့် ရှိပါသည်။ (NS Major သည် မျက်မှန်တပ်သူများ လျှောက်ထား၍ မရပါ)<br>
+
+                အရာရှိ (Officer) အဆင့်မှ စတင် လုပ်ကိုင်ခွင့် ရရှိမည်ဖြစ်ပြီး အရည်အချင်းပေါ် မူတည်၍ ရာထူးတိုး မြန်ဆန်ပါသည်။<br>
+
+              <strong>  NS Major:</strong> အမြင့်ဆုံး Captain (သင်္ဘောကပ္ပတိန်) အထိ တက်လှမ်းနိုင်ပါသည်။<br>
+            <strong> ME / MESE Major: </strong>အမြင့်ဆုံး Chief Engineer (စက်ကဲ) အထိ တက်လှမ်းနိုင်ပါသည်။ (ကုန်းပေါ်တွင်လည်း Engineer အဖြစ် ပြန်လည် ကူးပြောင်း လုပ်ကိုင်နိုင်သည်)</p><br>
+             <strong> 🏗️ ကုန်းတွင်းနှင့် ပြည်ပ အခွင့်အလမ်း အဓိက Major များ (MM, PH, NA, RC)</strong>
+
+              <p>အမျိုးသား / အမျိုးသမီး နှစ်ဦးစလုံး တက်ရောက်နိုင်ပါသည်။<br>
+
+                ဂျပန်၊ စင်ကာပူ၊ ဩစတြေးလျနှင့် အနောက်နိုင်ငံများအထိ အလုပ်အကိုင် အခွင့်အလမ်းများစွာ ရှိပါသည်။
+
+                <br>ဆိပ်ကမ်းများ၊ Construction ပိုင်းများ၊ MITT (သီလဝါဆိပ်ကမ်း) နှင့် သက်ဆိုင်ရာ အစိုးရ/ပုဂ္ဂလိက စက်ရုံ၊ ရုံးများတွင် လုပ်ကိုင်နိုင်ပါသည်။</p><br>
+               <strong> 🌟 ပညာသင်ဆု (Scholarship)</strong>
+               <p> ထူးချွန် ကျောင်းသားများအတွက် နိုင်ငံတကာ သင်္ဘောကုမ္ပဏီကြီးများမှ Scholarship များ ပေးအပ်လေ့ရှိပြီး၊ နိုင်ငံခြားတွင် Master Degree ဆက်လက် သင်ယူရန် အခွင့်အလမ်းများလည်း ပွင့်လင်းလျက် ရှိပါသည်။
+
+          </p>
+              
+            </div>
+          </section>
+
+          <section class="detail-section" id="opportunities">
+            <div class="intro-card">
+              <h3>Qualification</h3>
+              <p>MMU ဝင်ခွင့်လျှောက်လွှာတင်မည်ဆိုလျှင်
+                တက္ကသိုလ်မှ ထုတ်ပြန်သည့် ကျောင်းဝင်ခွင့်ကြေညာချက်အရ လျောက်လွှာပုံစံများကို သတ်မှတ်ရက်အတွင်း ထုတ်ယူ၊ ဖြည့်စွက်ရမည်။<br>လျောက်လွှာများကို သန်လျင်မြိုနယ်ရှိ မြန်မာနိုင်ငံရေကြောင်းပညာတက္ကသိုလ် သို လူကိုယ်တိုင် သိုမဟုတ် သတ်မှတ်ထားသော နည်းလမ်းအတိုင်း တင်သွင်းရမည်။<br>ကျန်းမာရေးစစ်ဆေးခြင်းနှင့် လူတွေ့စစ်ဆေးခြင်းများကို တက္ကသိုလ်၏ စည်းကမ်းချက်များနှင့်အညီ ဝင်ရောက်ဖြေဆိုရမည်။<br><br>
+                ရမှတ် ပျမ်းမျှ: အနည်းဆုံး လျှောက်ထားနိုင်သည့်အမှတ် 420-435၊ ကျောင်းဝင်ခွင့် သေချာစေရန် 470 ဝန်းကျင်၊ မိမိလိုချင်သော Major ရရှိရန် 480-500 ဝန်းကျင် ရရှိထားပါက ပိုမို စိတ်ချရပါသည်။ (နှစ်စဉ် လျှောက်ထားသူ ဦးရေပေါ် မူတည်၍ ပြောင်းလဲမှု ရှိပါသည်)<br><br>
+                <strong>ဝင်ခွင့် စာမေးပွဲများ: Eye Test၊ IQ Test နှင့် Psycho Test များ ဝင်ရောက်ဖြေဆိုရပါမည်။<br></strong><br>
+              <strong>  ဆေးစစ်ချက် (Medical Checkup): အရပ်၊ အလေးချိန်၊ ECG၊ HIV၊ Hepatitis B/C စသည်တို စစ်ဆေးပါသည်။ (Colorblind အမြင်အာရုံ ချိုယွင်းချက် ရှိသူများနှင့် B/C ပိုး ရှိသူများ တက်ရောက်ရန် ခက်ခဲပါသည်)
+
+                </strong>
+                </p>
+                <h3> ဝင်ခွင့်အနိမ့်ဆုံးဖြတ်မှတ်မျာ </h3>
+                <p><strong>၂၀၂၃ ခုနှစ် - ကျား (၄၄၅) မှတ်၊ မ (၄၄၉) မှတ်<br>
+                  ၂၀၂၄ ခုနှစ် - ကျား (၄၃၅) မှတ်၊ မ (၄၃၇) မှတ်<br>
+                  ၂၀၂၅ ခုနှစ် - ကျား (၄၆၄) မှတ်၊ မ (၄၇၀) မှတ်</strong></p>
+              <br>
+              <h3>Major အလိုက် အနိမ့်ဆုံးဖြတ်မှတ်များ</h3><br>
+              <table border="1">
+                <thead>
+                <tr>
+                  <th>Major</th>
+                  <th>2024</th>
+                  <th>2025</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                  <td>NS</td>
+                  <td>461</td>
+                  <td>475</td>
+                  
+                </tr>
+                <tr>
+                  <td>ME</td>
+                  <td>453</td>
+                  <td>473</td>
+                </tr>
+                <tr>
+                  <td>EE</td>
+                  <td>436</td>
+                  <td>465</td>
+                </tr>
+                <tr>
+                  <td>NA</td>
+                  <td>447</td>
+                  <td>465</td>
+                </tr>
+                <tr>
+                  <td>MM</td>
+                  <td>435</td>
+                  <td>465</td>
+                </tr>
+                <tr>
+                  <td>PH</td>
+                  <td>460</td>
+                  <td>477</td>
+                </tr>
+                <tr>
+                  <td>RC</td>
+                  <td>435</td>
+                  <td>465</td>
+                </tr>
+              </table>
+                
+
+              </p>
+            </div>
+          </section>
+
+        </div>
+
+        <div class="intro-card" style="margin-top: 24px;">
+          <h3>ဘယ်လိုလူတွေ တက်ရောက်သင့်သလဲ</h3>
+          <p>
+            MMU ကျောင်းဆင်းများအတွက် အလုပ်အကိုင် အခွင့်အလမ်း ပေါများပြီး နိုင်ငံခြားဝင်ငွေ ရှာဖွေနိုင်သည့် လမ်းကြောင်းကောင်းများစွာ ရှိပါသည်။ အဆင့်မြင့် ရေကြောင်းပညာရပ်တွေကို စိတ်ဝင်စားသူများအတွက် MMU ကျောင်းတော်ကြီးမှ နွေးထွေးစွာ ကြိုဆိုလျက် ရှိပါသည်။
+          </p>
+          <p> တက္ကသိုလ်အကြောင်း ပိုမိုသိရှိလိုပါက:
+            <button
+              style="background: var(--primary); color: white; border: none; padding: 6px 12px; border-radius: 8px; cursor: pointer; margin-left: 6px; justify-self: center;"
+              onclick="window.open('https://www.mmu.edu.mm/')">MMU
+              Official Website</button>
+          </p>
+        </div>
+        <footer class="site-footer">
+          <div class="footer-content">
+            <div class="footer-logo">🗽 UniFindex</div>
+            <p class="footer-desc">
+              We are just a smooth and better reader for people who love to read about Universities from internets. 
+            </p>
+            <div class="footer-disclaimer">
+              <strong>Copy Right Claim:</strong> <p>
+            ဤ Website တွင် ဖော်ပြထားသော အချက်အလက်များကို ယုံကြည်စိတ်ချရသော ရင်းမြစ်များမှ ကိုးကား၍
+            စုစည်းဖော်ပြထားခြင်းဖြစ်ပါသည်။
+            <br>
+            အချက်အလက်များကို မှန်ကန်ပြည့်စုံစေရန် အတတ်နိုင်ဆုံး ကြိုးပမ်းထားသော်လည်း မရည်ရွယ်ဘဲ လိုအပ်ချက်များ၊
+            မှားယွင်းမှုများ သို့မဟုတ် ခေတ်မမီတော့သော အချက်အလက်အချို့ ပါဝင်နိုင်ပါသည်။ ထိုသို့ ဖြစ်ပေါ်ခဲ့ပါက အနူးအညွတ်
+            တောင်းပန်အပ်ပါသည်။
+            <br>
+            မှားယွင်းမှုများ၊ လိုအပ်ချက်များ တွေ့ရှိပါက သို့မဟုတ် အကြံပြုချက်များက ပေးလိုပါက Contacts သို့သွားကာ
+            ကျွန်ုပ်တို့အား အသိပေးနိုင်ပါသည်။ ထို့အကြံပြုချက်များမှတဆင့် ကျွန်ုပ်တို့သည် Website ကို
+            ပိုမိုတိကျပြည့်စုံပြီး အသုံးဝင်လာစေရန် ဆက်လက်ပြင်ဆင်သွားမည် ဖြစ်ပါသည်။
+            ကျွန်ုပ်တို့၏ Website ကို ဝင်ရောက်ကြည့်ရှုအသုံးပြုပေးသည့်အတွက် အထူးကျေးဇူးတင်ရှိပါသည်။
+          </p>
+            </div>
+            <div class="footer-bottom-bar">
+              <span>&copy; 2026 UniFindex. All rights reserved.</span>
+            </div>
+          </div>
+        </footer>
+
+      </main>
+    </div>
+  </section>
+
+  <script>
+    const horizButtons = document.querySelectorAll('.horiz-btn');
+    const detailSections = document.querySelectorAll('.detail-section');
+
+    horizButtons.forEach(button => {
+      button.addEventListener('click', () => {
+        const targetId = button.dataset.target;
+
+        horizButtons.forEach(btn => btn.classList.remove('active'));
+        button.classList.add('active');
+
+        detailSections.forEach(section => {
+          if (section.id === targetId) {
+            section.classList.add('active');
+          } else {
+            section.classList.remove('active');
+          }
+        });
+      });
+    });
+
+    const photocards = document.querySelector('.photocards');
+    if (photocards) {
+      setInterval(() => {
+        if (photocards.scrollLeft + photocards.clientWidth >= photocards.scrollWidth) {
+          photocards.scrollTo({ left: 0, behavior: 'smooth' });
+        } else {
+          photocards.scrollBy({ left: 300, behavior: 'smooth' });
+        }
+      }, 3000);
+    }
+
+    const root = document.documentElement;
+    const themeSwitches = document.querySelectorAll('.theme-switch');
+
+    const applyTheme = (theme) => {
+      root.setAttribute('data-theme', theme);
+      themeSwitches.forEach((button) => {
+        const isDark = theme === 'dark';
+        button.setAttribute('aria-pressed', String(isDark));
+        button.classList.toggle('is-dark', isDark);
+        const knob = button.querySelector('.switch-knob');
+        if (knob) knob.textContent = isDark ? '🌙' : '☀';
+      });
+      localStorage.setItem('theme', theme);
+    };
+
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    applyTheme(savedTheme);
+
+    themeSwitches.forEach((button) => {
+      button.addEventListener('click', () => {
+        const nextTheme = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+        applyTheme(nextTheme);
+      });
+    });
+  </script>
+</body>
+
+</html>

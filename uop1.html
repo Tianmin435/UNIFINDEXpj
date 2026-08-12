@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="my">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>University Detail View</title>
+  <style>
+    :root {
+      --bg: #f5f7fb;
+      --surface: #ffffff;
+      --surface-2: #f2f6ff;
+      --primary: #1d4ed8;
+      --primary-dark: #163f95;
+      --text: #132238;
+      --muted: #667085;
+      --border: #dce5f2;
+      --accent: #eff6ff;
+      --sidebar-start: #11253f;
+      --sidebar-end: #163a63;
+      --shadow: rgba(19, 34, 56, 0.05);
+      --card-soft: #f9fbff;
+    }
+
+    :root[data-theme='dark'] {
+      --bg: #08151f;
+      --surface: #0f1724;
+      --surface-2: #1a2534;
+      --primary: #7aa7ff;
+      --primary-dark: #dfeaff;
+      --text: #edf6ff;
+      --muted: #b1bfd2;
+      --border: #233247;
+      --accent: #0c1d2d;
+      --sidebar-start: #0b1725;
+      --sidebar-end: #12314f;
+      --shadow: rgba(0, 0, 0, 0.35);
+      --card-soft: #101d2c;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      transition: background 0.25s ease, color 0.25s ease;
+    }
+
+    .main-app {
+      display: block;
+      min-height: 100vh;
+      background: var(--bg);
+    }
+
+    .app-shell {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* Sidebar (Left Column) */
+    .sidebar {
+      width: 20%;
+      min-width: 240px;
+      background: linear-gradient(180deg, #11253f 0%, #163a63 100%);
+      color: white;
+      padding: 24px 16px;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 28px;
+      font-size: 1.1rem;
+      font-weight: 700;
+    }
+
+    .brand-main {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+    }
+
+    .brand-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      display: grid;
+      place-items: center;
+      background: rgba(255, 255, 255, 0.16);
+      font-size: 1.2rem;
+    }
+
+    .theme-switch {
+      width: 46px;
+      height: 24px;
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.12);
+      display: flex;
+      align-items: center;
+      padding: 3px;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      flex-shrink: 0;
+    }
+
+    .theme-switch .switch-knob {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: #fff;
+      display: grid;
+      place-items: center;
+      font-size: 10px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.16);
+      transition: all 0.25s ease;
+      transform: translateX(0);
+    }
+
+    .theme-switch.is-dark {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    .theme-switch.is-dark .switch-knob {
+      transform: translateX(22px);
+      background: #e8f0ff;
+    }
+
+    .nav-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .nav-btn {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 14px;
+      border: none;
+      border-radius: 12px;
+      background: transparent;
+      color: white;
+      cursor: pointer;
+      transition: background 0.2s ease, transform 0.2s ease;
+      font-size: 0.98rem;
+      text-decoration: none;
+    }
+
+    .nav-btn:hover,
+    .nav-btn.active {
+      background: rgba(255, 255, 255, 0.16);
+      transform: translateX(3px);
+    }
+
+    /* Content Area (Right Column) */
+    .content-area {
+      flex: 1;
+      padding: 24px 24px 40px;
+      overflow-y: auto;
+    }
+
+    /* Horizontal Navigation Bar */
+    .horizontal-nav {
+      display: flex;
+      gap: 10px;
+      background: var(--surface);
+      padding: 10px;
+      border-radius: 16px;
+      border: 1px solid var(--border);
+      margin-bottom: 20px;
+      box-shadow: 0 4px 15px rgba(19, 34, 56, 0.03);
+      overflow-x: auto;
+    }
+
+    .horiz-btn {
+      background: transparent;
+      border: none;
+      padding: 10px 18px;
+      border-radius: 10px;
+      font-weight: 600;
+      color: var(--muted);
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s ease;
+    }
+
+    .horiz-btn:hover {
+      color: var(--primary);
+      background: var(--surface-2);
+    }
+
+    .horiz-btn.active {
+      background: var(--primary);
+      color: white;
+      box-shadow: 0 4px 12px rgba(29, 78, 216, 0.2);
+    }
+
+    /* Detail Sections Toggle */
+    .detail-section {
+      display: none;
+    }
+
+    .detail-section.active {
+      display: block;
+    }
+
+    .photocards {
+      display: flex;
+      overflow-x: auto;
+      gap: 16px;
+      padding: 16px 0;
+      scroll-snap-type: x mandatory;
+      scrollbar-width: none;
+    }
+
+    .photocards::-webkit-scrollbar {
+      display: none;
+    }
+
+    .photocards img {
+      flex: 0 0 280px;
+      height: 180px;
+      object-fit: cover;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      scroll-snap-align: start;
+    }
+
+    .intro-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 22px;
+      margin-bottom: 18px;
+      box-shadow: 0 10px 28px rgba(19, 34, 56, 0.05);
+    }
+
+    .intro-card h3 {
+      margin-top: 0;
+      margin-bottom: 10px;
+    }
+
+    .intro-card p,
+    .intro-card li {
+      color: var(--muted);
+      line-height: 1.7;
+    }
+
+    .step-list {
+      margin: 0;
+      padding-left: 18px;
+    }
+
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 14px;
+    }
+
+    .member-card {
+      background: #f9fbff;
+      padding: 12px;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+    }
+
+    .member-name {
+      font-weight: 700;
+      margin-bottom: 5px;
+    }
+
+    /* Site Footer Style */
+    .site-footer {
+      margin-top: 40px;
+      background: linear-gradient(135deg, #11253f 0%, #163a63 100%);
+      color: #ffffff;
+      border-radius: 20px;
+      padding: 30px;
+      box-shadow: 0 10px 30px rgba(19, 34, 56, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .footer-content {
+      max-width: 800px;
+    }
+
+    .footer-logo {
+      font-size: 1.2rem;
+      font-weight: 700;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .footer-desc {
+      color: #cbd5e1;
+      font-size: 0.95rem;
+      line-height: 1.6;
+      margin-bottom: 16px;
+    }
+
+    .footer-disclaimer {
+      background: rgba(255, 255, 255, 0.08);
+      border-left: 4px solid #3b82f6;
+      padding: 12px 16px;
+      border-radius: 0 12px 12px 0;
+      color: #e2e8f0;
+      font-size: 0.9rem;
+      line-height: 1.6;
+      margin-bottom: 20px;
+    }
+
+    .footer-disclaimer strong {
+      color: #ffffff;
+    }
+
+    .footer-bottom-bar {
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      padding-top: 14px;
+      font-size: 0.85rem;
+      color: #94a3b8;
+    }
+
+    @media (max-width: 960px) {
+      .app-shell {
+        flex-direction: column;
+      }
+
+      .sidebar {
+        width: 100%;
+        height: auto;
+        position: static;
+      }
+
+      .content-area {
+        padding: 18px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <section class="main-app">
+    <div class="app-shell">
+
+      <!-- Left Column (Sidebar with href="#" links) -->
+      <aside class="sidebar">
+        <div class="brand">
+          <div class="brand-main">
+            <div class="brand-icon">🗽</div>
+            <div>UniFindex</div>
+          </div>
+          <button type="button" class="theme-switch sidebar-theme-switch" aria-label="Toggle theme" aria-pressed="false">
+            <span class="switch-track">
+              <span class="switch-knob">
+                <span class="switch-icon sun">☀</span>
+                <span class="switch-icon moon">☾</span>
+              </span>
+            </span>
+          </button>
+        </div>
+         <nav class="nav-list">
+          <a href="../main.html#dashh" class="nav-btn active"> Dashboard</a>
+          <a href="../main.html#recomm" class="nav-btn"> Recommended</a>
+          <a href="../main.html#alll" class="nav-btn"> All Universities</a>
+          <a href="../main.html#locc" class="nav-btn">Locations</a>
+        </nav>
+
+      </aside>
+
+      <!-- Right Column -->
+      <main class="content-area">
+
+        <!-- Horizontal Navigation Bar -->
+        <nav class="horizontal-nav">
+          <button class="horiz-btn active" data-target="about">About</button>
+          <button class="horiz-btn" data-target="degree">Degree</button>
+          <button class="horiz-btn" data-target="clubs">Job Opportunities </button>
+          <button class="horiz-btn" data-target="opportunities">Qualification</button>
+        </nav>
+
+        <!-- Content Sections -->
+        <div class="detail-content-container">
+
+          <!-- About Section -->
+          <section class="detail-section active" id="about">
+            <div class="intro-card">
+              <div class="photocards">
+                <img src="University_of_Pharmacy,_Mandalay.jpg" alt="">
+                <img src="uop1.jfif" alt="">
+                <img src="UOPDistantView.jpg" alt="">
+                <img src="uop2.jfif" alt="">
+                <img src="uop3jpg.jpg" alt="">
+                <img src="uop4.jfif" alt="">
+              
+              </div>
+              <h3>About Universities of Pharmacy</h3>
+              <p>
+                မြန်မာနိုင်ငံတွင် ဆေးဝါးတက္ကသိုလ်သည် ရန်ကုန်တွင်တစ်ကျောင်း နှင့် မန္တလေးတွင် တစ်ကျောင်း နှစ်ခုရှိပါသည်။
+<br><br></p>
+<h3>ဆေးဝါးတက္ကသိုလ် (ရန်ကုန်) </h3>
+<p>
+ဆေးဝါးတက္ကသိုလ်(ရန်ကုန်)သည် မြောက်ဥက္ကလာပမြို့နယ်၊ ဓမ္မသုခလမ်း၊ ဝေဘာဂီကူးစက်ဆေးရုံနှင့် ဘေးကပ်ရပ်တွင် ရှိပါသည်။<br>
+၁၉၆၄ - ရန်ကုန်ဆေးရုံကြီးဝင်းအတွင်း ဆေးဘက်ဆိုင်ရာနည်းပညာသိပ္ပံ (ဆေးဝါးပညာဌာန) အဖြစ် စတင်ခဲ့ပြီး ဒီပလိုမာဘွဲ (DPMS) ပေးအပ်ခဲ့သည်။<br>
+၁၉၉၂ - ရန်ကုန်တက္ကသိုလ်နယ်မြေ (သထုံလမ်း) သို ပြောင်းရွှေ့ပြီး ဆေးဝါးပညာဘွဲ (B.Pharm) သို အဆင့်မြှင့်ခဲ့သည်။<br>
+၂၀၀၁ - မြောက်ဥက္ကလာပ (ဝေဘာဂီလမ်း) လက်ရှိမြေနေရာသို ပြောင်းရွှေ့ခဲ့သည်။<br>
+၂၀၀၅ - "ဆေးဝါးတက္ကသိုလ် (ရန်ကုန်)" အဖြစ် တက္ကသိုလ်အဆင့်သို တိုးမြှင့်ခဲ့သည်။<br>
+၂၀၁၄ & ၂၀၁၈ - ပါရဂူဘွဲ (Ph.D.) နှင့် မဟာဘွဲ (M.Pharm) သင်တန်းများ စတင်ဖွင့်လှစ်ခဲ့သည်။<br>
+
+</p>
+<h3>ဆေးဝါးတက္ကသိုလ် (မန္တလေး)</h3>
+<p>
+ ဆေးဝါးတက္ကသိုလ်(မန္တလေး)သည် အမရပူရမြို့နယ် တောတွင်းကျေးရွာအနီး ထုံးဘို-မြစ်ငယ်ဖြတ်လမ်းအနီး စိတ်ကျန်းမာရေးဆေးရုံဘေးတွင် ရှိပါသည်။<br>
+ ၂၀၀၀ - ဆေးတက္ကသိုလ် (မန္တလေး) ဝင်းအတွင်း "ဆေးဝါးပညာသိပ္ပံ" အဖြစ် စတင်တည်ထောင်ခဲ့သည်။<br>
+၂၀၀၄ - ပထမဆုံးအကြိမ် ဆေးဝါးပညာဘွဲ (B.Pharm) ကို စတင်အပ်နှင်းခဲ့သည်။<br>
+၂၀၀၆ - "ဆေးဝါးတက္ကသိုလ် (မန္တလေး)" အဖြစ် တရားဝင် ပြောင်းလဲခဲ့သည်။<br>
+<br>
+       </p>
+       <h3>Visions and Missions</h3>   
+        <p>ဒေသတွင်း ဖွံ့ဖြိုးပြီးနိုင်ငံများနှင့် ရင်ဘောင်တန်းနိုင်ကာ ပြည်သူတစ်ရပ်လုံးအတွက် ဘေးကင်းလုံခြုံ၍ ထိရောက်သော ကျန်းမာရေးစောင့်ရှောက်မှုနှင့် အရည်အသွေးမြင့် ဆေးဝါးထုတ်ကုန်များကို ထောက်ပံ့ပေးနိုင်မည့် အရည်အချင်းပြည့်ဝသော ဆေးဝါးကျွမ်းကျင်ပညာရှင်များ မွေးထုတ်ပေးရန်။ <br>   <br>
+          ပြည်သူတစ်ရပ်လုံး၏ ကျန်းမာရေးမြှင့်တင်မှု၊ ကာကွယ်မှု၊ ကုသမှုနှင့် ပြန်လည်ထူထောင်မှုဆိုင်ရာ ကျန်းမာရေးစောင့်ရှောက်မှုစနစ်များတွင် ပါဝင်ဆောင်ရွက်နိုင်သည့် ကျွမ်းကျင်သော ကျန်းမာရေးပညာရှင်များအဖြစ် အသိအမှတ်ပြုခံရမည့် အရည်အချင်းပြည့်ဝသော ဆေးဝါးကျွမ်းကျင်သူများကို မွေးထုတ်ပေးရန်။
+              </p>
+            </div>
+          </section>
+
+          <!-- Degree Section -->
+          <section class="detail-section" id="degree">
+            <div class="intro-card">
+              <h2>Undergraduate</h3>
+              <h3>Bachelor's Degree Programs in Pharmacy (B.Pharm.)</h1>
+              <p>First Year<br>
+                <ul>
+                  <li>Anatomy</li>
+                          <li>Behavioural Science</li>
+                         <li> Botany</li>
+                          <li>Chemistry</li>
+                          <li>  English</li>
+                          <li>Mathematics</li>
+                         <li> Myanmar</li>
+                         <li> Zoology</li>
+                          <li>  Biochemistry</li>
+                </ul>
+                <br>
+                Second Year<br>
+                <ul>
+                  <li>Physiology</li>
+                     <li> Pharmaceutical Chemistry</li>
+                       <li> Pharmaceutics</li>
+                          <li>Pharmacognosy</li>
+                          <li>  Pharmacology</li>
+                </ul>
+                   Third Year<br>
+                   <ul>
+                    <li>Medical Microbiology</li>
+                        <li>  Pathology</li>
+                        <li>  Pharmaceutical Chemistry</li>
+                        <li>  Pharmaceutical Microbiology</li>
+                        <li>    Pharmaceutics</li>
+                         <li>   Pharmacognosy</li>
+                         <li>     Pharmacology</li>
+                   </ul>           
+                <br>
+                Fourth Year
+                <ul>
+                  <li>Pharmaceutics</li>
+                <li>Pharmaceutical Chemistry</li>
+               <li> Pharmacognosy</li>
+                <li>    Pharmacology</li>
+                </ul>
+              </p>
+              <h2>Postgraduate</h3>
+              <ul>
+                  <li>Doctor of Philosophy Program in Clinical Pharmacy (3 Years)</li>
+                    <li>  Doctor of Philosophy Program in Pharmaceutics (3 Years)</li>
+                    <li>    Doctor of Philosophy Program in Pharmaceutical Chemistry (3 Years)</li>
+                     <li> Doctor of Philosophy Program in Pharmacognosy (3 Years)</li>
+                    <li>  Master of Pharmacy Program in Clinical Pharmacy (3 Years)</li>
+                    <li>  Master of Pharmacy Program in Pharmaceutics (2 Years)</li>
+                     <li> Master of Pharmacy Program in Pharmaceutical Chemistry (2 Years)</li>
+                    <li>  Master of Pharmacy Program in Pharmacognosy (2 Years) </li>
+              </ul>
+                  
+            </div>
+          </section>
+
+          <!-- Club & Activities Section -->
+          <section class="detail-section" id="clubs">
+            <div class="intro-card">
+              <h2>Job Opportunities</h2>  
+              <h3>Clinical Pharmacist</h3>        
+                <p>Clinical Pharmacistသည် General Pharmacistrမဟုတ်ဘဲ Specialist တစ်ယောက်ဖြစ်ပြီး ပုံမှန်အားဖြင့် M.Pharm(Clinical Pharmacy) ဘွဲ့ရရှိပြီးမှသာ တရားဝင်ခေါ်ဆိုနိုင်ပါသည်။ ဆေးရုံများတွင် ward round ဆင်းသည့် Healthcare team တွင် ပါဝင်ရပြီး ဆေးဝါးများဖြင့် ရောဂါကုသမှုဆိုင်ရာ စီမံခန့်ခွဲမှုများ (Therapeutic Management)ကို တာဝန်ယူရသည်။ Drug Interaction သို့မဟုတ် Food-Drug Interactionကို စစ်ဆေးပြီး Medication Safetyဖြစ်အောင်လုပ်ဆောင်ပေးရသည်။ ထို့ပြင် Pharmacovigilance နှင့် Clinical research များတွင်လည်း အဓိကပါဝင်ဆောင်ရွက်ကြသည်။
+              </p><br>
+              <h3>Dispensing Pharmacist (Hospital/Clinic)</h3>
+              <p>ဆေးရုံဆေးခန်းများ၏ ဆေးပေးခန်း(Dispensary)တွင် လုပ်ကိုင်ရပြီး ဆရာဝန်ပေးလိုက်သော ဆေးစာများကို စစ်ဆေးကာ လူနာထံ ဆေးဝါးမှန်မှန်ကန်ကန် ရောက်ရှိရေး၊ ဆေးသောက်ရန် ညွှန်ကြားချက်များကို ရှင်းလင်းပြရေးကို လုပ်ဆောင်ရသည်။ ပုံမှန်အားဖြင့် B.Pharmဘွဲ့ရရှိသူများ တာဝန်ယူလုပ်ဆောင်ကြသည်။  Product & Patient Centeredဖြစ်ပြီး ဆေးဝါးများ စနစ်တကျ ထုတ်ပေးနိုင်ရေး၊ ဆေးဝါးသိုလှောင်မှုနှင့် လူနာအားဆေးသောက်ပုံ လမ်းညွှန်တို့ကို အဓိကလုပ်ဆောင်သည်။</p>
+              <br>
+               <h3>Community/ Retail Pharmacist</h3>
+               <p>ပြင်ပဆေးဆိုင်ခွဲများ(Chain Pharmacy)၊ တစ်နိုင်တစ်ပိုင်ဆေးဆိုင်များ(Stand-alone Pharmacy)များတွင် တာဝန်ယူသူများဖြစ်သည်။ Patients/Consumers နှင့်တိုက်ရိုက်ထိတွေဆက်ဆံရသည့် ရှေ့တန်းကျန်းမာရေးစောင့်ရှောက်သူများဖြစ်သည်။ ဆရာဝန်ဆေးစာဖြင့် ဝယ်ယူသော ဆေးများနှင့် ဆရာဝန်ဆေးစာမလိုဘဲ ဝယ်ယူနိုင်သောဆေးများကို သောက်သုံးရန်ညွှန်ကြားချက်များ၊ ဘေးထွက်ဆိုးကျိုးများကို သေချာရှင်းပြပေးခြင်း၊ လူနာရောဂါပုံစံပေါ်မူတည်၍ သင့်တော်သောဆေးပေးခြင်း၊ လိုအပ်လျှင် သက်ဆိုင်ရဦ ဆရာဝန် (သို့) ဆေးရုံများသို့ refer ပေးခြင်းများလုပ်ဆောင်သည်။ Pharmacy Operation Managementအတွက် Pharmacy Staffများကို သင်တန်းပေးခြင်းများပါလုပ်ဆောင်ကြသည်။ နိုင်ငံတကာတွင် Community Pharmacist များသည် လူနာများကို ကာကွယ်ဆေးထိုးပေးခြင်းများကိုလည်း တာဝန်ဘူဆောင်ရွက်ကြသည်။</p>
+               <br>
+               <h3>Industrial Pharmacist</h3>
+                <p>ဆေးဝါးထုတ်လုပ်မှုနယ်ပယ်တွင် Indirect Patient Care ပေးသူများဖြစ်ကြသည်။ ဆေးဝါးသုတေသန ပြုလုပ်ခြင်း၊ GMPနှင့်အညီ ဆေးဝါးထုတ်လုပ်ခြင်း၊ အရည်အသွေးစစ်ဆေးခြင်း(QA/QC)Pharmaceutical Marketing အပိုင်းများအတွက် တာဝန်ယူဆောင်ရွက်ကြသည်။ </p><br>
+                <h3>Regulatory Pharmacist</h3>
+                <p>Regulatory Affairs (RA) Positionဖြင့် ဆေးဝါးစက်ရုံများတွင် Critical Role မှတာဝန်ယူရသည်။ မြန်မာနိုင်ငံ အစားအသောက်နှင့်ဆေးဝါးကွပ်ကဲရေးဦးစီးဌာန (FDA)တွင် ဆေးဝါးပညာရှင်များကို ဓာတ်ခွဲစစ်ဆေးခြင်း (laboratory)နှင့် Regulatory (Onsite Pharmacy Inspectation, Managing Documentation & Securing Government Approvals) ဟု အကြမ်းဖျင်းနှစ်ပိုင်းခွဲ၍ တာဝန်ပေးအပ်လေ့ရှိသည်။</p><br>
+                <h3>Academic Pharmacist</h3>
+                <p>ဆေးဝါးတက္ကသိုလ်များတွင် ကျောင်းသား/သူများကို စာသင်ကြားပေးခြင်း၊ သုတေသနပြုလုပ်ခြင်းနှင့် နောင်အနာဂတ်ဆေးဝါးပညာရှင်သစ်များပြုစုပျိုးထောင်ပေးခြင်းတို့ကို ဆရာ/ဆရာမအဖြစ် လုပ်ကိုင်နိုင်ပါသည်။</p>
+            </div>
+          </section>
+
+          <section class="detail-section" id="opportunities">
+            <div class="intro-card">
+              <h3>Qualification</h3>
+              <p>တက္ကသိုလ်ဝင်တန်းစာမေးပွဲကို STEAM-1 (ဓာတု၊ ရူပ၊ ဇီဝ)ဘာသာတွဲဖြင့် အောင်မြင်သူ ဖြစ်ရပါမည်။ အကျင့်စာရိတ္တကောင်းမွန်သူ၊ ကျန်းမာရေးကောင်းမွန်သူ ဖြစ်ရပါမည်။
+                </p><br>
+                <h3>လိုက်နာဆောင်ရွက်ရမည့်တာဝန်များ</h3>
+                <p>ဆေးဝါးတက္ကသိုလ်ဝင်ခွင့်ရပြီး ကျောင်းလခကို တစ်လလျှင် (၈၀၀)ကျပ်ဖြင့် တက်ရောက်လိုသူများသည်  သင်ကြားရေးအဆောက်အဦးများ၊ ပရိဘောဂ၊ သင်ထောက်ကူပစ္စည်းများ၊ စာကြည့်တိုက်နှင့် ဓာတ်ခွဲခန်းသုံးပစ္စည်းများ၊ သင်ကြားရေး ဆရာ၊ ဆရာမများ၊ ဝန်ထမ်းများ၏ လစာများကို နိုင်ငံတော်မှ ကျခံသုံးစွဲရသဖြင့်-<br>
+                (၁) ဆေးဝါးသိပ္ပံဘွဲ့ ရရှိပြီးနောက် နိုင်ငံ့ဝန်ထမ်းအဖြစ် အနည်းဆုံး (၅)နှစ်၊ ဘွဲ့လွန်သင်တန်းတက်ရောက်အောင်မြင်ပြီးပါက နိုင်ငံ့ဝန်ထမ်းအဖြစ်(၅)နှစ် မပျက်မကွက် တာဝန်ထမ်းဆောင်ပါမည်ဟု ကတိခံဝန်ချက်စာချုပ်ချုပ်ဆိုရမည်။<br>
+                (၂) ကတိစာချုပ်ပါအချက်ကို ဖောက်ဖျက်ပါက လျော်ကြေးငွေ ကျပ်(၂၅,၀၀၀,၀၀၀)ကို ပေးလျော်ရန်နှင့် သက်ဆိုင်ရာ ဥပဒေ၊ စည်းမျည်းများဖြင့် အရေးဘူခြင်းခံရမည်ဖြစ်သည်။</p><br>
+                <h3>အခြားသောရွေးချယ်ခွင့်</h3>
+                <p>ဆေးဝါးသိပ္ပံဘွဲ့ရရှိပြီးနောက် နိုင်ငံ့ဝန်ထမ်းအဖြစ် တာဝန်ထမ်းဆောင်လိုခြင်းမရှိသူများသည် မိမိစရိတ်ဖြင့် တက်ရောက်သင်ကြားနိုင်ပြီး သီးခြားသတ်မှတ်ထားသော တက္ကသိုလ်သင်တန်းကြေးများပေးသွင်းရမည်ဖြစ်သည်။<br> (ဤအချက်သည်လည်း မူလဝင်ခွင့်ပြုဦးရေ ၃၅၀၏ ၂၀% ထက်မပိုသော ဦးရေကိုသာခွင့်ပြုသည်။)</p>
+                <h3>2024 နှင့် 2025ခုနှစ်၏ နောက်ဆုံးဖြတ်မှတ်မျာ </h3>
+                <p>၂၀၂၄ ခုနှစ်တွင် စုစုပေါင်းအမှတ် (၃၈၈)အနည်းဆုံးဖြတ်မှတ်ဖြစ်သည်။ ၂၀၂၅ခုနစ်တွင် စုစုပေါင်းအမှတ် (၄၅၃) အနည်းဆုံးဖြတ်မှတ်ဖြစ်သည်။</p>
+              <br>
+              <h3>📍အကြံပေးချက်</h3>
+              <strong>ဘယ်လိုလူတွေလျှောက်သင့်တာလဲ?</strong>
+               <p>အထူးသဖြင့် ဆေးဝါးဘာသာရပ်ကို စိတ်ဝင်စားပြီး Pharmacist ဖြစ်ချင်သူတွေ joinတာအကောင်းဆုံးပါ။ စာတွေက ဆေးကျောင်းမှာသင်ရတဲ့ဘာသာရပ်တော်တော်များများကို minor subject အနေနဲ့သင်ရတော့ ခက်ပြီး advanced ဖြစ်တယ်။ မြန်မာနိုင်ငံလို Undeveloped ဖြစ်နေသော နိုင်ငံအနေနဲ့ တခြားနိုင်ငံတွေလို Facilities အပြည့်မထောက်ပံ့နိုင်တဲ့အတွက် ကျောင်းသားတွေအတွက် Theory နဲ့ Clinical ကြားမှာ Gap ရှိပြီး စာလုပ်ရတာခက်ခဲနိုင်ပါတယ်။ နောက်တစ်ခုက Lab&Practical တွေမှာ Duty Coat ကို မြတ်မြတ်နိုးနိုးဝတ်ရမှာပါ။</p>
+            </div>
+      </section>
+        <!-- Contact Area -->
+        <div class="intro-card" style="margin-top: 24px;">
+          <h3>ဘယ်လိုလူတွေ တက်ရောက်သင့်သလဲ</h3>
+          <p>ဆေးဝါးတက္ကသိုလ်နှစ်ကျောင်းလုံးသည် ဆေးဝါးပညာရပ်နှင့်ဓာတုဗေဒကို စိတ်ဝင်စားပြီး စေ့စပ်သေချာမှု၊ အသေးစိတ်ဂရုစိုက်မှုနှင့် စိတ်ရှည်သည်းခံမှုရှိသော ဆေးဝါးပညာရှင်ကြီးများဖြစ်ချင်သူများအတွက် သင့်လျော်သောကျောင်းများဖြစ်ပါသည်။
+            
+          </p>
+          <p> တက္ကသိုလ်အကြောင်း ပိုမိုသိရှိလိုပါက:
+            <button
+              style="background: var(--primary); color: white; border: none; padding: 6px 12px; border-radius: 8px; cursor: pointer; margin-left: 6px; justify-self: center;"
+              onclick="window.open('https://www.uopygn.gov.mm/')"> UOPY Official Link
+              </button> 
+              <button
+              style="background: var(--primary); color: white; border: none; padding: 6px 12px; border-radius: 8px; cursor: pointer; margin-left: 6px; justify-self: center;"
+              onclick="window.open('https://www.uopmdy.gov.mm/')"> UOP(Mandalay) Official Link
+              </button>            
+          </p>
+        </div>
+    
+
+        <!-- Footer (Right Column ထဲတွင်သာ ပေါ်မည်) -->
+        <footer class="site-footer">
+          <div class="footer-content">
+            <div class="footer-logo">🗽 UniFindex</div>
+            <p class="footer-desc">
+              We are just a smooth and better reader for people who love to read about Universities from internets. 
+            </p>
+            <div class="footer-disclaimer">
+              <strong>Copy Right Claim:</strong> <p>
+            ဤ Website တွင် ဖော်ပြထားသော အချက်အလက်များကို ယုံကြည်စိတ်ချရသော ရင်းမြစ်များမှ ကိုးကား၍
+            စုစည်းဖော်ပြထားခြင်းဖြစ်ပါသည်။
+            <br>
+            အချက်အလက်များကို မှန်ကန်ပြည့်စုံစေရန် အတတ်နိုင်ဆုံး ကြိုးပမ်းထားသော်လည်း မရည်ရွယ်ဘဲ လိုအပ်ချက်များ၊
+            မှားယွင်းမှုများ သို့မဟုတ် ခေတ်မမီတော့သော အချက်အလက်အချို့ ပါဝင်နိုင်ပါသည်။ ထိုသို့ ဖြစ်ပေါ်ခဲ့ပါက အနူးအညွတ်
+            တောင်းပန်အပ်ပါသည်။
+            <br>
+            မှားယွင်းမှုများ၊ လိုအပ်ချက်များ တွေ့ရှိပါက သို့မဟုတ် အကြံပြုချက်များက ပေးလိုပါက Contacts သို့သွားကာ
+            ကျွန်ုပ်တို့အား အသိပေးနိုင်ပါသည်။ ထို့အကြံပြုချက်များမှတဆင့် ကျွန်ုပ်တို့သည် Website ကို
+            ပိုမိုတိကျပြည့်စုံပြီး အသုံးဝင်လာစေရန် ဆက်လက်ပြင်ဆင်သွားမည် ဖြစ်ပါသည်။
+            ကျွန်ုပ်တို့၏ Website ကို ဝင်ရောက်ကြည့်ရှုအသုံးပြုပေးသည့်အတွက် အထူးကျေးဇူးတင်ရှိပါသည်။
+          </p>
+            </div>
+            <div class="footer-bottom-bar">
+              <span>&copy; 2026 UniFindex. All rights reserved.</span>
+            </div>
+          </div>
+        </footer>
+
+      </main>
+    </div>
+  </section>
+
+  <!-- JavaScript -->
+  <script>
+    const horizButtons = document.querySelectorAll('.horiz-btn');
+    const detailSections = document.querySelectorAll('.detail-section');
+
+    horizButtons.forEach(button => {
+      button.addEventListener('click', () => {
+        const targetId = button.dataset.target;
+
+        // Button active အပြောင်းအလဲလုပ်ရန်
+        horizButtons.forEach(btn => btn.classList.remove('active'));
+        button.classList.add('active');
+
+        // Section active အပြောင်းအလဲလုပ်ရန်
+        detailSections.forEach(section => {
+          if (section.id === targetId) {
+            section.classList.add('active');
+          } else {
+            section.classList.remove('active');
+          }
+        });
+      });
+    });
+
+    const photocards = document.querySelector('.photocards');
+    if (photocards) {
+      setInterval(() => {
+        if (photocards.scrollLeft + photocards.clientWidth >= photocards.scrollWidth) {
+          photocards.scrollTo({ left: 0, behavior: 'smooth' });
+        } else {
+          photocards.scrollBy({ left: 300, behavior: 'smooth' });
+        }
+      }, 3000);
+    }
+
+    const root = document.documentElement;
+    const themeSwitches = document.querySelectorAll('.theme-switch');
+
+    const applyTheme = (theme) => {
+      root.setAttribute('data-theme', theme);
+      themeSwitches.forEach((button) => {
+        const isDark = theme === 'dark';
+        button.setAttribute('aria-pressed', String(isDark));
+        button.classList.toggle('is-dark', isDark);
+        const knob = button.querySelector('.switch-knob');
+        if (knob) knob.textContent = isDark ? '🌙' : '☀';
+      });
+      localStorage.setItem('theme', theme);
+    };
+
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    applyTheme(savedTheme);
+
+    themeSwitches.forEach((button) => {
+      button.addEventListener('click', () => {
+        const nextTheme = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+        applyTheme(nextTheme);
+      });
+    });
+  </script>
+</body>
+
+</html>

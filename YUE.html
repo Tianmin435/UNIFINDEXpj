@@ -1,0 +1,1122 @@
+<!DOCTYPE html>
+<html lang="my">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>University Detail View</title>
+    <style>
+        :root {
+            --bg: #f5f7fb;
+            --surface: #ffffff;
+            --surface-2: #f2f6ff;
+            --primary: #1d4ed8;
+            --primary-dark: #163f95;
+            --text: #132238;
+            --muted: #667085;
+            --border: #dce5f2;
+            --accent: #eff6ff;
+            --switch-bg: #e9eefb;
+            --switch-knob: #ffffff;
+            --brand-bg: rgba(255, 255, 255, 0.12);
+            --card-alt: #f9fbff;
+            --shadow: rgba(19, 34, 56, 0.05);
+        }
+
+        :root[data-theme='dark'] {
+            --bg: #08151f;
+            --surface: #0f1724;
+            --surface-2: #1a2534;
+            --primary: #7aa7ff;
+            --primary-dark: #dfeaff;
+            --text: #edf6ff;
+            --muted: #b1bfd2;
+            --border: #233247;
+            --accent: #0c1d2d;
+            --switch-bg: #111d2b;
+            --switch-knob: #1f2c3a;
+            --brand-bg: rgba(255, 255, 255, 0.12);
+            --card-alt: #111b2a;
+            --shadow: rgba(0, 0, 0, 0.35);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            transition: background 0.25s ease, color 0.25s ease;
+        }
+
+        .main-app {
+            display: block;
+            min-height: 100vh;
+            background: var(--bg);
+            color: var(--text);
+        }
+
+        .app-shell {
+            display: flex;
+            min-height: 100vh;
+            background: var(--bg);
+        }
+
+        /* Sidebar (Left Column) */
+        .sidebar {
+            width: 20%;
+            min-width: 240px;
+            background: linear-gradient(180deg, #11253f 0%, #163a63 100%);
+            color: white;
+            padding: 24px 16px;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            margin-bottom: 28px;
+            font-size: 1.1rem;
+            font-weight: 700;
+        }
+
+        .brand-main {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            min-width: 0;
+        }
+
+        .brand-icon {
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
+            display: grid;
+            place-items: center;
+            background: rgba(255, 255, 255, 0.16);
+            font-size: 1.2rem;
+        }
+
+        .theme-switch {
+            border: none;
+            background: transparent;
+            padding: 0;
+            margin: 0;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .switch-track {
+            --track-w: 54px;
+            --track-h: 30px;
+            --knob-d: 22px;
+            --track-padding: 3px;
+            position: relative;
+            display: inline-block;
+            width: var(--track-w);
+            height: var(--track-h);
+            border-radius: 999px;
+            background: var(--switch-bg);
+            box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.12);
+        }
+
+        .switch-knob {
+            position: absolute;
+            top: var(--track-padding);
+            left: var(--track-padding);
+            width: var(--knob-d);
+            height: var(--knob-d);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--switch-knob);
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.18);
+            transition: transform 0.25s ease;
+        }
+
+        .switch-icon {
+            font-size: 12px;
+            line-height: 1;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .switch-icon.sun {
+            color: #f7b955;
+        }
+
+        .switch-icon.moon {
+            color: #dfeaff;
+            display: none;
+        }
+
+        .theme-switch.is-dark .switch-knob {
+            transform: translateX(24px);
+        }
+
+        .theme-switch.is-dark .switch-icon.sun {
+            display: none;
+        }
+
+        .theme-switch.is-dark .switch-icon.moon {
+            display: inline-flex;
+        }
+
+        .nav-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .nav-btn {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 14px;
+            border: none;
+            border-radius: 12px;
+            background: transparent;
+            color: white;
+            cursor: pointer;
+            transition: background 0.2s ease, transform 0.2s ease;
+            font-size: 0.98rem;
+            text-decoration: none;
+        }
+
+        .nav-btn:hover,
+        .nav-btn.active {
+            background: rgba(255, 255, 255, 0.16);
+            transform: translateX(3px);
+        }
+
+        /* Content Area (Right Column) */
+        .content-area {
+            flex: 1;
+            padding: 24px 24px 40px;
+            overflow-y: auto;
+            background: var(--bg);
+            color: var(--text);
+        }
+
+        /* Horizontal Navigation Bar */
+        .horizontal-nav {
+            display: flex;
+            gap: 10px;
+            background: var(--surface);
+            padding: 10px;
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px var(--shadow);
+            overflow-x: auto;
+        }
+
+        .horiz-btn {
+            background: transparent;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 10px;
+            font-weight: 600;
+            color: var(--muted);
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.2s ease;
+        }
+
+        .horiz-btn:hover {
+            color: var(--primary);
+            background: var(--surface-2);
+        }
+
+        .horiz-btn.active {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 4px 12px rgba(29, 78, 216, 0.2);
+        }
+
+        /* Detail Sections Toggle */
+        .detail-section {
+            display: none;
+        }
+
+        .detail-section.active {
+            display: block;
+        }
+
+        .photocards {
+            display: flex;
+            overflow-x: auto;
+            gap: 16px;
+            padding: 16px 0;
+            scroll-snap-type: x mandatory;
+            scrollbar-width: none;
+        }
+
+        .photocards::-webkit-scrollbar {
+            display: none;
+        }
+
+        .photocards img {
+            flex: 0 0 280px;
+            height: 180px;
+            object-fit: cover;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            scroll-snap-align: start;
+        }
+
+        .intro-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 22px;
+            margin-bottom: 18px;
+            box-shadow: 0 10px 28px var(--shadow);
+        }
+
+        .intro-card h3 {
+            margin-top: 0;
+            margin-bottom: 10px;
+        }
+
+        .intro-card p,
+        .intro-card li {
+            color: var(--muted);
+            line-height: 1.7;
+        }
+
+        .step-list {
+            margin: 0;
+            padding-left: 18px;
+        }
+
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 14px;
+        }
+
+        .member-card {
+            background: var(--card-alt);
+            padding: 12px;
+            border-radius: 14px;
+            border: 1px solid var(--border);
+        }
+
+        .member-name {
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        /* Site Footer Style */
+        .site-footer {
+            margin-top: 40px;
+            background: linear-gradient(135deg, #11253f 0%, #163a63 100%);
+            color: #ffffff;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(19, 34, 56, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .footer-content {
+            max-width: 800px;
+        }
+
+        .footer-logo {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .footer-desc {
+            color: #cbd5e1;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            margin-bottom: 16px;
+        }
+
+        .footer-disclaimer {
+            background: rgba(255, 255, 255, 0.08);
+            border-left: 4px solid #3b82f6;
+            padding: 12px 16px;
+            border-radius: 0 12px 12px 0;
+            color: #e2e8f0;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .footer-disclaimer strong {
+            color: #ffffff;
+        }
+
+        .footer-bottom-bar {
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 14px;
+            font-size: 0.85rem;
+            color: #94a3b8;
+        }
+
+        @media (max-width: 960px) {
+            .app-shell {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: static;
+            }
+
+            .content-area {
+                padding: 18px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <section class="main-app">
+        <div class="app-shell">
+
+            <!-- Left Column (Sidebar with href="#" links) -->
+            <aside class="sidebar">
+                <div class="brand">
+                    <div class="brand-main">
+                        <div class="brand-icon">🗽</div>
+                        <div>UniFindex</div>
+                    </div>
+                    <button type="button" class="theme-switch" aria-label="Toggle theme" aria-pressed="false">
+                        <span class="switch-track">
+                            <span class="switch-knob">
+                                <span class="switch-icon sun">☀</span>
+                                <span class="switch-icon moon">☾</span>
+                            </span>
+                        </span>
+                    </button>
+                </div>
+                <nav class="nav-list">
+          <a href="../main.html#dashh" class="nav-btn active"> Dashboard</a>
+          <a href="../main.html#recomm" class="nav-btn"> Recommended</a>
+          <a href="../main.html#alll" class="nav-btn"> All Universities</a>
+          <a href="../main.html#contt" class="nav-btn"> Contact Us</a>
+        </nav>
+            </aside>
+
+
+            <main class="content-area">
+
+                <nav class="horizontal-nav">
+                    <button class="horiz-btn active" data-target="about">About</button>
+                    <button class="horiz-btn" data-target="degree">Degree</button>
+                    <button class="horiz-btn" data-target="clubs">Opportunities & Activities</button>
+                    <button class="horiz-btn" data-target="opportunities">Qualification</button>
+                </nav>
+
+                <div class="detail-content-container">
+
+                    <section class="detail-section active" id="about">
+                        <div class="intro-card">
+                            <div class="photocards">
+                                <img src="photo_8_2026-08-05_23-27-52.jpg" alt="">
+                                <img src="photo_1_2026-08-05_23-27-52.jpg" alt="">
+                                <img src="photo_7_2026-08-05_23-27-52.jpg" alt="">
+                                <img src="photo_2_2026-08-05_23-27-52.jpg" alt="">
+                                <img src="photo_3_2026-08-05_23-27-52.jpg" alt="">
+                                <img src="photo_4_2026-08-05_23-27-52.jpg" alt="">
+                                <img src="photo_5_2026-08-05_23-27-52.jpg" alt="">
+                                <img src="photo_6_2026-08-05_23-27-52.jpg" alt="">
+                                
+                            </div>
+                            <h3>About University of Economics</h3>
+              <p>
+ရန်ကုန်စီးပွားရေးတက္ကသိုလ်သည် မြန်မာနိုင်ငံ၌ စီးပွားရေး၊ စီမံခန့်ခွဲမှု၊ ဘောဂဗေဒနှင့် စာရင်းအင်းပညာရပ်များအတွက် အဆင့်မြင့်ဆုံးနှင့် အကောင်းဆုံး တက္ကသိုလ်တစ်ခု ဖြစ်ပါသည်။
+<br><br>
+နယ်မြေ/ပရဝုဏ် (၃) ခု ရှိသည်။
+<br>
+<br>
+ကမာရွတ်နယ်မြေ (ပင်မပရိဝုဏ်): ပြည်လမ်းပေါ်တွင် တည်ရှိပြီး ဘွဲ့လွန်သင်တန်းများနှင့် စီမံခန့်ခွဲမှုပညာဌာနများ ဖွင့်လှစ် သင်ကြားပေးပါသည်။
+<br>
+လှိုင်နယ်မြေ: လှိုင်မြို့နယ်တွင် တည်ရှိပြီး ဘွဲ့လွန်ဒီပလိုမာများနှင့် တိုးချဲ့သင်တန်းများ ဖွင့်လှစ်ထားပါသည်။
+<br>
+ရွာသာကြီးနယ်မြေ: ဒဂုံမြို့သစ်တောင်ပိုင်းတွင် တည်ရှိပြီး၊ ဘွဲ့ကြို (Day) ကျောင်းသား/သူများ အဓိကတက်ရောက်ရသည့် နေရာဖြစ်ပါသည်။
+<br><br>
+                ရန်ကုန်စီးပွားရေးတက္ကသိုလ်သည် အဆင့်မြင့်ပညာရေးဌာန (ရန်ကုန်တိုင်းဒေသကြီး၊ မြန်မာနိုင်ငံ) လက်အောက်ရှိ
+                အစိုးရတက္ကသိုလ်တစ်ခုဖြစ်သည်။ အဆိုပါတက္ကသိုလ်ကို စီးပွားရေးပညာရှင်၊ စာရင်းအင်းပညာရှင်များ၊
+                စာရင်းကိုင်များနှင့် စီမံခန့်ခွဲမှုဝန်ထမ်းများကို လေ့ကျင့်ပေးရန်နှင့် မြန်မာ့စီးပွားရေးနှင့်
+                သက်ဆိုင်သည့် စီးပွားရေး၊ စီးပွားရေးနှင့် စာရင်းအင်းဆိုင်ရာကိစ္စရပ်များကို သုတေသနပြုလုပ်ရန်အတွက်
+                ပရော်ဖက်ရှင်နယ်အဖွဲ့အစည်းတစ်ခုအဖြစ် တည်ထောင်ခဲ့သည်။
+                <br><br>
+                ရန်ကုန်စီးပွားရေးတက္ကသိုလ်သည် ၁၉၂၄ ခုနှစ်တွင် ရန်ကုန်တက္ကသိုလ် (ရန်ကုန်) လက်အောက်ရှိ စီးပွားရေးဌာနအဖြစ်
+                စတင်တည်ထောင်ခဲ့ပြီး ၁၉၄၀ ခုနှစ်တွင် စီးပွားရေးဌာနသည် ကူးသန်းရောင်းဝယ်ရေးဘာသာရပ်ကို အထူးဘာသာရပ်တစ်ခုအဖြစ်
+                စတင်သင်ကြားခဲ့သည်။ ၁၉၅၃ ခုနှစ်မှစ၍ စာရင်းအင်းဘာသာရပ်များကို ဌာနမှ အထူးသင်တန်းများ ပို့ချခဲ့သည်။ ၁၉၅၅
+                ခုနှစ်တွင် ကူးသန်းရောင်းဝယ်ရေးဌာနကို သီးခြားတည်ထောင်ခဲ့ပြီး ၁၉၅၆ ခုနှစ်တွင် စာရင်းအင်းဌာနကို
+                သီးခြားတည်ထောင်ခဲ့သည်။ ၁၉၅၈ ခုနှစ်တွင် မန္တလေးတက္ကသိုလ် တည်ထောင်ခြင်းနှင့်အတူ မန္တလေးတွင်
+                စီးပွားရေးဌာနတစ်ခု ထပ်မံပေါ်ပေါက်လာခဲ့သည်။
+                <br><br>
+                ၁၉၆၄ ခုနှစ်တွင် ပညာရေးစနစ်သစ် စတင်မိတ်ဆက်ခြင်းနှင့်အတူ ဤဌာနအားလုံးကို စုစည်း၍
+                လက်ရှိရန်ကုန်စီးပွားရေးတက္ကသိုလ်အဖြစ် ပြန်လည်ဖွဲ့စည်းခဲ့သည်။ ၁၉၈၈ ခုနှစ်တွင် စီမံခန့်ခွဲမှုပညာဌာနနှင့်
+                အသုံးချစီးပွားရေးဌာနတို့ကို တည်ထောင်ခဲ့သည်။ တက္ကသိုလ်တွင် ယခုအခါ စီးပွားရေး၊ အသုံးချစီးပွားရေး၊
+                စာရင်းအင်း၊ ကူးသန်းရောင်းဝယ်ရေးနှင့် စီမံခန့်ခွဲမှုပညာဟူ၍ အဓိက သင်ကြားရေးဌာန ငါးခုရှိသည်။ အင်စတီကျု၏
+                အခြားပံ့ပိုးကူညီသည့်ဌာနများမှာ မြန်မာဘာသာစကား၊ အင်္ဂလိပ်စာ၊ သင်္ချာနှင့် ပထဝီဝင်ဌာနများဖြစ်သည်။
+                <br><br>
+                တက္ကသိုလ်ကို ပါမောက္ခချုပ်၊ ဒုတိယပါမောက္ခချုပ်များနှင့် ဌာနမှူးများဖြင့် ဖွဲ့စည်းထားပြီး
+                အုပ်ချုပ်ရေးဘုတ်အဖွဲ့နှင့် ပညာရေးဘုတ်အဖွဲ့ကို ဖွဲ့စည်းထားသည်။ လက်ရှိတွင် အင်စတီကျုတွင်
+                အချိန်ပြည့်ဝန်ထမ်း ၃၈၅ ဦးရှိပြီး ၎င်းတို့အနက် ၁၇၁ ဦးသည် သင်ကြားရေးနှင့် သုတေသနလုပ်ငန်းများတွင်
+                လုပ်ကိုင်နေကြသည်။ ကျန်ဝန်ထမ်းများမှာ အုပ်ချုပ်ရေးနှင့် အထောက်အပံ့ပေးသူများဖြစ်သည်။
+                <br><br>
+                နှစ်စဉ် ကျောင်းသားဦးရေ စုစုပေါင်း ၇၅၄၀ ဦးခန့် ရှိပြီး ၎င်းတို့အနက် ၂၂၄၀ ဦးမှာ ဝင်ခွင့်အသစ်များ ဖြစ်သည်။
+                စီးပွားရေး၊ စာရင်းအင်း၊ ကူးသန်းရောင်းဝယ်ရေးနှင့် စီမံခန့်ခွဲမှု ဘာသာရပ်များကို ဘွဲ့ကြို၊ ဂုဏ်ထူး၊
+                မဟာဘွဲ့နှင့် ဒီပလိုမာ အဆင့်များဖြင့် ဖွင့်လှစ်သင်ကြားပေးသည်။ လက်ရှိတွင် တက္ကသိုလ်မှ ဘွဲ့ကြို ၉ ဘွဲ့၊
+                မဟာဘွဲ့ ၁၂ ဘွဲ့၊ ဒီပလိုမာ ၉ ဘွဲ့နှင့် ပါရဂူဘွဲ့ ၃ ဘွဲ့အတွက် သင်တန်းများ ဖွင့်လှစ်ပို့ချပေးနေသည်။
+                တက္ကသိုလ်မှ စီးပွားရေး၊ စာရင်းအင်း၊ ကူးသန်းရောင်းဝယ်ရေးနှင့် စီးပွားရေးဘာသာရပ်များတွင် အထူးပြုသော
+                ဘွဲ့ရရှိသူ ၇၇,၀၃၆ ဦးကျော်ကို မွေးထုတ်ပေးခဲ့ပြီးဖြစ်သည်။
+                <br><br>
+                တက္ကသိုလ်တွင် ကျောင်းဝင်းသုံးခုရှိသည်- ကမာရွတ်ကျောင်းဝင်း၊ လှိုင်ကျောင်းဝင်းနှင့် ရွာသာကြီးကျောင်းဝင်း။
+                မူလကျောင်းဝင်းဖြစ်သော ကမာရွတ်ကျောင်းဝင်းသည် အင်းယားလမ်းနှင့် ပြည်လမ်းထောင့်ရှိ အင်းယားကန်ကမ်းစပ်တွင်
+                တည်ရှိသည်။ လှိုင်ကျောင်းဝင်းသည် ကမာရွတ်ကျောင်းဝင်းမှ တစ်မိုင်ခန့်အကွာတွင် တည်ရှိသည်။ ၂၀၀၀ ခုနှစ်တွင်
+                အသစ်တည်ထောင်ခဲ့သော ရွာသာကြီးကျောင်းဝင်းသည် ကမာရွတ်ကျောင်းဝင်းမှ ၁၃ မိုင်အကွာတွင် တည်ရှိသည်။
+                <br><br>
+                ရွာသာကြီးကျောင်းဝင်းတွင် ဘွဲ့ကြိုသင်တန်းများကို ပို့ချပေးနေပြီး ကမာရွတ်ကျောင်းဝင်းတွင်
+                မဟာဘွဲ့သင်တန်းများနှင့် ပါရဂူဘွဲ့သင်တန်းများကို ပို့ချပေးနေပါသည်။ လှိုင်ကျောင်းဝင်းတွင် YEco သည်
+                လူ့စွမ်းအားအရင်းအမြစ်ဖွံ့ဖြိုးတိုးတက်ရေး (HRD) အစီအစဉ်အရ သင်တန်းများကို ပို့ချပေးနေပြီး ၂၀၀၉ ခုနှစ်မှစ၍
+                မြန်မာ-အိန္ဒိယ စွန့်ဦးတီထွင်မှု ဖွံ့ဖြိုးတိုးတက်ရေးစင်တာကို ဖွင့်လှစ်ထားပါသည်။ လှိုင်ကျောင်းဝင်းတွင်လည်း
+                ၂၀၁၃ ခုနှစ် ဇွန်လတွင် စီးပွားရေးကျွမ်းကျင်မှု မွေးမြူရေးစင်တာကို ဖွင့်လှစ်တော့မည်ဖြစ်သည်။
+                <br><br>
+                ပြုပြင်ပြောင်းလဲမှုများနှင့်အညီ ၂၀၁၄ ခုနှစ်တွင် ရန်ကုန်စီးပွားရေးတက္ကသိုလ်အဖြစ် ပြောင်းလဲခဲ့သည်။
+                <br><br>
+                လှိုင်ကျောင်းဝင်းတွင် ၂၀၁၅-၂၀၁၆ ပညာသင်နှစ်တွင် စာရင်းကိုင်၊ ပြည်သူ့အုပ်ချုပ်ရေးနှင့်
+                ဖွံ့ဖြိုးတိုးတက်ရေးဘာသာရပ်များ အထူးပြု၍ ဘွဲ့ကြိုသင်တန်းများကို ပို့ချပေးနေပါသည်။
+                <br><br>
+                ၂၀၁၉-၂၀၂၀ ပညာသင်နှစ်တွင် လှိုင်ကျောင်းဝင်း၌ ကူးသန်းရောင်းဝယ်ရေး၊ စီးပွားရေးစီမံခန့်ခွဲမှု၊
+                စီးပွားရေးနှင့် စာရင်းအင်းဘာသာရပ်များကို အထူးပြု၍ ဘွဲ့ကြိုသင်တန်းများကို စတင်ဖွင့်လှစ်ခဲ့သည်။
+                ထို့ကြောင့် လှိုင်ကျောင်းဝင်းတွင် အထူးပြုဘာသာရပ် ရှစ်ခုရှိပြီး လှိုင်ကျောင်းဝင်းတွင် ကျောင်းသားဦးရေ ၇၀၀
+                ခန့် ရှိပါသည်။
+                <br><br>
+                ၂၀၂၀ ခုနှစ်တွင် ရန်ကုန်စီးပွားရေးတက္ကသိုလ်သည် ကမာရွတ်ကျောင်းဝင်းနှင့် လှိုင်ကျောင်းဝင်းတွင်
+                စျေးကွက်ရှာဖွေရေးစီမံခန့်ခွဲမှုမဟာဘွဲ့ (MMM)၊ ဧည့်ဝတ်ပြုမှုနှင့် ခရီးသွားလုပ်ငန်းစီမံခန့်ခွဲမှုမဟာဘွဲ့
+                (MHTM) နှင့် လူ့စွမ်းအားအရင်းအမြစ်စီမံခန့်ခွဲမှုဘွဲ့လွန်ဒီပလိုမာကို စတင်ဖွင့်လှစ်ခဲ့သည်။
+                <br><br>
+                လူ့စွမ်းအားအရင်းအမြစ်ဖွံ့ဖြိုးတိုးတက်ရေးဗဟိုဌာန (CHRD) အစီအစဉ်အရ ရန်ကုန်စီးပွားရေးတက္ကသိုလ်သည်
+                လှိုင်ကျောင်းဝင်းတွင် အသိအမှတ်ပြုလက်မှတ်သင်တန်းနှစ်ခုနှင့် ဒီပလိုမာသင်တန်းငါးခုကို ဖွင့်လှစ်ခဲ့သည်။
+              </p>
+              <p>
+                ကျောင်းဝင်းအတွင်းတွင် စာကြည့်တိုက် (Central Library)၊ Computer Laboratories၊ Seminar Hall၊ Lecture
+                Theatres၊ Cafeteria နှင့် ကျောင်းသားလှုပ်ရှားမှုများအတွက် Facilities များ ပါဝင်ပြီး သင်ယူမှုနှင့်
+                သုတေသနလုပ်ငန်းများကို အထောက်အကူပြုပါသည်။
+                <br><br>
+                
+              </p>
+                        </div>
+                    </section>
+
+                    <section class="detail-section" id="degree">
+                        <div class="intro-card">
+                             <h3>Degree Programs</h3>
+              <p>
+                ပေးအပ်သည့် ဘွဲ့များနှင့် သင်တန်းများ
+                <br><br>
+                ကျောင်းသားများ၏ အရည်အချင်းနှင့် လုပ်ငန်းခွင်လိုအပ်ချက်အပေါ် မူတည်၍ သင်တန်းအမျိုးအစား စုံလင်စွာ ဖွင့်လှစ်ပေးထားပါသည်။
+                <br>
+                ဘွဲ့ကြိုသင်တန်းများ (Undergraduate): B.Econ (ဘောဂဗေဒ)၊ B.Com (ကုန်သွယ်စီးပွား)၊ B.B.A (စီးပွားရေးစီမံခန့်ခွဲမှု) နှင့် B.P.A (ပြည်သူ့ရေးရာစီမံခန့်ခွဲမှု) ဘွဲ့များ။
+                <br>
+                မဟာဘွဲ့သင်တန်းများ (Master's): Yangon University of Economics Official Website တွင် MBA (စီမံခန့်ခွဲမှုမဟာ)၊ M.Com၊ M.Econ၊ MPA အပြင် အွန်လိုင်းမှ တက်ရောက်နိုင်သော MSESI မဟာဘွဲ့များကိုပါ လျှောက်ထားနိုင်ပါသည်။
+                <br>
+                ဘွဲ့လွန်ဒီပလိုမာများ (Diploma): လုပ်ငန်းခွင်ဝင်နေသူများအတွက် PGDMA (စီမံခန့်ခွဲမှု)၊ PGDHRM (လူ့စွမ်းအားအရင်းအမြစ်) စသည့် အချိန်ပိုင်းနှင့် အွန်လိုင်းဒီပလိုမာသင်တန်းများ။
+                <br><br>
+                ရန်ကုန်စီးပွားရေးတက္ကသိုလ်တွင် စီးပွားရေး၊ စာရင်းကိုင်နှင့် ကူးသန်းရောင်းဝယ်ရေးဘာသာရပ်များအတွက်
+                ဘွဲ့ကြို၊ မဟာဘွဲ့နှင့် ဒီပလိုမာ အဆင့်များကို သင်ကြားပေးနေပါသည်။ အဆိုပါ ဘွဲ့များအတွက် သင်တန်းများကို
+                အောက်ပါအတိုင်း ဖွင့်လှစ်ပေးနေပါသည်။
+
+              </p>
+              <p>Undergraduate Programs</p>
+              <ul class="step-list">
+
+                <ul>
+                  <li>Bachelor of Accounting (B.Act)</li>
+                  <li>Bachelor of Business Administration (BBA)</li>
+                  <li>Bachelor of Public Administration (BPA)</li>
+                  <li>Bachelor of Development Studies (BDevs)</li>
+                  <li>Bachelor of Economics (Statistics) - BEcon (Stats)</li>
+                  <li>Bachelor of Economics (Economics) - BEcon (Eco)</li>
+                  <li>Bachelor of Population Studies (BPS)</li>
+                  <li>Bachelor of Actuarial Science (BAS)</li>
+                </ul>
+                <p>Postgraduate Programs</p>
+                <ul>
+                  <li>
+                    Master of Economics (M.Econ)
+                  </li>
+                  <li>
+                    Master of Commerce (M.Com)
+                  </li>
+                  <li>
+                    Master of Business Administration (MBA)
+                  </li>
+                  <li>
+                    Executive MBA (EMBA)
+                  </li>
+                  <li>
+                    Master of Public Administration (MPA)
+                  </li>
+                  <li>
+                    Ph.D. Programs
+                  </li>
+                </ul>
+                        </div>
+                    </section>
+
+                    <section class="detail-section" id="clubs">
+                        <div class="intro-card">
+                          <section class="student-life">
+
+                <!-- Clubs & Organizations -->
+                <section class="clubs-section">
+                  <h2>Clubs, Activities &amp; Student Life</h2>
+
+                  <p>
+                    ရန်ကုန်စီးပွားရေးတက္ကသိုလ်မှာ ပညာရေးပိုင်းဆိုင်ရာ လေ့လာသင်ယူမှုတွေအပြင်
+                    ကျောင်းသား၊ ကျောင်းသူတွေရဲ့ ဝါသနာ၊ စိတ်ဝင်စားမှုနဲ့ ကိုယ်ပိုင်အရည်အချင်းတွေကို
+                    ဖော်ထုတ်တိုးတက်စေနိုင်ဖို့အတွက် <strong>Clubs နဲ့ Organizations အမျိုးမျိုး</strong>
+                    ဖွဲ့စည်းထားရှိပါတယ်။
+                  </p>
+
+                  <p>
+                    ကိုယ်စိတ်ဝင်စားတဲ့ နယ်ပယ်အလိုက် ပါဝင်လှုပ်ရှားနိုင်တာကြောင့် မိတ်ဆွေအသစ်တွေ
+                    ရရှိနိုင်သလို Teamwork, Communication, Leadership နဲ့ Creativity စတဲ့
+                    အရည်အချင်းတွေကိုလည်း လက်တွေ့အသုံးချရင်း တိုးတက်အောင် လေ့ကျင့်နိုင်ပါတယ်။
+                  </p>
+
+                  <h3>YUEco Clubs &amp; Organizations</h3>
+
+                  <ol>
+                    <li>YUEco Football Club</li>
+                    <li>YUEco Volleyball Club</li>
+                    <li>YUEco Chess Club</li>
+                    <li>YUEco Basketball Club</li>
+                    <li>YUEco Hiking and Mountain Club</li>
+                    <li>YUEco Badminton Club</li>
+                    <li>YUEco Swimming Club</li>
+                    <li>YUEco သိုင်းပြောင်းပြန် Family</li>
+                    <li>YUEco Art Club (Photography, Dance, ...)</li>
+                    <li>YUEco Debate Club</li>
+                    <li>YUEco Literature Club</li>
+                    <li>YUEco Youth Environmental Club</li>
+                    <li>YUEco MMGG (Organization)</li>
+                    <li>YUEco UTC (Organization)</li>
+                  </ol>
+
+                  <p>
+                    စတဲ့ Clubs နဲ့ Organizations တွေအပြင် မေဂျာအလိုက်၊ စိတ်ဝင်စားမှုအလိုက်
+                    ဖွဲ့စည်းထားတဲ့ လှုပ်ရှားမှုတွေလည်း ရှိတာကြောင့် ကျောင်းသား၊ ကျောင်းသူတွေအနေနဲ့
+                    ကိုယ့်ရဲ့ Hobby နဲ့ စိတ်ဝင်စားမှုနဲ့ ကိုက်ညီတဲ့ Club တွေမှာ ပါဝင်ခွင့်
+                    ရရှိနိုင်ပါတယ်။
+                  </p>
+                </section>
+
+
+                <!-- Events & Activities -->
+                <section class="events-section">
+                  <h2>ကျောင်းတွင်း ပွဲလမ်းသဘင်များနှင့် Activities</h2>
+
+                  <p>
+                    ရန်ကုန်စီးပွားရေးတက္ကသိုလ်ရဲ့ ကျောင်းသားဘဝဟာ စာသင်ကြားရေးတစ်ခုတည်းကိုသာ
+                    အာရုံစိုက်ရတဲ့ ဘဝမျိုးမဟုတ်ဘဲ ကျောင်းသား၊ ကျောင်းသူတွေအတူတကွ
+                    ပျော်ရွှင်စွာ ပါဝင်ဆင်နွှဲနိုင်မယ့် ပွဲလမ်းသဘင်နဲ့ Activities တွေလည်း
+                    အများကြီးရှိပါတယ်။
+                  </p>
+
+                  <ul>
+                    <li>မေဂျာပေါင်းစုံ Welcome အစီအစဉ်များ</li>
+                    <li>တိုင်းရင်းသားပေါင်းစုံ ဈေးရောင်းပွဲတော်</li>
+                    <li>ကျောင်းသင်္ကြန်ပွဲ</li>
+                    <li>အခြားသော ကျောင်းတွင်း ပျော်ပွဲရွှင်ပွဲများနှင့် အခမ်းအနားများ</li>
+                  </ul>
+
+                  <p>
+                    ဒါ့အပြင် ကျောင်းသား၊ ကျောင်းသူတွေရဲ့ ပညာရပ်ဆိုင်ရာနဲ့ အထွေထွေဗဟုသုတတွေ
+                    တိုးတက်စေဖို့ <strong>Seminar နဲ့ Workshop</strong> အစီအစဉ်တွေကိုလည်း
+                    အခါအားလျော်စွာ ကျင်းပပေးပါတယ်။
+                  </p>
+                </section>
+
+
+                <!-- Competitions & External Activities -->
+                <section class="competitions-section">
+                  <h2>ပြိုင်ပွဲများနှင့် ပြင်ပ Activities</h2>
+
+                  <p>
+                    ပျော်ပွဲရွှင်ပွဲတွေနဲ့ Seminar / Workshop တွေသာမက ကျောင်းသား၊ ကျောင်းသူတွေရဲ့
+                    အရည်အချင်းနဲ့ စွမ်းရည်တွေကို ဖော်ထုတ်ပြသနိုင်ဖို့အတွက်
+                    <strong>ပြိုင်ပွဲအမျိုးမျိုး</strong> ကိုလည်း ကျင်းပပေးပါတယ်။
+                  </p>
+
+                  <ul>
+                    <li>University Training Corps (UTC) ဆိုင်ရာ ပြိုင်ပွဲများ</li>
+                    <li>ကင်းထောက်ပြိုင်ပွဲ</li>
+                    <li>ကဗျာ / စာစီစာကုံးပြိုင်ပွဲ</li>
+                    <li>စကားရည်လုပွဲ</li>
+                    <li>ကျဘမ်းစကားပြောပြိုင်ပွဲ</li>
+                    <li>ရေကူး / လှေလှော် / ဘောလုံး အားကစားပြိုင်ပွဲများ</li>
+                    <li>English Language Competition</li>
+                    <li>Miss YUEco စီးပွားရေးအလှမယ်ပြိုင်ပွဲ</li>
+                  </ul>
+
+                  <p>
+                    စတဲ့ ပြိုင်ပွဲတွေအပြင် မေဂျာအလိုက်၊ Club အလိုက်နဲ့ အဖွဲ့အစည်းအလိုက်
+                    ပြုလုပ်ကျင်းပတဲ့ ပြိုင်ပွဲတွေလည်း အများကြီးရှိပါတယ်။
+                  </p>
+
+                  <p>
+                    ဒါတင်မကသေးဘဲ ပြင်ပအဖွဲ့အစည်းများ၊ အဖွဲ့အစည်းပေါင်းစုံနဲ့ ချိတ်ဆက်ပြီး
+                    Volunteer လုပ်ငန်းများမှာ ပါဝင်ခွင့်ရရှိနိုင်သလို အခြားသော စိတ်ဝင်စားစရာကောင်းတဲ့
+                    Activities တွေမှာလည်း ပါဝင်နိုင်ပါတယ်။
+                  </p>
+
+                  <p>
+                    ဒါကြောင့် ရန်ကုန်စီးပွားရေးတက္ကသိုလ်မှာ စာသင်ကြားရေးကို အဓိကထားရင်း
+                    ကိုယ်ဝါသနာပါတဲ့ အားကစား၊ အနုပညာ၊ စာပေ၊ ဘာသာစကား၊ လူမှုရေးနဲ့
+                    အခြားနယ်ပယ်တွေကိုလည်း တစ်ပြိုင်နက်တည်း လေ့လာလုပ်ဆောင်နိုင်မှာ ဖြစ်ပါတယ်။
+                  </p>
+                </section>
+
+
+                <!-- Scholarship Opportunities -->
+                <section class="scholarship-section">
+                  <h2>Scholarship Opportunities</h2>
+
+                  <p>
+                    ရန်ကုန်စီးပွားရေးတက္ကသိုလ်မှာ ပညာရေးနဲ့ ကျောင်းသားဘဝ Activities တွေအပြင်
+                    ကျောင်းသား၊ ကျောင်းသူတွေအတွက် <strong>Scholarship Opportunities</strong>
+                    တွေလည်း အမျိုးမျိုးရှိပါတယ်။
+                  </p>
+
+                  <p>
+                    အစိုးရ၊ ပြည်တွင်းဘဏ်များ၊ နိုင်ငံခြားအစိုးရနဲ့ အဖွဲ့အစည်းများ၊
+                    ပြင်ပအဖွဲ့အစည်းများ၊ လုပ်ငန်းများ စတဲ့ နေရာအသီးသီးကနေ
+                    ထူးချွန်တဲ့ ကျောင်းသား၊ ကျောင်းသူတွေအတွက် Scholarship တွေ
+                    ပေးအပ်လျက်ရှိပါတယ်။
+                  </p>
+
+
+                  <article class="scholarship-card">
+                    <h3>အစိုးရကပေးသော Scholarship</h3>
+
+                    <p>
+                      အစိုးရက ထောက်ပံ့ပေးတဲ့ Scholarship တွေထဲမှာ
+                      <strong>တက္ကသိုလ်ဝင်တန်းအမှတ်အပေါ် အခြေခံပြီး ရွေးချယ်ပေးတဲ့
+                        Scholarship</strong> လည်း ပါဝင်ပါတယ်။
+                    </p>
+
+                    <ul>
+                      <li>တစ်လလျှင် ၁ သိန်းကျပ်</li>
+                      <li>ပညာသင်နှစ်တစ်ခုအတွက် ၁၀ သိန်းကျပ်</li>
+                      <li>တစ်နှစ်လျှင် ကျောင်းသား၊ ကျောင်းသူ ၂၀ ဦးဝန်းကျင်</li>
+                    </ul>
+
+                    <p>
+                      သတ်မှတ်ချက်တွေနဲ့ ကိုက်ညီပါက ကျောင်းမပြီးမချင်း နှစ်စဉ်
+                      ဆက်လက်ရရှိနိုင်ပါတယ်။
+                    </p>
+                  </article>
+
+
+                  <article class="scholarship-card">
+                    <h3>UOB Scholarship</h3>
+
+                    <p>
+                      <strong>UOB (United Overseas Bank)</strong> ကနေ ပေးအပ်တဲ့
+                      Scholarship လည်း ရှိပါတယ်။
+                    </p>
+
+                    <p>
+                      တစ်နှစ်လျှင် ကျောင်းသား၊ ကျောင်းသူ ၁၀ ဦးခန့်ကို ရွေးချယ်ပေးပြီး
+                      Interview အဆင့်ကနေ ရွေးချယ်ပေးတာဖြစ်ပါတယ်။
+                      Scholarship ပမာဏလည်း ကောင်းမွန်တာကြောင့် ကျောင်းသား၊ ကျောင်းသူတွေအတွက်
+                      အထူးစိတ်ဝင်စားစရာ Scholarship Opportunity တစ်ခု ဖြစ်ပါတယ်။
+                    </p>
+                  </article>
+
+
+                  <article class="scholarship-card">
+                    <h3>Final Year Scholarship</h3>
+
+                    <p>
+                      Final Year ကျောင်းသား၊ ကျောင်းသူတွေအတွက်လည်း ထူးချွန်သူတွေကို
+                      ရွေးချယ်ပြီး Scholarship ပေးအပ်တဲ့ အစီအစဉ်ရှိပါတယ်။
+                    </p>
+
+                    <p>
+                      Final Year students တွေထဲကနေ ထူးချွန်တဲ့
+                      <strong>ကျောင်းသား၊ ကျောင်းသူ ၃ ဦးခန့်</strong> ကို ရွေးချယ်ပေးပြီး
+                      Scholarship အဖြစ် <strong>USD 1,000 အထိ</strong> ရရှိနိုင်ပါတယ်။
+                    </p>
+                  </article>
+
+
+                  <article class="scholarship-card">
+                    <h3>အခြား Scholarship Opportunities များ</h3>
+
+                    <ul>
+                      <li>ဂျပန်နိုင်ငံမှ ပေးအပ်သော Scholarship များ</li>
+                      <li>Bank များမှ ပေးအပ်သော Scholarship များ</li>
+                      <li>တရုတ်နိုင်ငံဘက်မှ ပေးအပ်သော Scholarship များ</li>
+                      <li>
+                        အခြား နိုင်ငံခြားအဖွဲ့အစည်းများ၊ ပြည်တွင်း/ပြည်ပ လုပ်ငန်းများနှင့်
+                        Organizations များမှ ပေးအပ်သော Scholarship များ
+                      </li>
+                    </ul>
+
+                    <p>
+                      Scholarship တွေဟာ အစိုးရနဲ့ တက္ကသိုလ်ဘက်ကပဲ ပေးအပ်တာမဟုတ်ဘဲ
+                      ပြင်ပအဖွဲ့အစည်းများနဲ့ လုပ်ငန်းများကနေ ထူးချွန်တဲ့ ကျောင်းသား၊
+                      ကျောင်းသူတွေအတွက် ပေးအပ်တဲ့ Scholarship နဲ့ အခွင့်အရေးတွေလည်း
+                      ရှိတာကြောင့် မိမိရဲ့ ပညာရေးအရည်အချင်းနဲ့ လုပ်ဆောင်ချက်တွေအပေါ်
+                      မူတည်ပြီး အခွင့်အရေးအမျိုးမျိုးကို ရှာဖွေလျှောက်ထားနိုင်ပါတယ်။
+                    </p>
+                  </article>
+                </section>
+
+
+                <!-- Exchange Programs -->
+                <section class="exchange-section">
+                  <h2>Exchange Programs</h2>
+
+                  <p>
+                    Scholarship Opportunities တွေအပြင် ရန်ကုန်စီးပွားရေးတက္ကသိုလ်မှာ
+                    နိုင်ငံခြားတက္ကသိုလ်တွေနဲ့ အဖွဲ့အစည်းတွေနဲ့ ချိတ်ဆက်ပြီး
+                    <strong>Exchange Program</strong> တွေမှာလည်း ပါဝင်ခွင့်ရနိုင်ပါတယ်။
+                  </p>
+
+                  <p>
+                    နိုင်ငံခြားကို သွားရောက်လေ့လာခွင့်ရရှိတာသာမက မတူညီတဲ့ နိုင်ငံတွေရဲ့
+                    ပညာရေးစနစ်၊ ယဉ်ကျေးမှုနဲ့ လူမှုဘဝတွေကို ကိုယ်တိုင်တွေ့ကြုံလေ့လာနိုင်တာကြောင့်
+                    ကျောင်းသား၊ ကျောင်းသူတွေအတွက် အတွေ့အကြုံကောင်းတွေ ရရှိစေနိုင်ပါတယ်။
+                  </p>
+
+
+                  <article class="program-card">
+                    <h3>SHARE Program</h3>
+
+                    <p>
+                      <strong>SHARE Program</strong> ကတော့ နိုင်ငံခြားတက္ကသိုလ်တွေမှာ
+                      <strong>Semester တစ်ခုစာခန့် သွားရောက်လေ့လာသင်ယူနိုင်တဲ့
+                        Exchange Program</strong> တစ်ခုဖြစ်ပါတယ်။
+                    </p>
+
+                    <p>
+                      နိုင်ငံခြားမှာ သွားရောက်နေထိုင်ရင်း ပညာသင်ကြားနိုင်တာကြောင့်
+                      မိမိရဲ့ Academic Knowledge အပြင် နိုင်ငံတကာအတွေ့အကြုံနဲ့
+                      Communication Skills တွေကိုပါ တိုးတက်စေနိုင်ပါတယ်။
+                    </p>
+                  </article>
+
+
+                  <article class="program-card">
+                    <h3>SHARE Platform</h3>
+
+                    <p>
+                      <strong>SHARE Platform</strong> မှာ တင်ထားတဲ့ Program တွေထဲကနေ
+                      မိမိသွားရောက်လိုတဲ့ <strong>အာရှနိုင်ငံများနဲ့ တက္ကသိုလ်တွေကို
+                        ရွေးချယ်ပြီး လျှောက်ထားနိုင်တဲ့ အခွင့်အရေး</strong> ရှိပါတယ်။
+                    </p>
+
+                    <p>
+                      ဒါကြောင့် နိုင်ငံခြားမှာ ပညာသင်ကြားလိုတဲ့ ကျောင်းသား၊ ကျောင်းသူတွေအတွက်
+                      နိုင်ငံတကာပညာရေးအတွေ့အကြုံ ရရှိနိုင်မယ့် အခွင့်အရေးကောင်းတစ်ခု ဖြစ်ပါတယ်။
+                    </p>
+                  </article>
+
+
+                  <article class="program-card">
+                    <h3>GENETIC Program</h3>
+
+                    <p>
+                      <strong>GENETIC Program</strong> ကတော့
+                      <strong>ဂျပန်နိုင်ငံနဲ့ YUEco တို့အကြား အထူးဆက်ဆံရေး
+                        (Relationship) ကို အခြေခံထားတဲ့ Program</strong> တစ်ခုဖြစ်ပါတယ်။
+                    </p>
+
+                    <p>
+                      ဂျပန်နိုင်ငံနဲ့ ပတ်သက်တဲ့ ပညာရေး၊ ယဉ်ကျေးမှုနဲ့ အတွေ့အကြုံတွေကို
+                      လေ့လာနိုင်မယ့် အခွင့်အရေးတွေ ရရှိနိုင်ပါတယ်။
+                    </p>
+                  </article>
+
+
+                  <article class="program-card">
+                    <h3>SYC Program</h3>
+
+                    <p>
+                      <strong>SYC Program</strong> ကတော့
+                      <strong>စင်ကာပူနိုင်ငံနဲ့ ယဉ်ကျေးမှုဖလှယ်မှု</strong> ကို
+                      အခြေခံထားတဲ့ Program တစ်ခုဖြစ်ပါတယ်။
+                    </p>
+
+                    <p>
+                      နိုင်ငံနှစ်နိုင်ငံရဲ့ ယဉ်ကျေးမှု၊ လူမှုဘဝနဲ့ အတွေ့အကြုံတွေကို
+                      အပြန်အလှန်လေ့လာနိုင်ပြီး နိုင်ငံတကာမိတ်ဆွေတွေနဲ့
+                      ဆက်ဆံရေးတည်ဆောက်နိုင်မယ့် အခွင့်အရေးလည်း ရရှိနိုင်ပါတယ်။
+                    </p>
+                  </article>
+
+
+                  <p>
+                    ဒါတွေအပြင် နိုင်ငံခြားတက္ကသိုလ်များ၊ အဖွဲ့အစည်းများနဲ့ ချိတ်ဆက်ထားတဲ့
+                    <strong>အခြား Exchange Programs နဲ့ International Programs</strong>
+                    တွေလည်း အခွင့်အရေးအလိုက် ရှိနေပါသေးတယ်။
+                  </p>
+                </section>
+                <p>
+                  ဒါကြောင့် <strong>စာသင်ကြားရေး၊ ကိုယ်ပိုင်ဝါသနာ၊ အရည်အချင်းဖွံ့ဖြိုးတိုးတက်ရေး
+                    နဲ့ နိုင်ငံတကာအတွေ့အကြုံ</strong> တွေကို တစ်နေရာတည်းမှာ ရှာဖွေချင်တဲ့
+                  ကျောင်းသား၊ ကျောင်းသူတွေအနေနဲ့ ရန်ကုန်စီးပွားရေးတက္ကသိုလ်ကို
+                  တက္ကသိုလ်ရွေးချယ်တဲ့အခါ ထည့်သွင်းစဉ်းစားသင့်တဲ့ တက္ကသိုလ်တစ်ခုအဖြစ်
+                  စဉ်းစားနိုင်ပါတယ်။
+                </p>
+              </section>
+                            <p>
+                                Information Availability Notice
+                                <br><br>
+                                Some information on this website may not yet be available or may still be under
+                                collection and verification. As a result, certain sections may be incomplete or
+                                temporarily unavailable.
+                                <br>
+                                We are continuously working to update and improve the content to ensure that accurate
+                                and comprehensive information is provided. Thank you for your patience and
+                                understanding.
+                            </p>
+                            <div class="cards-grid" style="margin-top: 15px;">
+                                <div class="member-card">
+                                    <div class="member-name">Nothing</div>
+                                    <p style="font-size: 0.85rem; color: var(--muted); margin: 0;">Nothing
+                                    </p>
+                                </div>
+                                <div class="member-card">
+                                    <div class="member-name">Nothing</div>
+                                    <p style="font-size: 0.85rem; color: var(--muted); margin: 0;">Nothing</p>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="detail-section" id="opportunities">
+                        <div class="intro-card">
+                           <h3>Qualification</h3>
+              <h2>ဝင်ခွင့်အရည်အချင်း (Qualification)</h2>
+            
+              <p>
+                <h4>ဝင်ခွင့် လိုအပ်ချက်များ</h4>
+
+တက္ကသိုလ်ဝင် စာမေးပွဲ ကို အောင်မြင်ပြီး ရန်ကုန်စီးပွားရေး တက္ကသိုလ်သို့ ဝင်ခွင့် လျှောက်ထားသည့် ကျောင်းသားများ၏ ရမှတ်များကို အခြေခံ ပြီး တက္ကသိုလ် ဗဟိုကောင်စီ ၏ စည်းမျဉ်းများအတိုင်း အဆင့်မြင့်  ပညာဦးစီးဌာန (DHE) မှ ရွေးချယ်ပေးပါသည်။
+              </p>
+              <p>
+                ရန်ကုန်စီးပွားရေးတက္ကသိုလ်သို့ ဝင်ခွင့်ရရှိရန် လိုအပ်သောအမှတ်သည်
+                ရွေးချယ်လိုသော ဘာသာရပ်အလိုက် ကွာခြားနိုင်ပါသည်။ မိမိ၏ စုစုပေါင်းအမှတ်သည်
+                သက်ဆိုင်ရာဘာသာရပ်၏ ဝင်ခွင့်ရမှတ်နှင့် ကိုက်ညီခြင်း သို့မဟုတ်
+                ပိုမိုမြင့်မားခြင်းရှိပါက ထိုဘာသာရပ်အတွက် ဝင်ခွင့်ရရှိနိုင်ရန်
+                အခွင့်အလမ်းရှိပါသည်။
+              </p>
+
+              <ul>
+                <li>B.Com (Bachelor of Commerce) — 426 မှတ်</li>
+                <li>B.P.A (Bachelor of Public Administration) — 394 မှတ်</li>
+                <li>B.B.A (Bachelor of Business Administration) — 412 မှတ်</li>
+                <li>B.Econ (Development Studies) — 391 မှတ်</li>
+                <li>B.Act (Bachelor of Actuarial Science) — 410 မှတ်</li>
+                <li>B.A.S (Bachelor of Applied Statistics) — 389 မှတ်</li>
+                <li>B.Econ (Statistics) — 404 မှတ်</li>
+                <li>B.P.S (Bachelor of Population Studies) — 386 မှတ်</li>
+                <li>B.Econ (Economics) — 402 မှတ်</li>
+              </ul>
+
+              <p>
+                အထက်ပါအမှတ်များသည် သက်ဆိုင်ရာဘာသာရပ်များအတွက် ဖော်ပြထားသော
+                ဝင်ခွင့်ရမှတ်များဖြစ်ပြီး နှစ်အလိုက် ဝင်ခွင့်အခြေအနေ၊ လျှောက်ထားသူ
+                အရေအတွက်နှင့် သတ်မှတ်ချက်များအပေါ် မူတည်၍ ပြောင်းလဲနိုင်ပါသည်။
+                ထို့ကြောင့် မိမိ၏အမှတ်နှင့် သက်ဆိုင်ရာနှစ်၏ တရားဝင်ဝင်ခွင့်
+                သတ်မှတ်ချက်များကို တိုက်ဆိုင်စစ်ဆေးရန် လိုအပ်ပါသည်။
+              </p>
+
+              <p>
+              <h4>ဒီဂရီ အတွက်လိုအပ်ချက်များ</h4>
+အထူးပြု ဘာသာရပ်များ ရွေးချယ်ခြင်းကို ပထမနှစ် တွင် စတင်ပြီးရွေးချယ်သည်။  ဒီဂရီ ဘွဲ့ အတွက် ကြာမြင့်ချိန် စာသင်နှစ် 4 နှစ် ဖြစ်သည်။  ပညာသင်နှစ် ၁ နှစ်တိုင်းတွင်  semester (၂) ခုစီရှိမည်ဖြစ်ပြီး semester (၁) ခုပြီးတိုင်း စာမေးပွဲ များ ကျင်းပသည်။  နောက်ဆုံးနှစ် ကျောင်းသား / သူများသည် ရေးဖြေ စာမေးပွဲ များ ကို အောင်မြင်ရန်လိုအပ်သည့်အပြင် ဘွဲ့ အတွက်လိုအပ်သော ကျမ်းစာငယ် (Term Paper) ပြုစုခြင်း နှင့် လူတွေ့ စာမေးပွဲများ ဖြေဆိုရန် လိုအပ်သည်။  ကျောင်းသား / သူများသည် ဘာသာရပ်တစ်ခုစီတွင် အနည်းဆုံး Grade 3 ရရှိရန် လိုအပ်သည်။
+              </p>
+              <p>
+               <h4>ဂုဏ်ထူးတန်း ဘွဲ့များအတွက်လိုအပ်ချက်များ</h4> 
+ဒုတိယနှစ်စာမေးပွဲများတွင် အခြေခံဘာသာရပ်နှစ်ခု၌ Grade Points 5 ဖြင့် အောင်မြင်ပြီး ပညာသင်ကာလ ၂ ခု အတွက် စုစုပေါင်း Grade Point Average (GPA) ကို GPA 4 နှင့်အထက်ရရှိရန် လိုအပ်ပြီး ဂုဏ်ထူးတန်းအတွက် မှတ်ပုံတင်လျှောက်ထားရန် အရည်အချင်းပြည့်မီသည်။
+<br><br>
+ဂုဏ်ထူးတန်းဘွဲ့သင်တန်းကာလမှာ ၃ နှစ်ဖြစ်သည်။
+ပထမနှစ်နှင့် ဒုတိယနှစ်အတွက် နှစ်နှစ်ကို ထည့်သွင်းစဉ်းစားပါက စုစုပေါင်း လေ့လာမှုကာလမှာ ငါးနှစ်ဖြစ်သည်။
+ဂုဏ်ထူးတန်း ကျောင်းသားများကို စာမေးပွဲဖြေဆိုရန် တစ်ကြိမ်သာ တက်ရောက်ခွင့်ပြုထားသည်။
+ဂုဏ်ထူးစာမေးပွဲတွင် ရေးဖြေနှင့် နှုတ်ဖြေ လူတွေ့ စာမေးပွဲ နှစ်ခုလုံး ပါဝင်ပါသည်။
+ရေးဖြေစာမေးပွဲတွင် ကျောင်းသားသည် ဘာသာရပ်တစ်ခုစီတွင် Grade Point 4 ရှိရမည်။
+ဂုဏ်ထူးတန်း တက်ရောက်နေစဉ် သတ်မှတ်ထားသော အရည်အချင်းများ မပြည့်မီပါက သာမန်ဘွဲ့ကိုသာ ရရှိမည်ဖြစ်သည်။
+<br>
+စာမေးပွဲရလဒ်များကို အောက်ပါ အတန်းငါးတန်းအလိုက် ထုတ်ပြန်ထားပါသည်။<br>
+
+ပထမတန်းဂုဏ်ထူးတန်း<br>
+ဒုတိယတန်း ဂုဏ်ထူးတန်း (ပထမတန်း)၊<br>
+ဒုတိယတန်း ဂုဏ်ထူးတန်း (ဒုတိယတန်း)၊<br>
+တတိယတန်းဂုဏ်ထူးတန်း<br>
+B.Econ / B.Com (သာမန်ဘွဲ့)၊<br>
+ဒုတိယနှစ် စာမေးပွဲ အောင်မြင်ပြီးနောက် ဂုဏ်ထူးတန်း အတန်းသို့ တက်ရောက်ရန် အရည်အချင်းမပြည့်မီသော ကျောင်းသားသည် နောက်ဆုံးနှစ်သင်တန်းများတွင် CGPA 4 နှင့်အထက် ရရှိပါက နောက်ဆုံးနှစ်သင်တန်းများ ပေါင်းစပ်ထားသော မဟာဘွဲ့  အရည်အချင်းစစ် အတန်းများသို့ တက်ရောက်ရန် အခွင့်အရေးများရှိပါသည်။
+              </p>
+              <p>
+                <h4>မာစတာဒီဂရီများအတွက်လိုအပ်ချက်များ</h4>
+မာစတာဒီဂရီပရိုဂရမ် ဟူ၍ နှစ်မျိုးရှိပြီး ပုံမှန်ဒီဂရီပရိုဂရမ်နှင့် ပရော်ဖက်ရှင်နယ်ဒီဂရီပရိုဂရမ်ဟူ၍ နှစ်မျိုးရှိသည်။ မဟာဘွဲ့အစီအစဉ်များအတွက် မှတ်ပုံတင်လျှောက်ထားရန် အရည်အချင်းပြည့်မီသူများသည် အောက်ပါအတိုင်းဖြစ်သည်။
+<br><br>
+ပုံမှန် Master Degree အစီအစဉ်
+ဂုဏ်ထူးတန်းစာမေးပွဲ သို့မဟုတ် ဘာသာရပ်တစ်ခုစီတွင် Grade Point 4 ဖြင့် မဟာအရည်အချင်းစစ်စာမေးပွဲအောင်မြင်ပြီးသူသည် မဟာဘွဲ့အစီအစဉ်တွင် ပါဝင်ရန် အရည်အချင်းပြည့်မီသည်။
+ကျောင်းသားတစ်ဦးသည် မှတ်ပုံတင်သည့်နေ့မှစ၍ တစ်နှစ်ထက်မနည်းသော ကာလတစ်ခုအတွက် အတည်ပြုထားသော မဟာဘွဲ့  အရည်အချင်းစစ် အတန်းများကို တက်ရောက်ရမည်။
+မဟာဘွဲ့ သင်တန်းများ အတွက် ကျင်းပသောစာမေးပွဲများ တွင် ရေးဖြေနှင့် နှုတ်ဖြေ (လူတွေ့) စာမေးပွဲ များ  ပါဝင်ရမည်။
+ထို့အပြင် လျှောက်ထားသူသည် thesis တင်သွင်းရန် လိုအပ်ပါသည်။ အဆိုပါစာတမ်းကို မှတ်ပုံတင်သည့်နေ့မှ သုံးနှစ်အတွင်း တင်သွင်းရမည်ဖြစ်သည်။ လျှောက်ထားသူသည် သတ်မှတ်အချိန်အတွင်း စာတမ်းတင်သွင်းရန် ပျက်ကွက်ပါက၊ ဖြေဆိုထားသော ရေးဖြေစာမေးပွဲ ရလဒ်များလည် ပျက်ပြယ်သည်ဟု ယူဆပါသည်။<br><br>
+<h4>ပရော်ဖက်ရှင်နယ် Master Degree အစီအစဉ်</h4>
+ရန်ကုန်စီးပွားရေးတက္ကသိုလ်မှ ပရော်ဖက်ရှင်နယ် မဟာဘွဲ့ အစီအစဉ် အမျိုးအစားသုံးမျိုး ပေးထားပြီး အချိန်ပြည့် မဟာဘွဲ့ ၊ အဆင့်မြင့် မဟာဘွဲ့ နှင့် အွန်လိုင်;မဟာဘွဲ့  ဟူ၍ အမျိုးအစားသုံးမျိုး ရှိသည်။
+သင်တန်းသားများကို လုပ်ငန်းအတွေ့အကြုံ၊ ဝါသနာ နှင့် အသက်မွေးဝမ်းကြောင်းဆိုင်ရာ ရည်ရွယ်ချက် များဖြင့် ရွေးချယ်ထားသည်။
+ဝင်ခွင့်လိုအပ်ချက်များသည် အသိအမှတ်ပြုတက္ကသိုလ်မှ ဘွဲ့ဒီဂရီတစ်ခု၊ GMAT ကဲ့သို့သော (ဘွဲ့လွန်စီမံခန့်ခွဲမှုဝင်ခွင့်စာမေးပွဲ) စာမေးပွဲနှင့် နှုတ်ဖြေ (လူတွေ့) စာမေးပွဲ ရလဒ်များဖြစ်သည်။<br><br>
+<h4>ပါရဂူဘွဲ့များအတွက် လိုအပ်ချက်</h4>
+ရန်ကုန်စီးပွားရေးတက္ကသိုလ်သည် ၁၉၉၈ ခုနှစ်မှစတင်၍ PhD ပရိုဂရမ်ကို စတင်ဆောင်ရွက်နေသည်။ YUE သည် PhD ဘွဲ့ရ ၈၉ ဦးကို ပြုစုပျိုးထောင်ပေးခဲ့ပြီး (၆၈) ဦးသည် ၎င်းတို့၏ PhD သင်တန်းများကို တက်ရောက်လျက်ရှိသည်။ PhD ဝင်ခွင့်အတွက် လိုအပ်ချက်များမှာ အောက်ပါအတိုင်းဖြစ်သည်။
+<br>
+- အသက် 30 နှစ်အောက်ဖြစ်ရမည်။(
+လုပ်ငန်းအတွေ့အကြုံရှိသူဖြစ်ပါက အသက်ကန့်သတ်ချက်ကို လျှော့ပေါ့ပေးနိုင်သည်။)<br>
+- PhD ပဏာမသင်တန်းတွင် အချိန်ပြည့် ၁ နှစ် တက်ရောက်ရန် လိုအပ်ပါသည်။
+              </p>
+
+                            <p>
+                                Information Availability Notice
+                                <br><br>
+                                Some information on this website may not yet be available or may still be under
+                                collection and verification. As a result, certain sections may be incomplete or
+                                temporarily unavailable.
+                                <br>
+                                We are continuously working to update and improve the content to ensure that accurate
+                                and comprehensive information is provided. Thank you for your patience and
+                                understanding.
+                            </p>
+                        </div>
+                    </section>
+
+                </div>
+
+                <div class="intro-card" style="margin-top: 24px;">
+                    <h3>ဘယ်လိုလူတွေ တက်ရောက်သင့်သလဲ</h3>
+          <p>
+            YUE သည် Matriculation Examination အောင်မြင်ထားပြီး
+                စီးပွားရေး၊ ဘဏ္ဍာရေး၊ စာရင်းကိုင်၊ စျေးကွက်ရှာဖွေရေး၊ စီမံခန့်ခွဲမှုနှင့်
+                စီးပွားရေးလုပ်ငန်းရှင်ဖြစ်လိုသူများအတွက် အထူးသင့်လျော်သော တက္ကသိုလ်တစ်ခုဖြစ်ပါသည်။
+          </p>
+          <p> တက္ကသိုလ်အကြောင်း ပိုမိုသိရှိလိုပါက:
+            <button
+              style="background: var(--primary); color: white; border: none; padding: 6px 12px; border-radius: 8px; cursor: pointer; margin-left: 6px; justify-self: center;"
+              onclick="window.open('https://www.google.com/url?sa=t&source=web&rct=j&opi=89978449&url=https://yueco.edu.mm/&ved=2ahUKEwjCuojJ5omWAxX29DgGHWgCG4YQFnoECBwQAQ&sqi=2&usg=AOvVaw0if8MsfAXPNTsxvvBYmdlL', '_blank')">YUE
+              Official Website</button>
+          </p>
+                </div>
+                <footer class="site-footer">
+                    <div class="footer-content">
+                        <div class="footer-logo">🗽 UniFindex</div>
+                        <p class="footer-desc">
+                            We are just a smooth and better reader for people who love to read about Universities from
+                            internets.
+                        </p>
+                        <div class="footer-disclaimer">
+                            <strong>Copy Right Claim:</strong>
+                            <p>
+                                ဤ Website တွင် ဖော်ပြထားသော အချက်အလက်များကို ယုံကြည်စိတ်ချရသော ရင်းမြစ်များမှ ကိုးကား၍
+                                စုစည်းဖော်ပြထားခြင်းဖြစ်ပါသည်။
+                                <br>
+                                အချက်အလက်များကို မှန်ကန်ပြည့်စုံစေရန် အတတ်နိုင်ဆုံး ကြိုးပမ်းထားသော်လည်း မရည်ရွယ်ဘဲ
+                                လိုအပ်ချက်များ၊
+                                မှားယွင်းမှုများ သို့မဟုတ် ခေတ်မမီတော့သော အချက်အလက်အချို့ ပါဝင်နိုင်ပါသည်။ ထိုသို့
+                                ဖြစ်ပေါ်ခဲ့ပါက အနူးအညွတ်
+                                တောင်းပန်အပ်ပါသည်။
+                                <br>
+                                မှားယွင်းမှုများ၊ လိုအပ်ချက်များ တွေ့ရှိပါက သို့မဟုတ် အကြံပြုချက်များက ပေးလိုပါက
+                                Contacts သို့သွားကာ
+                                ကျွန်ုပ်တို့အား အသိပေးနိုင်ပါသည်။ ထို့အကြံပြုချက်များမှတဆင့် ကျွန်ုပ်တို့သည် Website ကို
+                                ပိုမိုတိကျပြည့်စုံပြီး အသုံးဝင်လာစေရန် ဆက်လက်ပြင်ဆင်သွားမည် ဖြစ်ပါသည်။
+                                ကျွန်ုပ်တို့၏ Website ကို ဝင်ရောက်ကြည့်ရှုအသုံးပြုပေးသည့်အတွက် အထူးကျေးဇူးတင်ရှိပါသည်။
+                            </p>
+                        </div>
+                        <div class="footer-bottom-bar">
+                            <span>&copy; 2026 UniFindex. All rights reserved.</span>
+                        </div>
+                    </div>
+                </footer>
+
+            </main>
+        </div>
+    </section>
+
+    <script>
+        const horizButtons = document.querySelectorAll('.horiz-btn');
+        const detailSections = document.querySelectorAll('.detail-section');
+
+        horizButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const targetId = button.dataset.target;
+
+                horizButtons.forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+
+                detailSections.forEach(section => {
+                    if (section.id === targetId) {
+                        section.classList.add('active');
+                    } else {
+                        section.classList.remove('active');
+                    }
+                });
+            });
+        });
+
+        const photocards = document.querySelector('.photocards');
+        if (photocards) {
+            setInterval(() => {
+                if (photocards.scrollLeft + photocards.clientWidth >= photocards.scrollWidth) {
+                    photocards.scrollTo({ left: 0, behavior: 'smooth' });
+                } else {
+                    photocards.scrollBy({ left: 300, behavior: 'smooth' });
+                }
+            }, 3000);
+        }
+
+        const root = document.documentElement;
+        const themeSwitch = document.querySelector('.theme-switch');
+
+        const savedTheme = localStorage.getItem('theme') || 'dark';
+        root.setAttribute('data-theme', savedTheme);
+
+        const syncTheme = () => {
+            const isDark = root.getAttribute('data-theme') === 'dark';
+            themeSwitch?.setAttribute('aria-pressed', String(isDark));
+            themeSwitch?.classList.toggle('is-dark', isDark);
+        };
+
+        syncTheme();
+
+        themeSwitch?.addEventListener('click', () => {
+            const nextTheme = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+            root.setAttribute('data-theme', nextTheme);
+            localStorage.setItem('theme', nextTheme);
+            syncTheme();
+        });
+    </script>
+</body>
+
+</html>

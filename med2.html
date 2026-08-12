@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="my">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>University Detail View</title>
+  <style>
+    :root {
+      --bg: #f5f7fb;
+      --surface: #ffffff;
+      --surface-2: #f2f6ff;
+      --primary: #1d4ed8;
+      --primary-dark: #163f95;
+      --text: #132238;
+      --muted: #667085;
+      --border: #dce5f2;
+      --accent: #eff6ff;
+      --sidebar-start: #11253f;
+      --sidebar-end: #163a63;
+      --shadow: rgba(19, 34, 56, 0.05);
+      --card-soft: #f9fbff;
+    }
+
+    :root[data-theme='dark'] {
+      --bg: #08151f;
+      --surface: #0f1724;
+      --surface-2: #1a2534;
+      --primary: #7aa7ff;
+      --primary-dark: #dfeaff;
+      --text: #edf6ff;
+      --muted: #b1bfd2;
+      --border: #233247;
+      --accent: #0c1d2d;
+      --sidebar-start: #0b1725;
+      --sidebar-end: #12314f;
+      --shadow: rgba(0, 0, 0, 0.35);
+      --card-soft: #101d2c;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      transition: background 0.25s ease, color 0.25s ease;
+    }
+
+    .main-app {
+      display: block;
+      min-height: 100vh;
+      background: var(--bg);
+    }
+
+    .app-shell {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* Sidebar (Left Column) */
+    .sidebar {
+      width: 20%;
+      min-width: 240px;
+      background: linear-gradient(180deg, #11253f 0%, #163a63 100%);
+      color: white;
+      padding: 24px 16px;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 28px;
+      font-size: 1.1rem;
+      font-weight: 700;
+    }
+
+    .brand-main {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+    }
+
+    .brand-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      display: grid;
+      place-items: center;
+      background: rgba(255, 255, 255, 0.16);
+      font-size: 1.2rem;
+    }
+
+    .theme-switch {
+      width: 46px;
+      height: 24px;
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.12);
+      display: flex;
+      align-items: center;
+      padding: 3px;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      flex-shrink: 0;
+    }
+
+    .theme-switch .switch-knob {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: #fff;
+      display: grid;
+      place-items: center;
+      font-size: 10px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.16);
+      transition: all 0.25s ease;
+      transform: translateX(0);
+    }
+
+    .theme-switch.is-dark {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    .theme-switch.is-dark .switch-knob {
+      transform: translateX(22px);
+      background: #e8f0ff;
+    }
+
+    .nav-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .nav-btn {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 14px;
+      border: none;
+      border-radius: 12px;
+      background: transparent;
+      color: white;
+      cursor: pointer;
+      transition: background 0.2s ease, transform 0.2s ease;
+      font-size: 0.98rem;
+      text-decoration: none;
+    }
+
+    .nav-btn:hover,
+    .nav-btn.active {
+      background: rgba(255, 255, 255, 0.16);
+      transform: translateX(3px);
+    }
+
+    /* Content Area (Right Column) */
+    .content-area {
+      flex: 1;
+      padding: 24px 24px 40px;
+      overflow-y: auto;
+    }
+
+    /* Horizontal Navigation Bar */
+    .horizontal-nav {
+      display: flex;
+      gap: 10px;
+      background: var(--surface);
+      padding: 10px;
+      border-radius: 16px;
+      border: 1px solid var(--border);
+      margin-bottom: 20px;
+      box-shadow: 0 4px 15px rgba(19, 34, 56, 0.03);
+      overflow-x: auto;
+    }
+
+    .horiz-btn {
+      background: transparent;
+      border: none;
+      padding: 10px 18px;
+      border-radius: 10px;
+      font-weight: 600;
+      color: var(--muted);
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s ease;
+    }
+
+    .horiz-btn:hover {
+      color: var(--primary);
+      background: var(--surface-2);
+    }
+
+    .horiz-btn.active {
+      background: var(--primary);
+      color: white;
+      box-shadow: 0 4px 12px rgba(29, 78, 216, 0.2);
+    }
+
+    /* Detail Sections Toggle */
+    .detail-section {
+      display: none;
+    }
+
+    .detail-section.active {
+      display: block;
+    }
+
+    .photocards {
+      display: flex;
+      overflow-x: auto;
+      gap: 16px;
+      padding: 16px 0;
+      scroll-snap-type: x mandatory;
+      scrollbar-width: none;
+    }
+
+    .photocards::-webkit-scrollbar {
+      display: none;
+    }
+
+    .photocards img {
+      flex: 0 0 280px;
+      height: 180px;
+      object-fit: cover;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      scroll-snap-align: start;
+    }
+
+    .intro-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 22px;
+      margin-bottom: 18px;
+      box-shadow: 0 10px 28px rgba(19, 34, 56, 0.05);
+    }
+
+    .intro-card h3 {
+      margin-top: 0;
+      margin-bottom: 10px;
+    }
+
+    .intro-card p,
+    .intro-card li {
+      color: var(--muted);
+      line-height: 1.7;
+    }
+
+    .step-list {
+      margin: 0;
+      padding-left: 18px;
+    }
+
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 14px;
+    }
+
+    .member-card {
+      background: #f9fbff;
+      padding: 12px;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+    }
+
+    .member-name {
+      font-weight: 700;
+      margin-bottom: 5px;
+    }
+
+    /* Site Footer Style */
+    .site-footer {
+      margin-top: 40px;
+      background: linear-gradient(135deg, #11253f 0%, #163a63 100%);
+      color: #ffffff;
+      border-radius: 20px;
+      padding: 30px;
+      box-shadow: 0 10px 30px rgba(19, 34, 56, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .footer-content {
+      max-width: 800px;
+    }
+
+    .footer-logo {
+      font-size: 1.2rem;
+      font-weight: 700;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .footer-desc {
+      color: #cbd5e1;
+      font-size: 0.95rem;
+      line-height: 1.6;
+      margin-bottom: 16px;
+    }
+
+    .footer-disclaimer {
+      background: rgba(255, 255, 255, 0.08);
+      border-left: 4px solid #3b82f6;
+      padding: 12px 16px;
+      border-radius: 0 12px 12px 0;
+      color: #e2e8f0;
+      font-size: 0.9rem;
+      line-height: 1.6;
+      margin-bottom: 20px;
+    }
+
+    .footer-disclaimer strong {
+      color: #ffffff;
+    }
+
+    .footer-bottom-bar {
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      padding-top: 14px;
+      font-size: 0.85rem;
+      color: #94a3b8;
+    }
+
+    @media (max-width: 960px) {
+      .app-shell {
+        flex-direction: column;
+      }
+
+      .sidebar {
+        width: 100%;
+        height: auto;
+        position: static;
+      }
+
+      .content-area {
+        padding: 18px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <section class="main-app">
+    <div class="app-shell">
+
+      <!-- Left Column (Sidebar with href="#" links) -->
+      <aside class="sidebar">
+        <div class="brand">
+          <div class="brand-main">
+            <div class="brand-icon">🗽</div>
+            <div>UniFindex</div>
+          </div>
+          <button class="theme-switch" type="button" aria-label="Toggle theme" aria-pressed="false">
+            <span class="switch-knob">☀</span>
+          </button>
+        </div>
+        <nav class="nav-list">
+          <a href="../main.html#dashh" class="nav-btn active"> Dashboard</a>
+          <a href="../main.html#recomm" class="nav-btn"> Recommended</a>
+          <a href="../main.html#alll" class="nav-btn"> All Universities</a>
+          <a href="../main.html#locc" class="nav-btn">Locations</a>
+        </nav>
+      </aside>
+
+
+      <main class="content-area">
+
+        <nav class="horizontal-nav">
+          <button class="horiz-btn active" data-target="about">About</button>
+          <button class="horiz-btn" data-target="degree">Degree</button>
+          <button class="horiz-btn" data-target="clubs">Opportunities & Activities</button>
+          <button class="horiz-btn" data-target="opportunities">Qualification</button>
+        </nav>
+
+        <div class="detail-content-container">
+
+          <section class="detail-section active" id="about">
+            <div class="intro-card">
+              <div class="photocards">
+                <img src="https://tse3.mm.bing.net/th/id/OIP.wv-iCfbPDgeikYC5pqYhHQAAAA?r=0&rs=1&pid=ImgDetMain&o=7&rm=3" alt="">
+                <img src="https://tse3.mm.bing.net/th/id/OIP.wv-iCfbPDgeikYC5pqYhHQAAAA?r=0&rs=1&pid=ImgDetMain&o=7&rm=3" alt="">
+                <img src="https://alchetron.com/cdn/university-of-medicine-2-yangon-10fe89f3-d019-4ffd-bb09-f98770e503c-resize-750.jpg" alt="">
+                <img src="https://tse2.mm.bing.net/th/id/OIP.rrsEo8rQNZpjSiJVcwyS3QHaFj?r=0&rs=1&pid=ImgDetMain&o=7&rm=3" alt="">
+                <img src="Medicine2/photo_1_2026-08-09_03-29-07.jpg" alt="">
+                <img src="Medicine2/photo_2_2026-08-09_03-29-07.jpg" alt="">
+                <img src="Medicine2/photo_3_2026-08-09_03-29-07.jpg" alt="">
+                <img src="Medicine2/photo_4_2026-08-09_03-29-07.jpg" alt="">
+              </div>
+              <h3>About University of Medicine-1, Yangon</h3>
+              <p>
+                ရန်ကုန်ဆေးတက္ကသိုလ် (၂) သည် ရန်ကုန်တိုင်းဒေသကြီး၊ မြောက်ဥက္ကလာပမြို့နယ်၊ ခေမာသီလမ်းတွင် တည်ရှိပါသည်။
+                <br><br>
+                ရန်ကုန်ဆေးတက္ကသိုလ် (၂) သည် မြန်မာနိုင်ငံ၏ ဆေးပညာလောကတွင် အထူးထင်ရှားသော အစဉ်အလာကောင်းများရှိသည့် တက္ကသိုလ်တစ်ခု ဖြစ်ပါသည်။ ၁၉၆၃ ခုနှစ်၊ ဇူလိုင်လ ၁၅ ရက်နေ့တွင် မင်္ဂလာဒုံမြို့နယ်၌ ဆေးကောလိပ်အဖြစ် စတင်အုတ်မြစ်ချခဲ့ရာမှ အစပြု၍၊ ၁၉၆၄ ခုနှစ်တွင် သီးခြားတက္ကသိုလ် (Institute) အဖြစ် တိုးမြှင့်ဖွဲ့စည်းခဲ့ပါသည်။ ဤတက္ကသိုလ်သည် အစပိုင်းတွင် ရန်ကုန်တက္ကသိုလ်၏ မဟာဌာနတစ်ခုအဖြစ် ရှိနေခဲ့သော်လည်း၊ နောက်ပိုင်းတွင် သီးခြားလွတ်လပ်သော အဖွဲ့အစည်းတစ်ခုအဖြစ် အသွင်ကူးပြောင်းခဲ့ခြင်း ဖြစ်ပါသည်။
+<br><br>
+၁၉၇၃ ခုနှစ်၊ အောက်တိုဘာလ ၁ ရက်နေ့တွင် ပညာရေးဝန်ကြီးဌာန လက်အောက်မှ ကျန်းမာရေးဝန်ကြီးဌာန လက်အောက်သို့ လွှဲပြောင်းခဲ့ပြီး ဆေးဘက်ဆိုင်ရာပညာရေးဦးစီးဌာန၏ တိုက်ရိုက်ကြီးကြပ်မှုဖြင့် ပိုမိုခေတ်မီဆန်းသစ်သော သင်ကြားရေးစနစ်များကို စတင်ကျင့်သုံးခဲ့ပါသည်။ ၁၉၉၆ ခုနှစ်၊ စက်တင်ဘာလ ၂၅ ရက်နေ့တွင် တက္ကသိုလ်အား မင်္ဂလာဒုံတပ်နယ်မြေမှ မြောက်ဥက္ကလာပမြို့နယ်၊ ခေမာသီလမ်းသို့ ပြောင်းရွှေ့ဖွင့်လှစ်ခဲ့ပါသည်။ ၂၀၀၅ ခုနှစ်၊ ဇွန်လ ၁ ရက်နေ့တွင် Institute မှ တက္ကသိုလ်အဆင့်သို့ တရားဝင်တိုးမြှင့်ခဲ့ပြီး၊ ယနေ့တိုင် အောင်မြင်သော ဆရာဝန်ကောင်းများကို မွေးထုတ်ပေးနေဆဲ ဖြစ်ပါသည်။ ထို့အပြင် ဤတက္ကသိုလ်သည် Educational Commission for Foreign Medical Graduates (ECFMG) အဖွဲ့အစည်း၏ အသိအမှတ်ပြုခြင်းကို ရရှိထားသော ကျောင်း (၅) ကျောင်းထဲတွင် တစ်ခုအပါအဝင်ဖြစ်သည့်အပြင် နိုင်ငံတကာအဆင့်မီသော ဆေးပညာနယ်ပယ်နှင့်သက်ဆိုင်သည့် ပညာရပ်များကို သင်ကြားပေးနေသော ကျောင်းတစ်ကျောင်းလည်း ဖြစ်သည်။<br><br>
+              </p>
+            </div>
+          </section>
+
+          <section class="detail-section" id="degree">
+            <div class="intro-card">
+              <h3>Degree Programs</h3>
+              <p>
+                ရန်ကုန်ဆေးတက္ကသိုလ် (၂) သည် မြန်မာနိုင်ငံ၏ ထိပ်တန်းဆေးပညာသင်ကြားရေးတက္ကသိုလ်တစ်ခုဖြစ်ပြီး ဘွဲ့ကြိုနှင့် ဘွဲ့လွန်သင်တန်းများကို စနစ်တကျ သင်ကြားပေးလျက်ရှိပါသည်။
+
+                
+                <br><br>
+<h3>ဘွဲ့ကြိုသင်တန်း (Undergraduate Program)</h3>
+ဆေးပညာဘွဲ့ (M.B.B.S) ရရှိရန်အတွက် စုစုပေါင်း ၇ နှစ်တာကာလကို အဆင့်ဆင့် တက်ရောက်သင်ကြားရပါသည်။<br>
+<ul>
+  <li>First Year (Foundation Year) - ၁ နှစ်ခန့်: အခြေခံဘာသာရပ်များဖြစ်သည့် မြန်မာစာ၊ အင်္ဂလိပ်စာ၊ သင်္ချာ၊ ရူပဗေဒ၊ ဓာတုဗေဒ၊ ရုက္ခဗေဒနှင့် သတ္တဗေဒဘာသာရပ်များကို သင်ကြားရပါသည်။</li>
+  <li>Second Year - ၁ နှစ်ခွဲ: ဆေးပညာ၏ အခြေခံအုတ်မြစ်များဖြစ်သော Anatomy (ခန္ဓာဗေဒ)၊ Physiology (ဇီဝကမ္မဗေဒ) နှင့် Biochemistry (ဇီဝဓာတုဗေဒ) ဘာသာရပ်များကို နက်ရှိုင်းစွာ သင်ယူရပါသည်။</li>
+  <li>Third Year - ၁ နှစ်: သင်ကြားရေးဆေးရုံများတွင် လက်တွေ့လေ့လာမှုများ စတင်ပြုလုပ်ရပြီး Pathology၊ Microbiology နှင့် Pharmacology ဘာသာရပ်များကို စာတွေ့၊ လက်တွေ့ သင်ယူရပါသည်။</li>
+  <li>Final Year (Part 1) - ၁ နှစ်: Forensic Medicine၊ Preventive and Social Medicine နှင့် Systemic Pathology တို့ကို သင်ကြားရင်း မြို့ပြကျန်းမာရေးဌာနများနှင့် နယ်မြေများသို့ ကွင်းဆင်းလေ့လာခြင်း (RFT Trip) များ ပြုလုပ်ရပါသည်။</li>
+  <li>Final Year (Part 2) - ၁ နှစ်ခွဲ: Child Health၊ Medicine၊ Obstetrics and Gynecology နှင့် Surgery ဘာသာရပ်များကို အဓိကထား၍ အထူးပြုလေ့လာရပါသည်။</li>
+  <li>House Surgeon (အလုပ်သင်ဆရာဝန်) - ၁ နှစ်: သင်ကြားရေးဆေးရုံများတွင် ကလေးကျန်းမာရေး၊ ပြည်သူ့အကျိုးပြုဆေးပညာ၊ စိတ်ရောဂါကုသမှုပညာ၊ သားဖွားမီးယပ်နှင့် ခွဲစိတ်ကုသမှုပညာတို့ကို လက်တွေ့ တာဝန်ထမ်းဆောင်ရပါသည်။</li>
+</ul>
+ဤ ၇ နှစ်တာကာလ အောင်မြင်ပြီးမှသာ တရားဝင် M.B.B.S (Bachelor of Medicine and Surgery) ဘွဲ့ကို အပ်နှင်းခြင်း ဖြစ်ပါသည်။
+<br><br>
+<h3>ဘွဲ့လွန်သင်တန်းများ (Postgraduate Programs)</h3>
+ရန်ကုန်ဆေးတက္ကသိုလ် (၂) သည် ဆေးပညာဆိုင်ရာ ဘွဲ့လွန်ဒီဂရီ အမျိုးမျိုးကိုလည်း ပေးအပ်လျက်ရှိပါသည်။
+<ul>
+  <li>ဒီပလိုမာဘွဲ့များ (Diploma in Medical Science - Dip.Med.Sc.): ဆေးပညာရပ်ဆိုင်ရာ ဘာသာရပ်အသီးသီးတွင် အထူးပြုဒီပလိုမာသင်တန်းများ</li>
+  <li>မဟာသိပ္ပံဘွဲ့ (Master of Medical Science - M.Med.Sc.): သက်ဆိုင်ရာဆေးပညာဘာသာရပ်များအလိုက် မဟာဘွဲ့သင်တန်းများ</li>
+  <li>ဆေးပညာပါရဂူဘွဲ့ (Doctor of Medical Science - Dr.Med.Sc.): ဆေးကုသမှုဆိုင်ရာ ဘာသာရပ်များအတွက် အမြင့်ဆုံးပါရဂူဘွဲ့များ</li>
+  <li>ပါရဂူဘွဲ့ (Ph.D.): အခြေခံဆေးပညာရပ်များ (Basic Medical Science) နှင့် ပတ်သက်သော ပါရဂူဘွဲ့သင်တန်းများ</li>
+</ul>
+အဆိုပါ ဘွဲ့လွန်သင်တန်းများတွင် အထူးသဖြင့် ဆေးပညာဌာန၊ ခွဲစိတ်ကုပညာဌာန၊ သားဖွားနှင့်မီးယပ်ပညာဌာနနှင့် ကလေးကျန်းမာပညာဌာနတို့အပြင် အခြားသော ဆေးပညာဘာသာရပ်များစွာတွင်လည်း ဘွဲ့လွန်ပညာသင်ကြားမှုများကို စဉ်ဆက်မပြတ် ဆောင်ရွက်လျက်ရှိပါသည်။
+              </p>
+            </div>
+          </section>
+
+          <section class="detail-section" id="clubs">
+            <div class="intro-card">
+              <h3>Opportunities & Activities</h3>
+              <p>
+                ဆေးတက္ကသိုလ်တွင် ခက်ခဲများပြားလှတဲ့ စာတွေကြားထဲမှာ စိတ်အပန်းဖြေမှုရဖို့ရန်အတွက် club များစွာလည်းရှိပါတယ်။
+
+<ul>
+  <li>UM2 Football club</li>
+  <li>UM2 Swimming club</li>
+  <li>UM2 Badminton club</li>
+  <li>UM2 Band</li>
+  <li>UM2 Basketball club</li>
+  <li>UM2 Dance club</li>
+  <li>UM2 Chess club</li>
+  <li>UM2 English club တို့ပဲဖြစ်ပါတယ်။</li>
+</ul>
+ဒါ့အပြင် UM2 ပါချုပ်ဖလား ဘောလုံးပြိုင်ပွဲ၊ ကြက်တောင်ပြိုင်ပွဲ နဲ့ စစ်တုရင်ပြိုင်ပွဲတွေလည်း ရှိပါတယ်။
+<br> <br>
+ဆေး၂မှာ ကျင်းပတဲ့ပွဲတွေထဲမှာ အကြီးကျယ် အခမ်းနားဆုံးပွဲတစ်ပွဲကတော့ ဖေဖော်ဝါရီလမှာ နှစ်စဉ်ကျင်းပမြဲဖြစ်တဲ့ Fund Fair ပဲ ဖြစ်ပါတယ်။ အဲဒီပွဲမှာဆိုရင် ကျောင်းသားတွေရဲ့ အနုပညာတင်ဆက်မှုတွေနဲ့ နာမည်ကြီးအဆိုတော်တွေရဲ့ ဖျော်ဖြေတင်ဆက်မှုတွေကြောင့် ဆေး၂ရဲ့ပွဲတွေထဲမှာမှ အစည်ကားဆုံးပွဲတစ်ပွဲလည်းဖြစ်ပါတယ်။
+<br>
+ဒါ့အပြင် ဆေး၂မှာ တန်ဆောင်တိုင်မီးထွန်းပွဲတော်၊ ကျောင်းသင်္ကြန်အစရှိတဲ့ တခြားတခြားသောပွဲတွေလည်း အများကြီးရှိပါသေးပါတယ်။ နှစ်စဉ် Fresher welcome လည်းရှိတဲ့အတွက် မုန့်ရောင်းပွဲတော်နှင့်အတူ ပြုလုပ်လေ့ရှိပါတယ်။ Student Union ကလုပ်တဲ့ပွဲတွေ၊ Student Committee ကလုပ်တဲ့ပွဲတွေ၊ Culture Show တွေလည်း ရှိပေမယ့် အဲဒီ့ပွဲတွေဟာ အမြဲတမ်းသတ်သတ်မှတ်မှတ်တော့ မရှိပါဘူး။ သတ်သတ်မှတ်မှတ်ရှိတာကတော့ Fresher welcome နဲ့ UM2 Show ပွဲပါ။
+<br>
+Second MB ရောက်ချိန်မှာတော့ Dead Body နဲ့ စာသင်ရပါတယ်။ အဲ့အချိန်ကျရင် Dead Body လှူထားတဲ့သူတွေကို ပြန်ပြီးအသိအမှတ်ပြု တလေးတစားဆက်ဆံတဲ့အနေဖြင့် အသံတိတ်မြတ်ဆရာပူဇော်ပွဲ ပြုလုပ်လေ့ရှိပါတယ်။ ပျော်ပွဲရွှင်ပွဲဆိုတာထက် Dead body လှူထားတဲ့သူတွေကို appreciate ပြုလုပ်ပေးတဲ့ပွဲလေးဖြစ်တဲ့အတွက် ကျောင်းသားကျောင်းသူအကုန်လုံးသည် အပေါ်ပိုင်းကို အင်္ကျီအဖြူနဲ့ အောက်ပိုင်းကို အနက်ရောင် ဝတ်ဆင်ကြပါတယ်။ Second MB တွင် World anatomy day ကျရောက်ပါက ကျောင်းအလိုက် Poster ပြိုင်ပွဲများကို ကျင်းပပေးပါတယ်။
+<br><br>
+<h3>Job & Scholarship Opportunities</h3><br>
+ဆရာဝန်များအနေဖြင့် ဆရာဝန်အလုပ်သာမက ဆေးဖက်ဆိုင်ရာနယ်ပယ်ကဲ့သို့ တခြားသောအလုပ်များကို ရွေးချယ်စရာ အခွင့်အလမ်းများစွာရှိပါတယ်။ အစိုးရပိုင်းမှာလုပ်လို့ရသလို ပုဂ္ဂလိကပိုင်းမှာလည်းလုပ်လို့ရပြီး နိုင်ငံခြားတွင်လည်း စာဆက်သွားသင်လို့ရပါတယ်။ Professional ကျောင်းဖြစ်တဲ့အတွက်ကြောင့် ကျောင်းပြီးသွားရင်တော့ ရရှိတဲ့ဆရာဝန်ဘွဲ့ကိုမှ ဘယ်လို career မျိုးရွေးချယ်ချင်လဲဆိုတာကတော့ ကိုယ့်ရဲ့စိတ်ဝင်စားမှုအပေါ်မူတည်ပါတယ်။
+<br>
+UM 2 မှ ကျောင်းသူကျောင်းသားများအတွက် ကျောင်းတွင်း ကျောင်းပြင် ပြည်တွင်းပြည်ပ အဖွဲ့အစည်းများစွာမှ ထောက်ပံ့ပေးနေသော scholarship များစွာကလည်း ရှိနေပါသေးသည်။ ပြည်ပအနေဖြင့် Japan ကနေခေါ်တဲ့ Scholarship တွေကို First year အပြီးလောက်မှာ First year နဲ့ second year တွေကို ခေါ်ပါတယ်။ ရေးဖြေနဲ့ interview ဖြေဆိုရပြီး ကျန်ရှိသော ၆ နှစ်ကို ဂျပန်တွင် scholarship ဖြင့် ဆက်လက်သင်ကြားပြီး ဂျပန်မှချီးမြှင့်သော M.B.B.S ဘွဲ့ကို ရရှိမှာဖြစ်ပါတယ်။ ပြည်တွင်းအနေဖြင့် ဆယ်တန်းအမှတ်ပေါ်မူတည်ပြီး ကျောင်းမှာ top 10 ဝင်တဲ့သူများကို တစ်လလျှင် တစ်သိန်း ပညာရေးဝန်ကြီးဌာနမှ ထောက်ပံ့ပေးခြင်းလည်း ရှိပါတယ်။
+              </p>
+              <p>
+                Information Availability Notice
+<br><br>
+Some information on this website may not yet be available or may still be under collection and verification. As a result, certain sections may be incomplete or temporarily unavailable.
+<br>
+We are continuously working to update and improve the content to ensure that accurate and comprehensive information is provided. Thank you for your patience and understanding.
+              </p>
+              <div class="cards-grid" style="margin-top: 15px;">
+                <div class="member-card">
+                  <div class="member-name">Nothing</div>
+                  <p style="font-size: 0.85rem; color: var(--muted); margin: 0;">Nothing
+                  </p>
+                </div>
+                <div class="member-card">
+                  <div class="member-name">Nothing</div>
+                  <p style="font-size: 0.85rem; color: var(--muted); margin: 0;">Nothing</p>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="detail-section" id="opportunities">
+            <div class="intro-card">
+              <h3>Qualification</h3>
+              <p>
+                ၂၀၂၆ ခုနှစ် တက္ကသိုလ်ဝင်စာမေးပွဲ အောင်မြင်ထားပြီး ဆေးတက္ကသိုလ်များကို ပထမဦးစားပေး လျောက်ထားချင်တဲ့ ကျောင်းသား/သူများအတွက် မဖြစ်မနေသိထားရမယ့် အဓိကအချက်များမှာ အောက်ပါအတိုင်း ဖြစ်ပါတယ် -
+<ul>
+  <li>(၁) ဝင်ခွင့်ရမှတ်နှင့် ရွေးချယ်ပုံအခြေအနေများ
+    <ul>
+      <li>အခြေခံရမှတ်: (၆) ဘာသာ ရမှတ်စုစုပေါင်း (၄၅၀) မှတ်နှင့်အထက် ရရှိထားသူ ဖြစ်ရမည်။</li>
+      <li>ရွေးချယ်ပုံ: ရမှတ် (၄၅၀) နှင့်အထက် ရရှိသူများထဲမှ အင်္ဂလိပ်စာ၊ ဓာတုဗေဒ၊ ဇီဝဗေဒ (၃) ဘာသာပေါင်း ရမှတ်အများ/အနည်းပေါ် မူတည်၍ ပဏာမအဆင့် ရွေးချယ်မည်။</li>
+      <li>ရန်ကုန်ဆေးတက္ကသိုလ် (၂) ဝင်ခွင့်ရမှတ်: အင်္ဂလိပ်၊ ဓာတု၊ ဇီဝ (၃) ဘာသာရမှတ်ပေါင်း (၂၅၁) မှတ် ဖြစ်ပါသည်။</li>
+      <li>ကျောင်းသား/သူ ရွေးချယ်မှုအချိုး: အမျိုးသား ဦးရေ ၅၀% နှင့် အမျိုးသမီး ဦးရေ ၅၀% နှုန်းဖြင့် ညီတူညီမျှ လက်ခံရွေးချယ်သွားမည် ဖြစ်သည်။</li>
+    </ul>
+  </li>
+  <li>(၂) အခြေခံအရည်အချင်းသတ်မှတ်ချက်များ
+    <ul>
+      <li>ဘာသာတွဲ: STEAMS-1 (ဓာတုဗေဒ၊ ရူပဗေဒ၊ ဇီဝဗေဒ) ဘာသာတွဲဖြင့် အောင်မြင်ထားသူ ဖြစ်ရမည်။</li>
+    </ul>
+  </li>
+  <li>(၃) လူတွေ့စစ်ဆေးခြင်းနှင့် အပြီးသတ်ရွေးချယ်ခြင်း
+    <ul>
+      <li>ပဏာမအဆင့်: ပဏာမအဆင့် ရွေးချယ်ခံရသူများသည် အရည်အချင်းစစ် လူတွေ့/နှုတ်မေးစာမေးပွဲ ဖြေဆိုရမည်။</li>
+      <li>အပြီးသတ်ရွေးချယ်မှု: လူတွေ့ဖြေဆိုသူများထဲမှ အမှတ်အများဆုံး ကျောင်းသား/သူ ဦးရေ (၁,၂၅၀) ဦး ကို အပြီးသတ် ရွေးချယ်မည်။</li>
+      <li>Psychometric Test: ရွေးချယ်ခံရပါက စိတ်ပိုင်းဆိုင်ရာ ဆန်းစစ်ခြင်း (Psychometric Test) ကို ထပ်မံခံယူရမည် ဖြစ်သည်။</li>
+    </ul>
+  </li>
+  <li>(၄) နိုင်ငံဝန်ထမ်းအဖြစ် တာဝန်ထမ်းဆောင်ရန် ကတိကဝတ် (အရေးကြီး)
+    <ul>
+      <li>အစိုးရအစီအစဉ်ဖြင့် တက်ရောက်သူများ: ဆေးပညာဘွဲ့ရရှိပြီးပါက နိုင်ငံဝန်ထမ်းအဖြစ် အနည်းဆုံး (၅) နှစ် နှင့် ဘွဲ့လွန်သင်တန်း တက်ရောက်အောင်မြင်ပြီးပါက နောက်ထပ် အနည်းဆုံး (၅) နှစ် (မပျက်မကွက်) တာဝန်ထမ်းဆောင်မည်ဟု ကတိဝန်ခံချက်ချုပ်ဆိုရမည်။</li>
+      <li>ပျက်ကွက်ပါက: ကတိကဝတ် ဖောက်ဖျက်ပါက လျော်ကြေးငွေ ကျပ်သိန်း (၆၀၀) တိတိ ပေးလျော်ရမည့်အပြင်၊ အထွေထွေဆေးကုသခွင့် လိုင်စင် (ဆမ) ထုတ်ပေးမည် မဟုတ်ပါ။</li>
+      <li>ကိုယ်ပိုင်စရိတ်ဖြင့် တက်ရောက်သူများ: ဝန်ထမ်းမလုပ်လိုပါက မိမိစရိတ်ဖြင့် သီးခြားသတ်မှတ်ထားသော သင်တန်းကြေးများပေးသွင်း၍ တက်ရောက်နိုင်သည်။ (မူလဝင်ခွင့်ဦးရေ ၁,၂၅၀ ၏ ၂၀% ထက်မပိုသော ဦးရေကိုသာ လက်ခံမည်။)</li>
+    </ul>
+  </li>
+</ul>
+              </p>
+              <p>
+                Information Availability Notice
+<br><br>
+Some information on this website may not yet be available or may still be under collection and verification. As a result, certain sections may be incomplete or temporarily unavailable.
+<br>
+We are continuously working to update and improve the content to ensure that accurate and comprehensive information is provided. Thank you for your patience and understanding.
+              </p>
+            </div>
+          </section>
+
+        </div>
+
+        <div class="intro-card" style="margin-top: 24px;">
+          <h3>ဘယ်လိုလူတွေ တက်ရောက်သင့်သလဲ</h3>
+          <p>
+            ဆေးပညာကို စိတ်ဝင်စားပြီး STEAMS-1 ဘာသာတွဲဖြင့် အောင်မြင်ထားကာ (၆) ဘာသာရမှတ် (၄၅၀) မှတ်နှင့်အထက်နှင့် အင်္ဂလိပ်၊ ဓာတု၊ ဇီဝ (၃) ဘာသာပေါင်း ရမှတ်ကောင်းမွန်သူများ (ရန်ကုန်ဆေးတက္ကသိုလ် (၂) အတွက် (၂၅၁) မှတ်နှင့်အထက်) တက်ရောက်သင့်ပါသည်။ ထို့အပြင် ၇ နှစ်တာ ကြာမြင့်မည့် စာပေသင်ကြားမှုများကို စိတ်ပိုင်းဆိုင်ရာ ကြံ့ခိုင်စွာဖြင့် ကျော်ဖြတ်နိုင်ရန်၊ ဘွဲ့ရပါက နိုင်ငံဝန်ထမ်းအဖြစ် အနည်းဆုံး (၅) နှစ် တာဝန်ထမ်းဆောင်ရန် ကတိကဝတ်ကို ကျေပွန်လိုစိတ်ရှိရန် သို့မဟုတ် ကိုယ်ပိုင်စရိတ်ဖြင့် တက်ရောက်ရန် ဆန္ဒရှိသူများအတွက် အထူးသင့်လျော်ပါသည်။
+          </p>
+          <p> တက္ကသိုလ်အကြောင်း ပိုမိုသိရှိလိုပါက:
+            <button
+              style="background: var(--primary); color: white; border: none; padding: 6px 12px; border-radius: 8px; cursor: pointer; margin-left: 6px; justify-self: center;"
+              onclick="window.open('https://um2ygn.edu.mm/', '_blank')">University of Medicine 2, Yangon
+              Official Website</button>
+          </p>
+        </div>
+        <footer class="site-footer">
+          <div class="footer-content">
+            <div class="footer-logo">🗽 UniFindex</div>
+            <p class="footer-desc">
+              We are just a smooth and better reader for people who love to read about Universities from internets. 
+            </p>
+            <div class="footer-disclaimer">
+              <strong>Copy Right Claim:</strong> <p>
+            ဤ Website တွင် ဖော်ပြထားသော အချက်အလက်များကို ယုံကြည်စိတ်ချရသော ရင်းမြစ်များမှ ကိုးကား၍
+            စုစည်းဖော်ပြထားခြင်းဖြစ်ပါသည်။
+            <br>
+            အချက်အလက်များကို မှန်ကန်ပြည့်စုံစေရန် အတတ်နိုင်ဆုံး ကြိုးပမ်းထားသော်လည်း မရည်ရွယ်ဘဲ လိုအပ်ချက်များ၊
+            မှားယွင်းမှုများ သို့မဟုတ် ခေတ်မမီတော့သော အချက်အလက်အချို့ ပါဝင်နိုင်ပါသည်။ ထိုသို့ ဖြစ်ပေါ်ခဲ့ပါက အနူးအညွတ်
+            တောင်းပန်အပ်ပါသည်။
+            <br>
+            မှားယွင်းမှုများ၊ လိုအပ်ချက်များ တွေ့ရှိပါက သို့မဟုတ် အကြံပြုချက်များက ပေးလိုပါက Contacts သို့သွားကာ
+            ကျွန်ုပ်တို့အား အသိပေးနိုင်ပါသည်။ ထို့အကြံပြုချက်များမှတဆင့် ကျွန်ုပ်တို့သည် Website ကို
+            ပိုမိုတိကျပြည့်စုံပြီး အသုံးဝင်လာစေရန် ဆက်လက်ပြင်ဆင်သွားမည် ဖြစ်ပါသည်။
+            ကျွန်ုပ်တို့၏ Website ကို ဝင်ရောက်ကြည့်ရှုအသုံးပြုပေးသည့်အတွက် အထူးကျေးဇူးတင်ရှိပါသည်။
+          </p>
+            </div>
+            <div class="footer-bottom-bar">
+              <span>&copy; 2026 UniFindex. All rights reserved.</span>
+            </div>
+          </div>
+        </footer>
+
+      </main>
+    </div>
+  </section>
+
+  <script>
+    const horizButtons = document.querySelectorAll('.horiz-btn');
+    const detailSections = document.querySelectorAll('.detail-section');
+
+    horizButtons.forEach(button => {
+      button.addEventListener('click', () => {
+        const targetId = button.dataset.target;
+
+        horizButtons.forEach(btn => btn.classList.remove('active'));
+        button.classList.add('active');
+
+        detailSections.forEach(section => {
+          if (section.id === targetId) {
+            section.classList.add('active');
+          } else {
+            section.classList.remove('active');
+          }
+        });
+      });
+    });
+
+    const photocards = document.querySelector('.photocards');
+    if (photocards) {
+      setInterval(() => {
+        if (photocards.scrollLeft + photocards.clientWidth >= photocards.scrollWidth) {
+          photocards.scrollTo({ left: 0, behavior: 'smooth' });
+        } else {
+          photocards.scrollBy({ left: 300, behavior: 'smooth' });
+        }
+      }, 3000);
+    }
+
+    const root = document.documentElement;
+    const themeSwitches = document.querySelectorAll('.theme-switch');
+
+    const applyTheme = (theme) => {
+      root.setAttribute('data-theme', theme);
+      themeSwitches.forEach((button) => {
+        const isDark = theme === 'dark';
+        button.setAttribute('aria-pressed', String(isDark));
+        button.classList.toggle('is-dark', isDark);
+        const knob = button.querySelector('.switch-knob');
+        if (knob) knob.textContent = isDark ? '🌙' : '☀';
+      });
+      localStorage.setItem('theme', theme);
+    };
+
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    applyTheme(savedTheme);
+
+    themeSwitches.forEach((button) => {
+      button.addEventListener('click', () => {
+        const nextTheme = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+        applyTheme(nextTheme);
+      });
+    });
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="my">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>University Detail View</title>
+  <style>
+    :root {
+      --bg: #f5f7fb;
+      --surface: #ffffff;
+      --surface-2: #f2f6ff;
+      --primary: #1d4ed8;
+      --primary-dark: #163f95;
+      --text: #132238;
+      --muted: #667085;
+      --border: #dce5f2;
+      --accent: #eff6ff;
+      --sidebar-start: #11253f;
+      --sidebar-end: #163a63;
+      --shadow: rgba(19, 34, 56, 0.05);
+      --card-soft: #f9fbff;
+    }
+
+    :root[data-theme='dark'] {
+      --bg: #08151f;
+      --surface: #0f1724;
+      --surface-2: #1a2534;
+      --primary: #7aa7ff;
+      --primary-dark: #dfeaff;
+      --text: #edf6ff;
+      --muted: #b1bfd2;
+      --border: #233247;
+      --accent: #0c1d2d;
+      --sidebar-start: #0b1725;
+      --sidebar-end: #12314f;
+      --shadow: rgba(0, 0, 0, 0.35);
+      --card-soft: #101d2c;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      transition: background 0.25s ease, color 0.25s ease;
+    }
+
+    .main-app {
+      display: block;
+      min-height: 100vh;
+      background: var(--bg);
+    }
+
+    .app-shell {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* Sidebar (Left Column) */
+    .sidebar {
+      width: 20%;
+      min-width: 240px;
+      background: linear-gradient(180deg, #11253f 0%, #163a63 100%);
+      color: white;
+      padding: 24px 16px;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 28px;
+      font-size: 1.1rem;
+      font-weight: 700;
+    }
+
+    .brand-main {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+    }
+
+    .brand-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      display: grid;
+      place-items: center;
+      background: rgba(255, 255, 255, 0.16);
+      font-size: 1.2rem;
+    }
+
+    .theme-switch {
+      width: 46px;
+      height: 24px;
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.12);
+      display: flex;
+      align-items: center;
+      padding: 3px;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      flex-shrink: 0;
+    }
+
+    .theme-switch .switch-knob {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: #fff;
+      display: grid;
+      place-items: center;
+      font-size: 10px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.16);
+      transition: all 0.25s ease;
+      transform: translateX(0);
+    }
+
+    .theme-switch.is-dark {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    .theme-switch.is-dark .switch-knob {
+      transform: translateX(22px);
+      background: #e8f0ff;
+    }
+
+    .nav-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .nav-btn {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 14px;
+      border: none;
+      border-radius: 12px;
+      background: transparent;
+      color: white;
+      cursor: pointer;
+      transition: background 0.2s ease, transform 0.2s ease;
+      font-size: 0.98rem;
+      text-decoration: none;
+    }
+
+    .nav-btn:hover,
+    .nav-btn.active {
+      background: rgba(255, 255, 255, 0.16);
+      transform: translateX(3px);
+    }
+
+    /* Content Area (Right Column) */
+    .content-area {
+      flex: 1;
+      padding: 24px 24px 40px;
+      overflow-y: auto;
+    }
+
+    /* Horizontal Navigation Bar */
+    .horizontal-nav {
+      display: flex;
+      gap: 10px;
+      background: var(--surface);
+      padding: 10px;
+      border-radius: 16px;
+      border: 1px solid var(--border);
+      margin-bottom: 20px;
+      box-shadow: 0 4px 15px rgba(19, 34, 56, 0.03);
+      overflow-x: auto;
+    }
+
+    .horiz-btn {
+      background: transparent;
+      border: none;
+      padding: 10px 18px;
+      border-radius: 10px;
+      font-weight: 600;
+      color: var(--muted);
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s ease;
+    }
+
+    .horiz-btn:hover {
+      color: var(--primary);
+      background: var(--surface-2);
+    }
+
+    .horiz-btn.active {
+      background: var(--primary);
+      color: white;
+      box-shadow: 0 4px 12px rgba(29, 78, 216, 0.2);
+    }
+
+    /* Detail Sections Toggle */
+    .detail-section {
+      display: none;
+    }
+
+    .detail-section.active {
+      display: block;
+    }
+
+    .photocards {
+      display: flex;
+      overflow-x: auto;
+      gap: 16px;
+      padding: 16px 0;
+      scroll-snap-type: x mandatory;
+      scrollbar-width: none;
+    }
+
+    .photocards::-webkit-scrollbar {
+      display: none;
+    }
+
+    .photocards img {
+      flex: 0 0 280px;
+      height: 180px;
+      object-fit: cover;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      scroll-snap-align: start;
+    }
+
+    .intro-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 22px;
+      margin-bottom: 18px;
+      box-shadow: 0 10px 28px rgba(19, 34, 56, 0.05);
+    }
+
+    .intro-card h3 {
+      margin-top: 0;
+      margin-bottom: 10px;
+    }
+
+    .intro-card p,
+    .intro-card li {
+      color: var(--muted);
+      line-height: 1.7;
+    }
+
+    .step-list {
+      margin: 0;
+      padding-left: 18px;
+    }
+
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 14px;
+    }
+
+    .member-card {
+      background: #f9fbff;
+      padding: 12px;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+    }
+
+    .member-name {
+      font-weight: 700;
+      margin-bottom: 5px;
+    }
+
+    /* Site Footer Style */
+    .site-footer {
+      margin-top: 40px;
+      background: linear-gradient(135deg, #11253f 0%, #163a63 100%);
+      color: #ffffff;
+      border-radius: 20px;
+      padding: 30px;
+      box-shadow: 0 10px 30px rgba(19, 34, 56, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .footer-content {
+      max-width: 800px;
+    }
+
+    .footer-logo {
+      font-size: 1.2rem;
+      font-weight: 700;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .footer-desc {
+      color: #cbd5e1;
+      font-size: 0.95rem;
+      line-height: 1.6;
+      margin-bottom: 16px;
+    }
+
+    .footer-disclaimer {
+      background: rgba(255, 255, 255, 0.08);
+      border-left: 4px solid #3b82f6;
+      padding: 12px 16px;
+      border-radius: 0 12px 12px 0;
+      color: #e2e8f0;
+      font-size: 0.9rem;
+      line-height: 1.6;
+      margin-bottom: 20px;
+    }
+
+    .footer-disclaimer strong {
+      color: #ffffff;
+    }
+
+    .footer-bottom-bar {
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      padding-top: 14px;
+      font-size: 0.85rem;
+      color: #94a3b8;
+    }
+
+    @media (max-width: 960px) {
+      .app-shell {
+        flex-direction: column;
+      }
+
+      .sidebar {
+        width: 100%;
+        height: auto;
+        position: static;
+      }
+
+      .content-area {
+        padding: 18px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <section class="main-app">
+    <div class="app-shell">
+
+      <!-- Left Column (Sidebar with href="#" links) -->
+      <aside class="sidebar">
+        <div class="brand">
+          <div class="brand-main">
+            <div class="brand-icon">🗽</div>
+            <div>UniFindex</div>
+          </div>
+          <button class="theme-switch" type="button" aria-label="Toggle theme" aria-pressed="false">
+            <span class="switch-knob">☀</span>
+          </button>
+        </div>
+        <nav class="nav-list">
+          <a href="../main.html#dashh" class="nav-btn active"> Dashboard</a>
+          <a href="../main.html#recomm" class="nav-btn"> Recommended</a>
+          <a href="../main.html#alll" class="nav-btn"> All Universities</a>
+          <a href="../main.html#locc" class="nav-btn">Locations</a>
+        </nav>
+      </aside>
+
+      <!-- Right Column -->
+      <main class="content-area">
+
+        <!-- Horizontal Navigation Bar -->
+        <nav class="horizontal-nav">
+          <button class="horiz-btn active" data-target="about">About</button>
+          <button class="horiz-btn" data-target="degree">Degree</button>
+          <button class="horiz-btn" data-target="clubs">Opportunities & Activities</button>
+          <button class="horiz-btn" data-target="opportunities">Qualification</button>
+        </nav>
+
+        <!-- Content Sections -->
+        <div class="detail-content-container">
+
+          <!-- About Section -->
+          <section class="detail-section active" id="about">
+            <div class="intro-card">
+              <div class="photocards">
+                <img src="uit ph.jpg" alt="">
+                <img src="uit it.jpg" alt="">
+                <img src="uit ph 2.jpg" alt="">
+                <img src="uit ph 3.jpg" alt="">
+                
+              </div>
+              <h3>About University of Information Technology</h3>
+              <p>
+<br><br>
+ရန်ကုန်တိုင်းဒေသကြီး၊ပါရမီလမ်း၊ လှိုင်တက္ကသိုလ်နယ်မြေ၊ လှိုင်မြိုနယ်၊ ရန်ကုန်မြို့တွင် တည်ရှိပါသည်။<br>
+<br>မြန်မာနိုင်ငံသတင်းအချက်အလက်နည်းပညာတက္ကသိုလ် (UIT) သည် မြန်မာနိုင်ငံ၏ သတင်းအချက်အလက်နှင့် ဆက်သွယ်ရေးနည်းပညာ (ICT) ကဏ္ဍတွင် အဆင့်မြင့်နည်းပညာကျွမ်းကျင်ပညာရှင်များနှင့် ဆန်းသစ်တီထွင်သူများကို မွေးထုတ်ပေးရန် ရည်ရွယ်၍ နိုင်ငံတကာအဆင့်မီ သင်ကြားရေးစနစ်များဖြင့် တည်ထောင်ထားသော ဦးဆောင်ဦးရွက်ပြု အစိုးရတက္ကသိုလ်တစ်ခု ဖြစ်ပါသည်။<br>
+<br>
+သမိုင်းကြောင်း နောက်ခံစတင်တည်ထောင်ခြင်း- ၂၀၁၂ ခုနှစ် ဒီဇင်ဘာလ ၃ ရက်နေ့တွင် ရန်ကုန်ကွန်ပျူတာတက္ကသိုလ် (ဗဟန်းနယ်မြေ) အဖြစ် စတင်ခွဲထွက် တည်ထောင်ခဲ့သည်။
+အမည်ပြောင်းလဲခြင်း - ၂၀၁၅ ခုနှစ် ဧပြီလ ၁၅ ရက်နေ့တွင် University of Information Technology (UIT) ဟု တရားဝင် ပြောင်းလဲခေါ်ဆိုခဲ့သည်။<br>
+
+<br>မြန်မာနိုင်ငံသတင်းအချက်အလက်နည်းပညာတက္ਕသိုလ် (UIT) တွင်လည်း အင်္ဂလိပ်ဘာသာစကားကို သင်ကြားရေးမီဒီယာအဖြစ် အသုံးပြုကာ ဆော့ဖ်ဝဲအင်ဂျင်နီယာ၊ ကွန်ပျူတာသိပ္ပံ၊ အဆင့်မြင့်စီးပွားရေးနှင့် နည်းပညာစသည့် မဟာဌာနများအောက်တွင် ဘာသာရပ်ဆိုင်ရာ အထူးပြုသင်တန်းများကို ခေတ်မီသင်ရိုးညွှန်းတမ်းများဖြင့် သင်ကြားပေးလျက်ရှိပြီး၊ ကျောင်းသား/သူများ လက်တွေ့သုတေသနပြုနိုင်ရန်အတွက် ဉာဏ်ရည်တု (AI)၊ ဆိုက်ဘာလုံခြုံရေး (Cyber Security) နှင့် အဆင့်မြင့်နည်းပညာ ဓာတ်ခွဲခန်းများကိုလည်း အဆင့်အတန်းမီစွာ ဖွဲ့စည်းထားရှိပါသည်။ <br>
+
+<br>မြန်မာနိုင်ငံသတင်းအချက်အလက်နည်းပညာတက္ကသိုလ် (UIT) သည်လည်း နိုင်ငံတကာတက္ကသိုလ်များနှင့် အဖွဲ့အစည်းများစွာနှင့် ပူးပေါင်းဆောင်ရွက်လျက်ရှိပြီး၊ နိုင်ငံတကာစံနှုန်းမီ သင်ကြားရေးနှင့် သုတေသနပူးပေါင်းဆောင်ရွက်မှုများကို တိုးမြှင့်လုပ်ဆောင်လျက်ရှိကာ၊ ယခုအခါ နိုင်ငံတကာအဆင့်မီ နည်းပညာပညာရှင်များကို မွေးထုတ်ပေးလျက်ရှိပြီး ၎င်းတို့သည် ပြည်တွင်းပြည်ပ နည်းပညာနှင့် စီးပွားရေးကဏ္ဍအသီးသီးတွင် အရေးပါသော အခန်းကဏ္ဍများမှ ပါဝင်ထမ်းဆောင်လျက် ရှိကြပါသည်။
+
+                
+              </p>
+            </div>
+          </section>
+
+          <!-- Degree Section -->
+          <section class="detail-section" id="degree">
+            <div class="intro-card">
+              <h3>Degree Programs</h3>
+              <p>
+                ပေးအပ်သည့် ဘွဲ့များနှင့် သင်တန်းများ
+                <br><br>
+                ကျောင်းသားများ၏ အရည်အချင်းနှင့် လုပ်ငန်းခွင်လိုအပ်ချက်အပေါ် မူတည်၍ သင်တန်းအမျိုးအစား စုံလင်စွာ ဖွင့်လှစ်ပေးထားပါသည်။
+                <br>
+                ရန်ကုန်သတင်းအချက်အလက်နည်းပညာတက္ကသိုလ်တွင် ကွန်ပျူတာသိပ္ပံ၊ သတင်းအချက်အလက်နည်းပညာနှင့် စနစ်များအတွက် ဘွဲကြို၊ မဟာဘွဲ၊ ဒီပလိုမာနှင့် ဒေါက်တာဘွဲ အဆင့်များကို သင်ကြားပေးလျက်ရှိပါသည်။ အဆိုပါ ဘွဲများအတွက် သင်တန်းများကို အောက်ပါအတိုင်း ဖွင့်လှစ်ပေးထားပါသည်-
+                <br>
+                
+                <br>
+                
+              </p>
+              <p>Undergraduate Programs</p>
+              <ul class="step-list">
+
+                <ul>
+                  <li>Bachelor of Computer Science (B.C.Sc. - Sofrwaare Engineering) </li>
+                  <li>Bachelor of Computer Science (B.C.Sc. - Knowledge Engineering)</li>
+                  <li>Bachelor of Computer Science (B.C.Sc. - Business Information Systems)</li>
+                  <li>Bachelor of Computer Science (B.C.Sc. - High Performance Computing) </li>
+                  <li>Bachelor of Computer Technology (B.C.Tech. - Embedded Systems)</li>
+                  <li>Bachelor of Computer Technology (B.C.Tech. - Computer Communication and Networks) </li>
+                  <li>Bachelor of Computer Technology (B.C.Tech. - Cyber Security) </li>
+
+                </ul>
+                <p>Postgraduate Programs</p>
+                <ul>
+                  <li>
+                    Master of Computer Science (M.C.Sc.)
+                  </li>
+                  <li>
+                    Master of Computer Technology (M.C.Tech.)
+                  </li>
+                  </ul>
+                  <p>Post-Graduate Diploma in Computer Application</p>
+                  <ul class="step-list">
+                  <li>
+                    Doctor of Philosophy (Ph.D. in Information Technology)
+                  </li>
+                 
+                </ul>
+            </div>
+          </section>
+
+          <!-- Club & Activities Section -->
+          <section class="detail-section" id="clubs">
+            <div class="intro-card">
+              <h3>Club & Activities</h3>
+              <p>
+                ကျောင်းတွင်း event၊ activity တွေအနေနဲ့ Fresher Welcome, Hackathon, ထမနဲထိုးပွဲ, နှင့် မိုးရာသီ အားကစားပွဲတွေ ရှိပါသည်
+        <br><br>Music Club, Dance Club, Football Club, Basketball Club,Badminton Club, eSport Club,Art Club နှင့် Photo Club တွေလိုမျိုး Club တွေရှိလို ကိုယ်ဝါသနာပါရာမှာ ပါဝင်နိုင်ပါသည်။
+
+        <br>MCPA Day အခမ်းအနားပွဲများ၊ Carreer Fair/ Job Fairများ၊ Project showများကိုလည်း နှစ်စဉ်ကျင်းပလေ့ရှိပါသည်။
+
+        
+              </p>
+              <h3>Opportunities</h3>
+              <p>UIT သည် အချက်အလက်နည်းပညာကဏ္ဍတွင် နိုင်ငံတကာအဆင့်မီ ကွန်ပျူတာပညာရှင်များ မွေးထုတ်ပေးရန် ရည်မှန်းထားသော "Center of Excellence" တက္ကသိုလ်တစ်ခုဖြစ်ပြီး နိုင်ငံတကာတက္ကသိုလ်များနှင့် ပူးပေါင်းဆောင်ရွက်မှုများ အားကောင်းသည့် ကျောင်းတစ်ကျောင်း ဖြစ်ပါသည်။  
+                ရန်ကုန်အချက်အလက်နည်းပညာတက္ကသိုလ် (UIT) သည် သင်ရိုးညွှန်းတမ်း စာတွေ့သင်ကြားမှုများအပြင် ကျောင်းသား/သူများ၏ အနာဂတ် နည်းပညာလုပ်ငန်းခွင်နှင့် ပညာရေးတိုးတက်မှုများအတွက် အောက်ပါ အခွင့်အလမ်းများကို ဖန်တီးပေးလျက်ရှိပါသည်-
+              <br>
+                <ul type="square">
+                  <li>နိုင်ငံတကာ ပညာသင်ဆုနှင့် လဲလှယ်ရေးအစီအစဉ်များ (International Scholarships & Exchange Programs): ဂျပန်၊ ကိုရီးယားနှင့် အာဆီယံနိုင်ငံများရှိ မိတ်ဖက်တက္ကသိုလ်များနှင့် ချိတ်ဆက်ကာ Student Exchange Programs များ၊ Short-term Training များနှင့် မဟာဘွဲ/ဒေါက်တာဘွဲ ပညာသင်ဆု (Scholarships) များကို လျှောက်ထားနိုင်သည့် အခွင့်အလမ်းများ။</li>
+                  <li>သုတေသနပြုလုပ်နိုင်မှုနှင့် Research Labs များ (Research Opportunities): Artificial Intelligence (AI), Cloud Computing, Data Science, Cyber Security, High Performance Computing နှင့် Internet of Things (IoT) စသည့် ခေတ်မီနယ်ပယ်များအလိုက် သုတေသနလက်တွေ့ခန်းများ (Research Labs) ထားရှိကာ သုတေသနအခြေပြု တက္ကသိုလ်တစ်ခုအဖြစ် ရည်မှန်းဆောင်ရွက်နေပါသည်။</li>
+                  <li>လုပ်ငန်းခွင်အကြို လေ့ကျင့်ရေးအစီအစဉ်များ (Industry Collaboration): ပြည်တွင်း/ပြည်ပ နည်းပညာကုမ္ပဏီများနှင့် ချိတ်ဆက်ကာ "Digital Myanmar Talent & Career Fair" ကဲ့သိုသော အစီအစဉ်များမှတစ်ဆင့် ကျောင်းသား/သူများအတွက် အလုပ်အကိုင် အခွင့်အလမ်းနှင့် လုပ်ငန်းခွင်အတွေ့အကြုံများ ရရှိစေရန် ဖန်တီးပေးလျက်ရှိပါသည်။  </li>
+                  <li>နည်းပညာပြိုင်ပွဲများနှင့် ဆန်းသစ်တီထွင်မှုများ (Competitions & Hackathons): ကျောင်းတွင်းတွင် "UIT Innovative Hackathon" ကဲ့သိုသော နည်းပညာဆိုင်ရာ ပြိုင်ပွဲများနှင့် ဆန်းသစ်တီထွင်မှု ပြပွဲများကို နှစ်စဉ် ကျင်းပပေးခြင်းဖြင့် ကျောင်းသားများ၏ လက်တွေ့စွမ်းရည်ကို မြှင့်တင်ပေးပါသည်။</li>
+                  <li>ကျောင်းသားအသင်းအဖွဲများနှင့် ကလပ်များ (Clubs & Societies): IT Clubs၊ Developer Student Clubs၊ နည်းပညာနှင့် အားကစားအသင်းများမှတစ်ဆင့် ခေါင်းဆောင်မှုစွမ်းရည် (Leadership)၊ ပြဿနာဖြေရှင်းနိုင်စွမ်းနှင့် Soft Skills များကို မြှင့်တင်နိုင်ခြင်း။
+
+                  </li>
+                </ul>
+              </p>
+
+              <div class="cards-grid" style="margin-top: 15px;">
+                <div class="member-card">
+                  <div class="member-name"></div>
+                  <p style="font-size: 0.85rem; color: var(--muted); margin: 0;">p
+                </div>
+                <div class="member-card">
+                  <div class="member-name">Nothing</div>
+                  <p style="font-size: 0.85rem; color: var(--muted); margin: 0;">Nothing</p>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Opportunities Section -->
+          <section class="detail-section" id="opportunities">
+            <div class="intro-card">
+              <h3>Qualification</h3>
+              <p>တက္ကသိုလ်ဝင်တန်းစာမေးပွဲတွင် စုစုပေါင်းအမှတ် (၄၅၀) နှင့်အထက်ရရှိသူများ သို့မဟုတ် အင်္ဂလိပ် နှင့် သင်္ချာ နှစ်ဘာသာပေါင်း (၁၄၀)နှင့်အထက်ရရှိသူများ လျှောက်ထားနိုင်ပါသည်။ စုစုပေါင်းအမှတ် အများအနည်းအလိုက် ရွေးချယ်သွားမည်။<br>တက္ကသိုလ်ဝင်တန်းစာမေးပွဲတွင် မြန်မာတစ်နိုင်ငံလုံးရှိ စာစစ်ဌာနများမှ သင်္ချာ၊ ဓာတု၊ ရူပ ပါဝင်သည့် ဘာသာတွဲတစ်ခုခုဖြင့် အောင်မြင်ထားသူဖြစ်ရမည်။
+                </p>
+                <h3>2024 နှင့် 2025ခုနှစ်၏ နောက်ဆုံးဖြတ်မှတ်များ </h3>
+                <p>၂၀၂၄ ခုနှစ်တွင် စုစုပေါင်းအမှတ် (၄၅၉)အနည်းဆုံးဖြတ်မှတ်ဖြစ်သည်။ ၂၀၂၅ခုနစ်တွင် စုစုပေါင်းအမှတ် (၄၇၃) အနည်းဆုံးဖြတ်မှတ်ဖြစ်သည်။</p>
+              <br>
+               
+            </div>
+          
+
+        
+      </section>
+        <!-- Contact Area -->
+        <div class="intro-card" style="margin-top: 24px;">
+          <h3>ဘယ်လိုလူတွေ တက်ရောက်သင့်သလဲ</h3>
+          <p>
+            ရန်ကုန်အချက်အလက်နည်းပညာတက္ကသိုလ် (UIT) သည် တက္ကသိုလ်ဝင်တန်းအောင်မြင်ပြီး ခေတ်မီသတင်းအချက်အလက်နှင့် ဆက်သွယ်ရေးနည်းပညာ (ICT)၊ ဆော့ဖ်ဝဲလ် အင်ဂျင်နီယာပညာရပ်များနှင့် ကွန်ပျူတာသိပ္ပံဆိုင်ရာ ဘာသာရပ်များကို စိတ်ဝင်စားသော ကျောင်းသားကျောင်းသူများအတွက် အထူးသင့်တော်သော တက္ਕသိုလ်တစ်ခု ဖြစ်ပါသည်။
+          </p>
+          <p> တက္ကသိုလ်အကြောင်း ပိုမိုသိရှိလိုပါက:
+            <button
+              style="background: var(--primary); color: white; border: none; padding: 6px 12px; border-radius: 8px; cursor: pointer; margin-left: 6px; justify-self: center;"
+              onclick="window.open('https://lms.edu.mm/page297.do')"> UIT Official website 
+              </button>            
+          </p>
+        </div>
+    
+
+        <!-- Footer (Right Column ထဲတွင်သာ ပေါ်မည်) -->
+        <footer class="site-footer">
+          <div class="footer-content">
+            <div class="footer-logo">🗽 UniFindex</div>
+            <p class="footer-desc">
+              We are just a smooth and better reader for people who love to read about Universities from internets. 
+            </p>
+            <div class="footer-disclaimer">
+              <strong>Copy Right Claim:</strong> <p>
+            ဤ Website တွင် ဖော်ပြထားသော အချက်အလက်များကို ယုံကြည်စိတ်ချရသော ရင်းမြစ်များမှ ကိုးကား၍
+            စုစည်းဖော်ပြထားခြင်းဖြစ်ပါသည်။
+            <br>
+            အချက်အလက်များကို မှန်ကန်ပြည့်စုံစေရန် အတတ်နိုင်ဆုံး ကြိုးပမ်းထားသော်လည်း မရည်ရွယ်ဘဲ လိုအပ်ချက်များ၊
+            မှားယွင်းမှုများ သို့မဟုတ် ခေတ်မမီတော့သော အချက်အလက်အချို့ ပါဝင်နိုင်ပါသည်။ ထိုသို့ ဖြစ်ပေါ်ခဲ့ပါက အနူးအညွတ်
+            တောင်းပန်အပ်ပါသည်။
+            <br>
+            မှားယွင်းမှုများ၊ လိုအပ်ချက်များ တွေ့ရှိပါက သို့မဟုတ် အကြံပြုချက်များက ပေးလိုပါက Contacts သို့သွားကာ
+            ကျွန်ုပ်တို့အား အသိပေးနိုင်ပါသည်။ ထို့အကြံပြုချက်များမှတဆင့် ကျွန်ုပ်တို့သည် Website ကို
+            ပိုမိုတိကျပြည့်စုံပြီး အသုံးဝင်လာစေရန် ဆက်လက်ပြင်ဆင်သွားမည် ဖြစ်ပါသည်။
+            ကျွန်ုပ်တို့၏ Website ကို ဝင်ရောက်ကြည့်ရှုအသုံးပြုပေးသည့်အတွက် အထူးကျေးဇူးတင်ရှိပါသည်။
+          </p>
+            </div>
+            <div class="footer-bottom-bar">
+              <span>&copy; 2026 UniFindex. All rights reserved.</span>
+            </div>
+          </div>
+        </footer>
+
+      </main>
+    </div>
+  </section>
+
+  <!-- JavaScript -->
+  <script>
+    const horizButtons = document.querySelectorAll('.horiz-btn');
+    const detailSections = document.querySelectorAll('.detail-section');
+
+    horizButtons.forEach(button => {
+      button.addEventListener('click', () => {
+        const targetId = button.dataset.target;
+
+        // Button active အပြောင်းအလဲလုပ်ရန်
+        horizButtons.forEach(btn => btn.classList.remove('active'));
+        button.classList.add('active');
+
+        // Section active အပြောင်းအလဲလုပ်ရန်
+        detailSections.forEach(section => {
+          if (section.id === targetId) {
+            section.classList.add('active');
+          } else {
+            section.classList.remove('active');
+          }
+        });
+      });
+    });
+
+    const photocards = document.querySelector('.photocards');
+    if (photocards) {
+      setInterval(() => {
+        if (photocards.scrollLeft + photocards.clientWidth >= photocards.scrollWidth) {
+          photocards.scrollTo({ left: 0, behavior: 'smooth' });
+        } else {
+          photocards.scrollBy({ left: 300, behavior: 'smooth' });
+        }
+      }, 3000);
+    }
+
+    const root = document.documentElement;
+    const themeSwitches = document.querySelectorAll('.theme-switch');
+
+    const applyTheme = (theme) => {
+      root.setAttribute('data-theme', theme);
+      themeSwitches.forEach((button) => {
+        const isDark = theme === 'dark';
+        button.setAttribute('aria-pressed', String(isDark));
+        button.classList.toggle('is-dark', isDark);
+        const knob = button.querySelector('.switch-knob');
+        if (knob) knob.textContent = isDark ? '🌙' : '☀';
+      });
+      localStorage.setItem('theme', theme);
+    };
+
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    applyTheme(savedTheme);
+
+    themeSwitches.forEach((button) => {
+      button.addEventListener('click', () => {
+        const nextTheme = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+        applyTheme(nextTheme);
+      });
+    });
+  </script>
+</body>
+
+</html>

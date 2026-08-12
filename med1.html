@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="my">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>University Detail View</title>
+  <style>
+    :root {
+      --bg: #f5f7fb;
+      --surface: #ffffff;
+      --surface-2: #f2f6ff;
+      --primary: #1d4ed8;
+      --primary-dark: #163f95;
+      --text: #132238;
+      --muted: #667085;
+      --border: #dce5f2;
+      --accent: #eff6ff;
+      --sidebar-start: #11253f;
+      --sidebar-end: #163a63;
+      --shadow: rgba(19, 34, 56, 0.05);
+      --card-soft: #f9fbff;
+    }
+
+    :root[data-theme='dark'] {
+      --bg: #08151f;
+      --surface: #0f1724;
+      --surface-2: #1a2534;
+      --primary: #7aa7ff;
+      --primary-dark: #dfeaff;
+      --text: #edf6ff;
+      --muted: #b1bfd2;
+      --border: #233247;
+      --accent: #0c1d2d;
+      --sidebar-start: #0b1725;
+      --sidebar-end: #12314f;
+      --shadow: rgba(0, 0, 0, 0.35);
+      --card-soft: #101d2c;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      transition: background 0.25s ease, color 0.25s ease;
+    }
+
+    .main-app {
+      display: block;
+      min-height: 100vh;
+      background: var(--bg);
+    }
+
+    .app-shell {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* Sidebar (Left Column) */
+    .sidebar {
+      width: 20%;
+      min-width: 240px;
+      background: linear-gradient(180deg, #11253f 0%, #163a63 100%);
+      color: white;
+      padding: 24px 16px;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 28px;
+      font-size: 1.1rem;
+      font-weight: 700;
+    }
+
+    .brand-main {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+    }
+
+    .brand-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      display: grid;
+      place-items: center;
+      background: rgba(255, 255, 255, 0.16);
+      font-size: 1.2rem;
+    }
+
+    .theme-switch {
+      width: 46px;
+      height: 24px;
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.12);
+      display: flex;
+      align-items: center;
+      padding: 3px;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      flex-shrink: 0;
+    }
+
+    .theme-switch .switch-knob {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: #fff;
+      display: grid;
+      place-items: center;
+      font-size: 10px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.16);
+      transition: all 0.25s ease;
+      transform: translateX(0);
+    }
+
+    .theme-switch.is-dark {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    .theme-switch.is-dark .switch-knob {
+      transform: translateX(22px);
+      background: #e8f0ff;
+    }
+
+    .nav-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .nav-btn {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 14px;
+      border: none;
+      border-radius: 12px;
+      background: transparent;
+      color: white;
+      cursor: pointer;
+      transition: background 0.2s ease, transform 0.2s ease;
+      font-size: 0.98rem;
+      text-decoration: none;
+    }
+
+    .nav-btn:hover,
+    .nav-btn.active {
+      background: rgba(255, 255, 255, 0.16);
+      transform: translateX(3px);
+    }
+
+    /* Content Area (Right Column) */
+    .content-area {
+      flex: 1;
+      padding: 24px 24px 40px;
+      overflow-y: auto;
+    }
+
+    /* Horizontal Navigation Bar */
+    .horizontal-nav {
+      display: flex;
+      gap: 10px;
+      background: var(--surface);
+      padding: 10px;
+      border-radius: 16px;
+      border: 1px solid var(--border);
+      margin-bottom: 20px;
+      box-shadow: 0 4px 15px rgba(19, 34, 56, 0.03);
+      overflow-x: auto;
+    }
+
+    .horiz-btn {
+      background: transparent;
+      border: none;
+      padding: 10px 18px;
+      border-radius: 10px;
+      font-weight: 600;
+      color: var(--muted);
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s ease;
+    }
+
+    .horiz-btn:hover {
+      color: var(--primary);
+      background: var(--surface-2);
+    }
+
+    .horiz-btn.active {
+      background: var(--primary);
+      color: white;
+      box-shadow: 0 4px 12px rgba(29, 78, 216, 0.2);
+    }
+
+    /* Detail Sections Toggle */
+    .detail-section {
+      display: none;
+    }
+
+    .detail-section.active {
+      display: block;
+    }
+
+    .photocards {
+      display: flex;
+      overflow-x: auto;
+      gap: 16px;
+      padding: 16px 0;
+      scroll-snap-type: x mandatory;
+      scrollbar-width: none;
+    }
+
+    .photocards::-webkit-scrollbar {
+      display: none;
+    }
+
+    .photocards img {
+      flex: 0 0 280px;
+      height: 180px;
+      object-fit: cover;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      scroll-snap-align: start;
+    }
+
+    .intro-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 22px;
+      margin-bottom: 18px;
+      box-shadow: 0 10px 28px rgba(19, 34, 56, 0.05);
+    }
+
+    .intro-card h3 {
+      margin-top: 0;
+      margin-bottom: 10px;
+    }
+
+    .intro-card p,
+    .intro-card li {
+      color: var(--muted);
+      line-height: 1.7;
+    }
+
+    .step-list {
+      margin: 0;
+      padding-left: 18px;
+    }
+
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 14px;
+    }
+
+    .member-card {
+      background: #f9fbff;
+      padding: 12px;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+    }
+
+    .member-name {
+      font-weight: 700;
+      margin-bottom: 5px;
+    }
+
+    /* Site Footer Style */
+    .site-footer {
+      margin-top: 40px;
+      background: linear-gradient(135deg, #11253f 0%, #163a63 100%);
+      color: #ffffff;
+      border-radius: 20px;
+      padding: 30px;
+      box-shadow: 0 10px 30px rgba(19, 34, 56, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .footer-content {
+      max-width: 800px;
+    }
+
+    .footer-logo {
+      font-size: 1.2rem;
+      font-weight: 700;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .footer-desc {
+      color: #cbd5e1;
+      font-size: 0.95rem;
+      line-height: 1.6;
+      margin-bottom: 16px;
+    }
+
+    .footer-disclaimer {
+      background: rgba(255, 255, 255, 0.08);
+      border-left: 4px solid #3b82f6;
+      padding: 12px 16px;
+      border-radius: 0 12px 12px 0;
+      color: #e2e8f0;
+      font-size: 0.9rem;
+      line-height: 1.6;
+      margin-bottom: 20px;
+    }
+
+    .footer-disclaimer strong {
+      color: #ffffff;
+    }
+
+    .footer-bottom-bar {
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      padding-top: 14px;
+      font-size: 0.85rem;
+      color: #94a3b8;
+    }
+
+    @media (max-width: 960px) {
+      .app-shell {
+        flex-direction: column;
+      }
+
+      .sidebar {
+        width: 100%;
+        height: auto;
+        position: static;
+      }
+
+      .content-area {
+        padding: 18px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <section class="main-app">
+    <div class="app-shell">
+
+      <!-- Left Column (Sidebar with href="#" links) -->
+      <aside class="sidebar">
+        <div class="brand">
+          <div class="brand-main">
+            <div class="brand-icon">🗽</div>
+            <div>UniFindex</div>
+          </div>
+          <button type="button" class="theme-switch sidebar-theme-switch" aria-label="Toggle theme" aria-pressed="false">
+            <span class="switch-track">
+              <span class="switch-knob">
+                <span class="switch-icon sun">☀</span>
+                <span class="switch-icon moon">☾</span>
+              </span>
+            </span>
+          </button>
+        </div>
+       <nav class="nav-list">
+          <a href="../main.html#dashh" class="nav-btn active"> Dashboard</a>
+          <a href="../main.html#recomm" class="nav-btn"> Recommended</a>
+          <a href="../main.html#alll" class="nav-btn"> All Universities</a>
+          <a href="../main.html#locc" class="nav-btn">Locations</a>
+        </nav>
+      </aside>
+
+
+      <main class="content-area">
+
+        <nav class="horizontal-nav">
+          <button class="horiz-btn active" data-target="about">About</button>
+          <button class="horiz-btn" data-target="degree">Degree</button>
+          <button class="horiz-btn" data-target="clubs">Opportunities & Activities</button>
+          <button class="horiz-btn" data-target="opportunities">Qualification</button>
+        </nav>
+
+        <div class="detail-content-container">
+
+          <section class="detail-section active" id="about">
+            <div class="intro-card">
+              <div class="photocards">
+                <img src="https://th.bing.com/th/id/R.cab63d8834ecabb59e77a3d5d4a26333?rik=xFcWjytBj4wAHg&pid=ImgRaw&r=0" alt="">
+                <img src="https://tse4.mm.bing.net/th/id/OIP.ny-TwDioyyxVlrC8pQvrewAAAA?r=0&rs=1&pid=ImgDetMain&o=7&rm=3" alt="">
+                <img src="https://tse3.mm.bing.net/th/id/OIP.Tp3FZtsKrrkMi-UrS0qPQQHaE8?r=0&rs=1&pid=ImgDetMain&o=7&rm=3" alt="">
+                <img src="https://1.bp.blogspot.com/-d4rVxy32Vy8/XreJO5-UsII/AAAAAAAAgx4/D4m0tCKsHAk_E2I2DHR-yaoYnj_2hD9ugCLcBGAsYHQ/s1600/DSC_101.jpg" alt="">
+                <img src="https://um1yangon.org/wp-content/uploads/2023/11/1575520104864.jpg" alt="">
+                <img src="https://tse2.mm.bing.net/th/id/OIP.dr-RLYe7Zh2zdv9AkqgciwHaE7?r=0&rs=1&pid=ImgDetMain&o=7&rm=3" alt="">
+                <img src="https://1.bp.blogspot.com/-GG3lN3IH_Og/XreJOkBhE5I/AAAAAAAAgx0/TewiwJerH1o8qwWifW1DcXVC66DL2y_UwCLcBGAsYHQ/s1600/DSC_102.jpg" alt="">
+                <img src="https://tse4.mm.bing.net/th/id/OIP.O2I2GpLmtPX9yZn4072mJAHaE8?r=0&pid=ImgDet&w=474&h=316&rs=1&o=7&rm=3" alt="">
+                <img src="https://tse3.mm.bing.net/th/id/OIP.B44iR1ua-tkKFh0_q2AALAHaE8?r=0&pid=ImgDet&w=474&h=316&rs=1&o=7&rm=3" alt="">
+              </div>
+              <h3>About University of Medicine-2, Yangon</h3>
+              <p>
+                ​ဆေးတက္ကသိုလ် (၁) ရန်ကုန် သည် မြန်မာနိုင်ငံ၏ သက်တမ်းအရင့်ဆုံးနှင့် အဂ္ဂတန်းဝင် ဆေးပညာသင်ကြားရေး
+                တက္ကသိုလ်တစ်ခု ဖြစ်ပြီး၊ မြန်မာနိုင်ငံ၏ ကျန်းမာရေးနှင့် ဆေးပညာကဏ္ဍတွင် အထင်ကရ ဦးဆောင်နေသော အဆင့်မြင့်ပညာ
+                ကျောင်းတစ်ကျောင်းလည်း ဖြစ်ပါသည်။
+                <br>
+                ၁၉၂၇ ခုနစ်မှာစတင်တည်ထောင်ခဲ့ပြီး သက်တမ်း (၉၃)နှစ်ရှိပြီဖြစ်တဲ့ ဆေးတက္ကသိုလ်(၁) ဟာဆိုရင်မြန်မာ
+                နိုင်ငံမှာရှိတဲ့ဆေးတက္ကသိုလ် ငါးခုထဲမှာ သက်တမ်းအရင့်ဆုံး တက္ကသိုလ်ပဲဖြစ်ပါတယ်။ တက္ကသိုလ်ရဲ့တည်ရှိရာ
+                နေရာလေးကတော့ လမ်းမတော်မြို့နယ်၊ ရန်ကုန်ပဲ ဖြစ်ပါတယ်။ Institute အဖြစ်စတင်ဖွင့်လှစ်ခဲ့ပြီး
+                နောက်ပိုင်းမှာတော့College၊ ​ ပြီးမှပဲ အခုခေါ်ဆိုကြတဲ့ University
+                ဆိုပြီးအဆင့်ဆင့်ပြောင်းလဲတည်ထောင်ဖွင့်လှစ်ခဲ့တာပဲ ဖြစ်ပါတယ်။
+                <br> <br>
+                ဆေးတက္ကသိုလ်(၁) ရန်ကုန်ဟာဆိုရင် Educational Commission For Foreign Medical Graduates အဖွဲ့ရဲ့
+                အသိအမှတ်ပြုခံရထားတဲ့ ကျောင်းတစ်ကျောင်းလည်းဖြစ်ပါတယ်။
+                <br>
+                ဆရာ၀န်တစ်ယောက်ဖြစ်ဖို့ကလည်း မလွယ်ကူလှပါဘူး။ ဆေးပညာဘွဲ့ (M.B.,B.S) ကို ရရှိဖို့ရန်အတွက် (၇)နှစ်တာ
+                ပညာသင်ကြားရမှာပဲ ဖြစ်ပါတယ်။
+                <br>
+                ထိုသင်တန်းကာလ ခုနစ်နှစ်အတွင်းမှာ <br>
+                🔸First Year <br>
+                🔸Second Year <br>
+                🔸Third Year <br>
+                🔸Final Year Part (I) <br>
+                🔸Final Year Part ( II ) <br>
+                🔸House Surgeon Training စတဲ့ နှစ်အလိုက် တက်ရောက်သင်ကြားရမှာပဲဖြစ်ပါတယ်။
+                <br>
+                <br>
+                 First Year(Foundation Year) ဟာဆိုရင်ဖြင့် တစ်နှစ်ကာလကြာမြင့်မှာဖြစ်ပြီး <br>
+                1. Burmese <br>
+                2. English <br>
+                3. Mathematics & Statistics <br>
+                4. Physics <br>
+                5. Chemistry <br>
+                6. Botany <br>
+                7. Zoology အစရှိတာတွေကိုသင်ကြားရမှာပဲ ဖြစ်ပါတယ်။
+                <br> <br>
+                 Second Year မှာတော့ <br>
+                1. Anatomy <br>
+                2. Physiology <br>
+                3. Biochemistry တို့ကိုသင်ကြားရပြီး
+                သင်တန်းကာလ တစ်နှစ်ခွဲ ကြာမြင့်မှာပဲဖြစ်ပါတယ်။
+                <br> <br>
+                 Third Year မှာဆိုရင်ဖြင့် ကျောင်းသား၊ကျောင်းသူတွေဟာ ဆေးရုံတွေ၊ ဆေးဘက်ဆိုင်ရာနှင့် ခွဲစိတ်ကုသမှုဆိုင်ရာ
+                ဌာနာတွေမှာ လက်တွေ့လေ့လာမှုတွေကို စတင်လုပ်ဆောင်ရမှာပဲဖြစ်ပါတယ်။ စာတွေ့သင်ကြားမှု အနေနဲ့တော့ <br>
+                1. General Pathology <br>
+                2. Microbiology <br>
+                3. Pharmacology တို့ကိုသင်ကြားရပြီး သင်တန်းကာလ တစ်နှစ် ကြာမြင့်မှာပဲ ဖြစ်ပါတယ်။
+                <br> <br>
+                 Final Year Part (I) ကတော့ တစ်နှစ်ကြာမြင့်မှာဖြစ်ပြီး
+                1. Forensic Medicine
+                (ကွင်းဆင်းလေ့လာမှုများပါ ပြုလုပ်ရပါတယ်) <br>
+                2. Preventive and Social Medicine
+                ( ကျေးလက်ဒေများသို့ (၃)ပတ်ခန့် ကွင်းဆင်းလေ့လာပြီး သင်တန်းများ ပြုလုပ်ပေးခြင်းတို့ကို လုပ်ပေးရပါတယ်) <br>
+
+                3. Systemic Pathology and Haematology
+                ( ဆေးပညာ၊ ခွဲစိတ်ကုသမှု၊ ကလေးကျန်းမာရေး ၊ သားဖွားမီးယပ် အစရှိသော အထူးကုဆရာဝန်ကြီးများ၏ ပို့ချချက်များကို
+                တတ်ရောက်နားထောင်သင်ယူခြင်း၊ ကြိုတင်ကာကွယ်ရေးနှင့် လူမှုရေး ဆေးပညာသင်ကြားမှုရဲ့ ပညာရပ်တစ်ခုအဖြစ်
+                သင်ကြားရေးဆေးရုံတွေသို့ သွားရောက်လေ့လာသင်ယူခြင်း အစရှိတာတွေကို သင်ကြားရမှာပဲဖြစ်ပါတယ်။)
+                <br> <br>
+                 Final Year Part (II) မှာ <br>
+
+                1. Child Health <br>
+                2. Medicine <br>
+                3. Obstetrics & Gynaecology <br>
+                4. Surgery အစရှိသော ဘာသာရပ်တွေကို သင်ကြားရပြီး သင်တန်းကာလ တစ်နှစ်ခွဲကြာမြင့်မှာပဲဖြစ်ပါတယ်။
+                <br>
+                နောက်ဆုံးစာမေးပွဲကိုတော့ M. B. ,B. S Part (II) Course ရဲ့ အဆုံးမှာကျင်းပပါတယ်။ ပြဿနာအခြေပြုသင်ယူ ခြင်း
+                Problem Based Learning (PBL)၊ ရပ်ရွာအခြေပြုသင်ယူခြင်း Community Based Learning ( CBL) နှင့် Behavioural
+                Science စတဲ့အရာတွေဟာလည်း M. B. ,B. S course နဲ့ဆက်စပ်နေတဲ့ ပညာရပ်တွေပဲ ဖြစ်ပါတယ်။
+                <br> <br>
+                 House Surgeon Training
+                <br>
+                နောက်ဆုံးစာမေးပွဲကို အောင်မြင်ပြီးဆုံးသွားတဲ့ ကျောင်းသား၊ကျောင်းသူတွေဟာ ရန်ကုန်အပါအဝင် အခြားပြည်နယ်နှင့်
+                တိုင်းဒေသအသီးသီးမှာရှိတဲ့ အသိအမှတ်ပြုသင်ကြားရေးဆေးရုံတွေမှာ House Surgeon အဖြစ် တစ်နှစ်တာ
+                တာဝန်ထမ်းဆောင်ပြီး လေ့လာသင်ယူ ရပါတယ်။
+                <br>
+                House Surgeon Training မှာပါ၀င်တဲ့ ဘာသာရပ်များနဲ့ ကာလအပိုင်းအခြားတွေကတော့.... <br>
+                1. Child Health (နှစ်လခွဲ) <br>
+                2. Community Medicine (နှစ်ပတ်) <br>
+                3. Medicine(including Psychiatry) (သုံးလ) <br>
+                4. Obstetrics & Gynaecology (သုံးလ) <br>
+                5. Surgery (including Traumatology) (သုံးလ) တို့ပဲ ဖြစ်ပါတယ်။ 
+              </p>
+            </div>
+          </section>
+
+          <section class="detail-section" id="degree">
+            <div class="intro-card">
+              <h3>Degree Programs</h3>
+
+              <p>
+                ဆေးတက္ကသိုလ် (၁) ရန်ကုန်မှ ပေးအပ်ချီးမြှင့်သော ဘွဲ့များနှင့် သင်တန်းအစီအစဉ်များမှာ အောက်ပါအတိုင်း ဖြစ်ပါသည်-
+              </p>
+              <ul>
+                <li>Bachelor of Medicine, Bachelor of Surgery (M.B.,B.S.)</li>
+                <li>Master of Medical Science (M.Med.Sc.)</li>
+                <li>Diploma in Medical Science</li>
+                <li>Doctor of Medicine (Dr.Med.Sc.)</li>
+                <li>Doctor of Philosophy (Ph.D.)</li>
+              </ul>
+            </div>
+          </section>
+
+          <section class="detail-section" id="clubs">
+            <div class="intro-card">
+              <h3>Opportunities & Activities</h3>
+              <p>
+                <br><br>
+              <h3>Clubs</h3>
+              <br>
+              ဆေးတက္ကသိုလ်(၁)ရန်ကုန်မှာ ကျောင်းသား/သူများအတွက် စိတ်အပန်းပြေစေရန်အတွက် ကျောင်းသား/သူများဖြင့်
+              ဖွဲ့စည်းထားတဲ့ အသင်းအဖွဲ့တွေလည်း ရှိပါတယ် <br>
+              Music club <br>
+              Dance club <br>
+              Art club <br>
+              Reading club <br>
+              Table Tennis club <br>
+              Hiking club <br>
+              Swimming club <br>
+              Basketball club <br>
+              Football club <br>
+              Public speaking club <br>
+              Chess club <br>
+              E_sport club <br>
+              Debate club <br>
+              Batmination club အစရှိတာတွေ အခြားသော အသင်းအဖွဲ့တွေလည်းရှိသေးတဲ့အတွက် ပျော်ရွှင်စရာပညာရိပ်မြုံတစ်ခုပဲ
+              ဖြစ်ပါတယ်။
+              ဒါ့အပြင် လအလိုက်ပွဲတော်တွေလည်း ရှိသေးတဲ့အတွက် စာသင်ကြားရင်း ကျောင်းသားဘဝရဲ့အရသာကိုအပြည့်အဝပေးနိုင်မယ့်
+              အခွင့်အရေးတွေအများကြီးရှိနေတာပဲ ဖြစ်ပါတယ်။<br><br>
+              </p>
+              <p>
+              <h3>Scholarship Opportunities</h3>
+              <br>
+              လူတော်တွေအများကြီး စုဝေးရာနေရာဖြစ်တဲ့ ဆေးတက္ကသိုလ်(၁) မှာဆိုရင် ကျောင်းသား/သူတွေအတွက် အကောင်းဆုံးသော
+              ပညာ‌​ရေးဆိုင်ရာ အခွင့်အလမ်းတွေကလည်း အများကြီးရှိနေမှာ အသေအချာပါပဲ။
+              <br><br>
+              ကျောင်းကပေးတဲ့ပညာသင်ထောက်ပံ့ကြေး
+              <br>
+              ဒီပညာသင်ထောက်ပံ့ကြေးကို ပေးအပ်တဲ့နေရာမှာ ပထမနှစ် Foundation Year ကိုတက်လာတဲ့ ကျောင်းသား/သူတွေအနေနဲ့
+              ဆယ်တန်းတုန်းကရခဲ့တဲ့ အမှတ်အပေါ် မူတည်ပြီး အရွေးခံရတာဖြစ်ပါတယ်။
+              အမှတ်အနည်းအများကို စဥ်လိုက်ပြီး Top 20 အထိကို တစ်လ ၁ သိန်းနှုန်းနဲ့
+              လစဥ်ပညာသင်ထောက်ပံ့ကြေးကိုချီးမြှင့်ပေးတာဖြစ်ပါတယ်။
+              <br><br>
+              Japan ကပေးတဲ့ Full Scholarship
+              <br>
+              ဒီ Scholarship ကိုတော့ Japan နိုင်ငံမှာရှိတဲ့ ဆေးတက္ကသိုလ်တစ်ခုကနေပေးအပ်တာဖြစ်ပါတယ်။ Foundation year ကနေ
+              ဘွဲ့ရတဲ့အထိ ထောက်ပံ့ပေးတဲ့ Full scholarship ဖြစ်ပြီး တစ်နှစ်ကိုတစ်ယောက်နှုန်းနဲ့ ရွေးချယ်တာပဲ ဖြစ်ပါတယ်။
+              အရွေးခံရတဲ့ကျောင်းသားဟာ ပထမနှစ် Foundation year ကနေစပြီး ဘွဲ့ရတဲ့အထိ Japan မှာ ကျောင်းတက်ရမှာပဲ ဖြစ်ပါတယ်။
+              <br><br>
+              ဒါတွေအပြင် အခြားသော ပြည်တွင်းပြည်ပအဖွဲ့အစည်းတွေကနေ ပေးအပ်ချီးမြှင့်တဲ့ ပညာသင်ဆုတွေဟာလည်း ကျောင်းသားတွေရဲ့
+              ​မျှော်မှန်းချက်တွေကို ဖြည့်ဆည်းပေးဖို့ အသင့်ရှိနေပါသေးတယ်။<br><br>
+              </p>
+              <p>
+              <h3>Job Opportunities</h3>
+              <br>
+
+              ကိုယ်က ဆေးကုရတာကို ဝါသနာမပါဘူးဆိုရင်တော့... <br>
+              Research<br>
+              Pharmaceutical companies<br>
+              Laboratory<br>
+              Hospital administration<br>
+              Health care management နှင့်
+              Public Health စတဲ့ ဆေးဖက်ဆိုင်ရာ နယ်ပယ်တွေမှာလည်း ကိုယ့်ရဲ့ စိတ်ဝင်စားရာနယ်ပယ်အလိုက် အလုပ်အကိုင်
+              အခွင့်အလမ်းတွေအများကြီးရှိနေပါတယ်။<br>
+              </p>
+              <p>
+                Information Availability Notice
+                <br><br>
+                Some information on this website may not yet be available or may still be under collection and
+                verification. As a result, certain sections may be incomplete or temporarily unavailable.
+                <br>
+                We are continuously working to update and improve the content to ensure that accurate and comprehensive
+                information is provided. Thank you for your patience and understanding.
+              </p>
+              <div class="cards-grid" style="margin-top: 15px;">
+                <div class="member-card">
+                  <div class="member-name">Nothing</div>
+                  <p style="font-size: 0.85rem; color: var(--muted); margin: 0;">Nothing
+                  </p>
+                </div>
+                <div class="member-card">
+                  <div class="member-name">Nothing</div>
+                  <p style="font-size: 0.85rem; color: var(--muted); margin: 0;">Nothing</p>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="detail-section" id="opportunities">
+            <div class="intro-card">
+              <h3>Qualification</h3>
+              <p>
+                ကျောင်းသား/သူ ရွေးချယ်မှုအချိုး
+                ​အမျိုးသား ဦးရေ ၅၀% နှင့် အမျိုးသမီး ဦးရေ ၅၀% နှုန်းဖြင့် ညီတူညီမျှ လက်ခံရွေးချယ်သွားမည် ဖြစ်သည်။
+                <br>
+                ​- အခြေခံအရည်အချင်းနှင့် ရမှတ်သတ်မှတ်ချက်
+                ​ဘာသာတွဲ: STEAMS-1 (ဓာတုဗေဒ၊ ရူပဗေဒ၊ ဇီဝဗေဒ) ဘာသာတွဲဖြင့် အောင်မြင်ထားသူ ဖြစ်ရမည်။
+                <br>
+                ​- အခြေခံရမှတ်: (၆) ဘာသာ ရမှတ်စုစုပေါင်း (၄၅၀) မှတ်နှင့်အထက် ရရှိထားသူ ဖြစ်ရမည်။
+                ​ရွေးချယ်ပုံ: ရမှတ် (၄၅၀) နှင့်အထက် ရရှိသူများထဲမှ အင်္ဂလိပ်စာ၊ ဓာတုဗေဒ၊ ဇီဝဗေဒ (၃) ဘာသာပေါင်း
+                ရမှတ်အများ/အနည်းပေါ် မူတည်၍ ပဏာမအဆင့် ရွေးချယ်မည်။
+                <br><br>
+                ​- လူတွေ့စစ်ဆေးခြင်းနှင့် ဝင်ခွင့်
+                ​ပဏာမအဆင့် ရွေးချယ်ခံရသူများသည် အရည်အချင်းစစ် လူတွေ့/နှုတ်မေးစာမေးပွဲ ဖြေဆိုရမည်။
+                ​လူတွေ့ဖြေဆိုသူများထဲမှ အမှတ်အများဆုံး ကျောင်းသား/သူ ဦးရေ (၁,၂၅၀) ဦး ကို အပြီးသတ် ရွေးချယ်မည်ဖြစ်ပြီး၊
+                ရွေးချယ်ခံရပါက စိတ်ပိုင်းဆိုင်ရာ ဆန်းစစ်ခြင်း (Psychometric Test) ကို ထပ်မံခံယူရမည်။
+              </p>
+              <p>
+                Information Availability Notice
+                <br><br>
+                Some information on this website may not yet be available or may still be under collection and
+                verification. As a result, certain sections may be incomplete or temporarily unavailable.
+                <br>
+                We are continuously working to update and improve the content to ensure that accurate and comprehensive
+                information is provided. Thank you for your patience and understanding.
+              </p>
+            </div>
+          </section>
+
+        </div>
+
+        <div class="intro-card" style="margin-top: 24px;">
+          <h3>ဘယ်လိုလူတွေ တက်ရောက်သင့်သလဲ</h3>
+          <p>
+            ဆယ်တန်းစာမေးပွဲတွင် အမှတ်ကောင်း၍ ဆေးပညာကို ဝါသနာပါသူများနှင့် လူနာများကို စာနာကူညီလိုစိတ်ရှိသော ကျောင်းသား/သူများအတွက် ဆေးတက္ကသိုလ် (၁)၊ ရန်ကုန်သည် အကောင်းဆုံးရွှေးချယ်မှုတစ်ခုဖြစ်ပါသည်။
+          </p>
+          <p> တက္ကသိုလ်အကြောင်း ပိုမိုသိရှိလိုပါက:
+            <button
+              style="background: var(--primary); color: white; border: none; padding: 6px 12px; border-radius: 8px; cursor: pointer; margin-left: 6px; justify-self: center;"
+              onclick="window.open('https://www.um1ygn.edu.mm/', '_blank')">University of Medicine 1, Yangon
+              Official Website</button>
+          </p>
+        </div>
+        <footer class="site-footer">
+          <div class="footer-content">
+            <div class="footer-logo">🗽 UniFindex</div>
+            <p class="footer-desc">
+              We are just a smooth and better reader for people who love to read about Universities from internets. 
+            </p>
+            <div class="footer-disclaimer">
+              <strong>Copy Right Claim:</strong>
+              <p>
+                ဤ Website တွင် ဖော်ပြထားသော အချက်အလက်များကို ယုံကြည်စိတ်ချရသော ရင်းမြစ်များမှ ကိုးကား၍
+                စုစည်းဖော်ပြထားခြင်းဖြစ်ပါသည်။
+                <br>
+                အချက်အလက်များကို မှန်ကန်ပြည့်စုံစေရန် အတတ်နိုင်ဆုံး ကြိုးပမ်းထားသော်လည်း မရည်ရွယ်ဘဲ လိုအပ်ချက်များ၊
+                မှားယွင်းမှုများ သို့မဟုတ် ခေတ်မမီတော့သော အချက်အလက်အချို့ ပါဝင်နိုင်ပါသည်။ ထိုသို့ ဖြစ်ပေါ်ခဲ့ပါက
+                အနူးအညွတ်
+                တောင်းပန်အပ်ပါသည်။
+                <br>
+                မှားယွင်းမှုများ၊ လိုအပ်ချက်များ တွေ့ရှိပါက သို့မဟုတ် အကြံပြုချက်များက ပေးလိုပါက Contacts သို့သွားကာ
+                ကျွန်ုပ်တို့အား အသိပေးနိုင်ပါသည်။ ထို့အကြံပြုချက်များမှတဆင့် ကျွန်ုပ်တို့သည် Website ကို
+                ပိုမိုတိကျပြည့်စုံပြီး အသုံးဝင်လာစေရန် ဆက်လက်ပြင်ဆင်သွားမည် ဖြစ်ပါသည်။
+                ကျွန်ုပ်တို့၏ Website ကို ဝင်ရောက်ကြည့်ရှုအသုံးပြုပေးသည့်အတွက် အထူးကျေးဇူးတင်ရှိပါသည်။
+              </p>
+            </div>
+            <div class="footer-bottom-bar">
+              <span>&copy; 2026 UniFindex. All rights reserved.</span>
+            </div>
+          </div>
+        </footer>
+
+      </main>
+    </div>
+  </section>
+
+  <script>
+    const horizButtons = document.querySelectorAll('.horiz-btn');
+    const detailSections = document.querySelectorAll('.detail-section');
+
+    horizButtons.forEach(button => {
+      button.addEventListener('click', () => {
+        const targetId = button.dataset.target;
+
+        horizButtons.forEach(btn => btn.classList.remove('active'));
+        button.classList.add('active');
+
+        detailSections.forEach(section => {
+          if (section.id === targetId) {
+            section.classList.add('active');
+          } else {
+            section.classList.remove('active');
+          }
+        });
+      });
+    });
+
+    const photocards = document.querySelector('.photocards');
+    if (photocards) {
+      setInterval(() => {
+        if (photocards.scrollLeft + photocards.clientWidth >= photocards.scrollWidth) {
+          photocards.scrollTo({ left: 0, behavior: 'smooth' });
+        } else {
+          photocards.scrollBy({ left: 300, behavior: 'smooth' });
+        }
+      }, 3000);
+    }
+
+    const root = document.documentElement;
+    const themeSwitches = document.querySelectorAll('.theme-switch');
+
+    const applyTheme = (theme) => {
+      root.setAttribute('data-theme', theme);
+      themeSwitches.forEach((button) => {
+        const isDark = theme === 'dark';
+        button.setAttribute('aria-pressed', String(isDark));
+        button.classList.toggle('is-dark', isDark);
+        const knob = button.querySelector('.switch-knob');
+        if (knob) knob.textContent = isDark ? '🌙' : '☀';
+      });
+      localStorage.setItem('theme', theme);
+    };
+
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    applyTheme(savedTheme);
+
+    themeSwitches.forEach((button) => {
+      button.addEventListener('click', () => {
+        const nextTheme = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+        applyTheme(nextTheme);
+      });
+    });
+  </script>
+</body>
+
+</html>

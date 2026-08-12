@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="my">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>University Detail View</title>
+  <style>
+    :root {
+      --bg: #f5f7fb;
+      --surface: #ffffff;
+      --surface-2: #f2f6ff;
+      --primary: #1d4ed8;
+      --primary-dark: #163f95;
+      --text: #132238;
+      --muted: #667085;
+      --border: #dce5f2;
+      --accent: #eff6ff;
+      --switch-bg: #e9eefb;
+      --switch-fg: #7b8dac;
+      --switch-knob: #ffffff;
+      --shadow: rgba(29, 78, 216, 0.12);
+    }
+
+    :root[data-theme='dark'] {
+      --bg: #08151f;
+      --surface: #0f1724;
+      --surface-2: #1a2534;
+      --primary: #7aa7ff;
+      --primary-dark: #dfeaff;
+      --text: #edf6ff;
+      --muted: #b1bfd2;
+      --border: #233247;
+      --accent: #0c1d2d;
+      --switch-bg: #111d2b;
+      --switch-fg: #dfe8ff;
+      --switch-knob: #1f2c3a;
+      --shadow: rgba(0, 0, 0, 0.38);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #f8fbff 0%, #eef4ff 100%);
+      color: var(--text);
+    }
+
+    .theme-switch {
+      background: transparent;
+      border: 0;
+      padding: 0;
+      margin: 0;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .switch-track {
+      --track-w: 54px;
+      --track-h: 30px;
+      --knob-d: 22px;
+      --track-padding: 3px;
+      position: relative;
+      display: inline-block;
+      width: var(--track-w);
+      height: var(--track-h);
+      border-radius: 999px;
+      background: var(--switch-bg);
+      box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.12);
+      transition: background 0.2s ease;
+    }
+
+    .switch-knob {
+      position: absolute;
+      top: var(--track-padding);
+      left: var(--track-padding);
+      width: var(--knob-d);
+      height: var(--knob-d);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--switch-knob);
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.18);
+      transition: transform 0.25s ease, background 0.2s ease;
+      transform: translateX(0);
+      color: var(--switch-fg);
+      font-size: 12px;
+      line-height: 1;
+    }
+
+    .theme-switch.is-dark .switch-knob {
+      transform: translateX(24px);
+    }
+
+    .sidebar-theme-switch .switch-track {
+      background: rgba(255, 255, 255, 0.12);
+      box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.15);
+    }
+
+    .sidebar-theme-switch .switch-knob {
+      background: rgba(255, 255, 255, 0.95);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 28px;
+      font-size: 1.1rem;
+      font-weight: 700;
+    }
+
+    .brand-main {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .main-app {
+      display: block;
+      min-height: 100vh;
+      background: var(--bg);
+    }
+
+    .app-shell {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* Sidebar (Left Column) */
+    .sidebar {
+      width: 20%;
+      min-width: 240px;
+      background: linear-gradient(180deg, #11253f 0%, #163a63 100%);
+      color: white;
+      padding: 24px 16px;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 28px;
+      font-size: 1.1rem;
+      font-weight: 700;
+    }
+
+    .brand-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      display: grid;
+      place-items: center;
+      background: rgba(255, 255, 255, 0.16);
+      font-size: 1.2rem;
+    }
+
+    .nav-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .nav-btn {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 14px;
+      border: none;
+      border-radius: 12px;
+      background: transparent;
+      color: white;
+      cursor: pointer;
+      transition: background 0.2s ease, transform 0.2s ease;
+      font-size: 0.98rem;
+      text-decoration: none;
+    }
+
+    .nav-btn:hover,
+    .nav-btn.active {
+      background: rgba(255, 255, 255, 0.16);
+      transform: translateX(3px);
+    }
+
+    /* Content Area (Right Column) */
+    .content-area {
+      flex: 1;
+      padding: 24px 24px 40px;
+      overflow-y: auto;
+    }
+
+    /* Horizontal Navigation Bar */
+    .horizontal-nav {
+      display: flex;
+      gap: 10px;
+      background: var(--surface);
+      padding: 10px;
+      border-radius: 16px;
+      border: 1px solid var(--border);
+      margin-bottom: 20px;
+      box-shadow: 0 4px 15px rgba(19, 34, 56, 0.03);
+      overflow-x: auto;
+    }
+
+    .horiz-btn {
+      background: transparent;
+      border: none;
+      padding: 10px 18px;
+      border-radius: 10px;
+      font-weight: 600;
+      color: var(--muted);
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s ease;
+    }
+
+    .horiz-btn:hover {
+      color: var(--primary);
+      background: var(--surface-2);
+    }
+
+    .horiz-btn.active {
+      background: var(--primary);
+      color: white;
+      box-shadow: 0 4px 12px rgba(29, 78, 216, 0.2);
+    }
+
+    /* Detail Sections Toggle */
+    .detail-section {
+      display: none;
+    }
+
+    .detail-section.active {
+      display: block;
+    }
+
+    .photocards {
+      display: flex;
+      overflow-x: auto;
+      gap: 16px;
+      padding: 16px 0;
+      scroll-snap-type: x mandatory;
+      scrollbar-width: none;
+    }
+
+    .photocards::-webkit-scrollbar {
+      display: none;
+    }
+
+    .photocards img {
+      flex: 0 0 280px;
+      height: 180px;
+      object-fit: cover;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      scroll-snap-align: start;
+    }
+
+    .intro-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 22px;
+      margin-bottom: 18px;
+      box-shadow: 0 10px 28px rgba(19, 34, 56, 0.05);
+    }
+
+    .intro-card h3 {
+      margin-top: 0;
+      margin-bottom: 10px;
+    }
+
+    .intro-card p,
+    .intro-card li {
+      color: var(--muted);
+      line-height: 1.7;
+    }
+
+    .step-list {
+      margin: 0;
+      padding-left: 18px;
+    }
+
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 14px;
+    }
+
+    .member-card {
+      background: #f9fbff;
+      padding: 12px;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+    }
+
+    .member-name {
+      font-weight: 700;
+      margin-bottom: 5px;
+    }
+
+    /* Site Footer Style */
+    .site-footer {
+      margin-top: 40px;
+      background: linear-gradient(135deg, #11253f 0%, #163a63 100%);
+      color: #ffffff;
+      border-radius: 20px;
+      padding: 30px;
+      box-shadow: 0 10px 30px rgba(19, 34, 56, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .footer-content {
+      max-width: 800px;
+    }
+
+    .footer-logo {
+      font-size: 1.2rem;
+      font-weight: 700;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .footer-desc {
+      color: #cbd5e1;
+      font-size: 0.95rem;
+      line-height: 1.6;
+      margin-bottom: 16px;
+    }
+
+    .footer-disclaimer {
+      background: rgba(255, 255, 255, 0.08);
+      border-left: 4px solid #3b82f6;
+      padding: 12px 16px;
+      border-radius: 0 12px 12px 0;
+      color: #e2e8f0;
+      font-size: 0.9rem;
+      line-height: 1.6;
+      margin-bottom: 20px;
+    }
+
+    .footer-disclaimer strong {
+      color: #ffffff;
+    }
+
+    .footer-bottom-bar {
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      padding-top: 14px;
+      font-size: 0.85rem;
+      color: #94a3b8;
+    }
+
+    @media (max-width: 960px) {
+      .app-shell {
+        flex-direction: column;
+      }
+
+      .sidebar {
+        width: 100%;
+        height: auto;
+        position: static;
+      }
+
+      .content-area {
+        padding: 18px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <section class="main-app">
+    <div class="app-shell">
+
+      <!-- Left Column (Sidebar with href="#" links) -->
+      <aside class="sidebar">
+        <div class="brand">
+          <div class="brand-main">
+            <div class="brand-icon">🗽</div>
+            <div>UniFindex</div>
+          </div>
+          <button type="button" class="theme-switch sidebar-theme-switch" aria-label="Toggle theme" aria-pressed="false">
+            <span class="switch-track">
+              <span class="switch-knob">☀</span>
+            </span>
+          </button>
+        </div>
+         <nav class="nav-list">
+          <a href="../main.html#dashh" class="nav-btn active"> Dashboard</a>
+          <a href="../main.html#recomm" class="nav-btn"> Recommended</a>
+          <a href="../main.html#alll" class="nav-btn"> All Universities</a>
+          <a href="../main.html#locc" class="nav-btn">Locations</a>
+        </nav>
+      </aside>
+
+      <!-- Right Column -->
+      <main class="content-area">
+
+        <!-- Horizontal Navigation Bar -->
+        <nav class="horizontal-nav">
+          <button class="horiz-btn active" data-target="about">About</button>
+          <button class="horiz-btn" data-target="degree">Degree</button>
+          <button class="horiz-btn" data-target="clubs">Opportunities & Activities</button>
+          <button class="horiz-btn" data-target="opportunities">Qualification</button>
+        </nav>
+
+        <!-- Content Sections -->
+        <div class="detail-content-container">
+
+          <!-- About Section -->
+          <section class="detail-section active" id="about">
+            <div class="intro-card">
+              <div class="photocards">
+                <img src="mtu.jpg" alt="">
+                <img src="mtu 2.jpg" alt="">
+                <img src="mtu 3.jpg" alt="">
+                <img src="mtu 4.jpg" alt="">
+                
+              </div>
+              <h3>About Mandalay Technological University </h3>
+              <p>
+<br><br>
+မန္တလေးတိုင်းဒေသကြီး၊ ပုတီးကုန်းရပ်ကွက်၊ မန္တလေး-စစ်ကိုင်း ကားလမ်းမကြီးဘေးတွင် တည်ရှိပါသည်။<br>
+<br> မန္တလေးနည်းပညာတက္ကသိုလ် (MTU) သည် မြန်မာနိုင်ငံ၏ အင်ဂျင်နီယာနှင့် နည်းပညာပညာရပ်ဆိုင်ရာနယ်ပယ်တွင် အထင်ကရဖြစ်ပြီး အဆင့်အတန်းမြင့်မားသော အစိုးရတက္ကသိုလ်တစ်ခု ဖြစ်ပါသည်။ မန္တလေးနည်းပညာတက္ကသိုလ်ကို ဒေသတွင်းနှင့် နိုင်ငံတကာအဆင့်မီ အင်ဂျင်နီယာပညာရပ်များကို သင်ကြားပေးရန်၊ နိုင်ငံတော်၏ စက်မှုလက်မှုဖွံ့ဖြိုးတိုးတက်ရေးနှင့် အဆောက်အအုံတည်ဆောက်ရေးလုပ်ငန်းများအတွက် လိုအပ်သော အရည်အချင်းပြည့်ဝသည့် အင်ဂျင်နီယာကျွမ်းကျင်ပညာရှင်များ မွေးထုတ်ပေးရန်နှင့် နည်းပညာဆိုင်ရာ သုတေသနနှင့် တီထွင်ဖန်တီးမှုများကို အားပေးမြှင့်တင်ရန်အတွက် ရည်ရွယ်၍ တည်ထောင်ခဲ့ခြင်း ဖြစ်ပါသည်။     
+  <br>
+<br>၁၉၅၄ ခုနှစ်တွင် စတင်တည်ထောင်ခဲ့သော မန္တလေးစက်မှုကောလိပ် (Government Technical Institute - GTI) မှ ဆင်းသက်လာခဲ့ပြီး၊ ၂၀၀၁ ခုနှစ်တွင် မန္တလေးနည်းပညာတက္ကသိုလ်အဖြစ် အဆင့်မြှင့်တင် ဖွဲစည်းခဲ့သော နိုင်ငံ၏ ထင်ရှားသည့် အင်ဂျင်နီယာတက္ကသိုလ်ကြီး တစ်ခုဖြစ်ပါသည်။<br>
+<br>အင်္ဂလိပ်ဘာသာစကားကို အဓိကသင်ကြားရေးဘာသာစကားအဖြစ် အသုံးပြုပြီး အင်ဂျင်နီယာနှင့် နည်းပညာဆိုင်ရာ အထူးပြုသင်တန်းများကို စနစ်တကျ သင်ကြားပေးလျက်ရှိပါသည်။<br>
+<br>နိုင်ငံတော်၏ စက်မှုလက်မှု၊ အင်ဂျင်နီယာနှင့် နည်းပညာကဏ္ဍများတွင် ဦးဆောင်နိုင်မည့် အရည်အချင်းပြည့်ဝသော အင်ဂျင်နီယာပညာရှင်များ မွေးထုတ်ပေးရန်နှင့် နိုင်ငံတကာအဆင့်မီ နည်းပညာသုတေသနများကို ဖော်ဆောင်ရန် ဖြစ်ပါသည်။<br>
+              </p>
+            </div>
+          </section>
+
+          <!-- Degree Section -->
+          <section class="detail-section" id="degree">
+            <div class="intro-card">
+              <h3>Degree Programs</h3>
+              <p>
+                ပေးအပ်သည့် ဘွဲ့များနှင့် သင်တန်းများ
+                <br><br>
+                ကျောင်းသားများ၏ အရည်အချင်းနှင့် လုပ်ငန်းခွင်လိုအပ်ချက်အပေါ် မူတည်၍ သင်တန်းအမျိုးအစား စုံလင်စွာ ဖွင့်လှစ်ပေးထားပါသည်။
+                <br>
+                မန္တလေးနည်းပညာတက္ကသိုလ် (MTU) တွင်လည်း အင်ဂျင်နီယာနှင့် နည်းပညာပညာရပ်ဆိုင်ရာ ဘွဲ့ကြို၊ မဟာဘွဲ့၊ ဒီပလိုမာနှင့် ဒေါက်တာဘွဲ့ အဆင့်များကို အောက်ပါအတိုင်း ဖွင့်လှစ်သင်ကြားပေးလျက်ရှိပါသည်-<br>
+                <br>
+                
+              </p>
+              <p>Undergraduate Programs</p>
+              <ul class="step-list">
+
+                <ul>
+  <li>မြိုပြအင်ဂျင်နီယာပညာ (Civil Engineering)</li>
+  <li>အီလက်ထရွန်နစ်အင်ဂျင်နီယာပညာ (Electronic Engineering)</li>
+  <li>လျှပ်စစ်စွမ်းအားအင်ဂျင်နီယာပညာ (Electrical Power Engineering)</li>
+  <li>စက်မှုအင်ဂျင်နီယာပညာ (Mechanical Engineering)</li>
+  <li>မက်ခ်ကတ်ထရွန်နစ်အင်ဂျင်နီယာပညာ (Mechatronic Engineering)</li>
+  <li>သတင်းအချက်အလက်နည်းပညာ (Information Technology)</li>
+  <li>လေကြောင်းနှင့် အာကာသအင်ဂျင်နီယာပညာ (Aerospace Engineering)</li>
+  <li>သတ္တုတွင်းနှင့် ပစ္စည်းသိပ္ပံအင်ဂျင်နီယာပညာ (Metallurgy Engineering and Material Science)</li>
+  <li>အထည်အလိပ်အင်ဂျင်နီယာပညာ (Textile Engineering)</li>
+  <li>ရေနံအင်ဂျင်နီယာပညာ (Petroleum Engineering)</li>
+  <li>သတ္တုတူးဖော်ရေးအင်ဂျင်နီယာပညာ (Mining Engineering)</li>
+  <li>ဇီဝနည်းပညာ (Biotechnology)</li>
+  <li>ဗိသုကာပညာ (Architecture)</li>
+                </ul>
+                <p>Postgraduate Programs</p>
+                <ul>
+                  <li>မဟာအင်ဂျင်နီယာဘွဲ - မြိုပြအင်ဂျင်နီယာဆိုင်ရာ ဘာသာရပ်များ (M.E. in Civil - Construction, Structural, Geotechnical, Water Resources, Transportation)</li>
+  <li>မဟာအင်ဂျင်နီယာဘွဲ - လျှပ်စစ်စွမ်းအားအင်ဂျင်နီယာပညာ (M.E. in Electrical Power Engineering)</li>
+  <li>မဟာအင်ဂျင်နီယာဘွဲ - အီလက်ထရွန်နစ်အင်ဂျင်နီယာပညာ (M.E. in Electronic Engineering)</li>
+  <li>မဟာအင်ဂျင်နီယာဘွဲ - စက်မှုအင်ဂျင်နီယာပညာ (M.E. in Mechanical Engineering)</li>
+  <li>မဟာအင်ဂျင်နီယာဘွဲ - မက်ခ်ကတ်ထရွန်နစ်အင်ဂျင်နီယာပညာ (M.E. in Mechatronic Engineering)</li>
+  <li>မဟာအင်ဂျင်နီယာဘွဲ - သတင်းအချက်အလက်နည်းပညာ (M.E. in Information Technology)</li>
+  <li>မဟာအင်ဂျင်နီယာဘွဲ - ရေနံနှင့် သတ္တုတွင်းအင်ဂျင်နီယာပညာ (M.E. in Petroleum / Mining Engineering)</li>
+  <li>မဟာအင်ဂျင်နီယာဘွဲ - ဓာတုဗေဒနှင့် ဇီဝနည်းပညာ (M.E. in Chemical Engineering / Biotechnology)</li>
+  <li>မဟာသိပ္ပံအင်ဂျင်နီယာဘွဲ - စက်မှုနှင့် ပြန်လည်ပြည့်ဖြိုးမြဲစွမ်းအင် (M.S. Eng. in Industrial, Renewable Energy, Construction Management)</li>
+  <li>မဟာဗိသုကာပညာဘွဲ (M.Arch.)</li>
+</ul>
+
+                  <ul>Post-Graduate Diplomas
+                  <li>Post-Graduate Diploma in Adaptive Metallurgical Engineering</li>
+  <li>Post-Graduate Diploma in Biomass Energy</li>
+  <li>Post-Graduate Diploma in Biomedical Engineering Technology</li>
+  <li>Post-Graduate Diploma in Biotechnology</li>
+  <li>Post-Graduate Diploma in Construction Management</li>
+  <li>Post-Graduate Diploma in Electronic and Communication Engineering</li>
+  <li>Post-Graduate Diploma in Environmental Engineering</li>
+  <li>Post-Graduate Diploma in Environmental Impact Assessment & Environmental Management Systems</li>
+  <li>Post-Graduate Diploma in Environmental Planning and Management</li>
+  <li>Post-Graduate Diploma in Food Technology</li>
+  <li>Post-Graduate Diploma in Geotechnical Engineering</li>
+  <li>Post-Graduate Diploma in Geotechnical Engineering for Tunnel Construction</li>
+  <li>Post-Graduate Diploma in Industrial Engineering</li>
+  <li>Post-Graduate Diploma in Information and Communication Technology</li>
+  <li>Post-Graduate Diploma in Mine Project Management</li>
+  <li>Post-Graduate Diploma in Petroleum Engineering</li>
+  <li>Post-Graduate Diploma in Power System Control Engineering</li>
+  <li>Post-Graduate Diploma in Renewable Energy Engineering</li>
+  <li>Post-Graduate Diploma in Renewable Energy Systems</li>
+  <li>Post-Graduate Diploma in Settlement Planning & Design</li>
+  <li>Post-Graduate Diploma in Structural Engineering</li>
+  <li>Post-Graduate Diploma in Surveying, Remote Sensing and GIS</li>
+  <li>Post-Graduate Diploma in Textile Engineering</li>
+  <li>Post-Graduate Diploma in Urban Planning and Infrastructure Design</li>
+  <li>Post-Graduate Diploma in Water Resources Engineering</li>
+
+                <ul>
+                   <li>မြိုပြအင်ဂျင်နီယာ ပါရဂူဘွဲ (Ph.D. in Civil Engineering Fields)</li>
+  <li>လျှပ်စစ်စွမ်းအားအင်ဂျင်နီယာ ပါရဂူဘွဲ (Ph.D. in Electrical Power Engineering)</li>
+  <li>အီလက်ထရွန်နစ်နှင့် ဆက်သွယ်ရေးအင်ဂျင်နီယာ ပါရဂူဘွဲ (Ph.D. in Electronic Engineering)</li>
+  <li>စက်မှုအင်ဂျင်နီယာ ပါရဂူဘွဲ (Ph.D. in Mechanical Engineering)</li>
+  <li>မက်ခ်ကတ်ထရွန်နစ်အင်ဂျင်နီယာ ပါရဂူဘွဲ (Ph.D. in Mechatronic Engineering)</li>
+  <li>သတင်းအချက်အလက်နည်းပညာ ပါရဂူဘွဲ (Ph.D. in Information Technology)</li>
+  <li>ဓာတုအင်ဂျင်နီယာနှင့် ပစ္စည်းသိပ္ပံ ပါရဂူဘွဲ (Ph.D. in Chemical Engineering & Material Science)</li>
+  <li>ရေနံနှင့် သတ္တုတွင်းအင်ဂျင်နီယာ ပါရဂူဘွဲ (Ph.D. in Petroleum & Mining Engineering)</li>
+  <li>ဇီဝနည်းပညာ ပါရဂူဘွဲ (Ph.D. in Biotechnology)</li>
+
+                </ul>
+            </div>
+          </section>
+
+          <!-- Club & Activities Section -->
+          <section class="detail-section" id="clubs">
+            <div class="intro-card">
+              <h3>Club & Activities</h3>
+              <p>
+                ကျောင်းတွင်း event၊ activity တွေအနေနဲ့ Fresher Welcome, Dinner, ထမနဲထိုးပွဲ, ဝတ်ရွတ်ပွဲ နှင့် မိုးရာသီ အားကစားပွဲတွေ ရှိပါသည်
+        <br><br>Music Club, Dance Club, Football Club, Basketball Club, Volleyball Club, Badminton Club, eSport Club, နှင့် Photo Club တွေလိုမျိုး Club တွေရှိလို ကိုယ်ဝါသနာပါရာမှာ ပါဝင်နိုင်ပါသည်။
+
+        <br>MCPA Day အခမ်းအနားပွဲများ၊ Carreer Fair/ Job Fairများ၊ Project showများကိုလည်း နှစ်စဉ်ကျင်းပလေ့ရှိပါသည်။
+
+        
+              </p>
+              <h3>Opportunities</h3>
+              <p>မန္တလေးနည်းပညာတက္ကသိုလ် (MTU) သည် မြန်မာနိုင်ငံ၏ ထင်ရှားသော နည်းပညာနှင့် အင်ဂျင်နီယာပညာရေး အဓိကကျောင်းတစ်ကျောင်းဖြစ်ပြီး AUN-QA အသိအမှတ်ပြုစံနှုန်းများနှင့်အညီ နိုင်ငံတကာ အင်ဂျင်နီယာတက္ကသိုလ်များနှင့် ပညာရေး၊ သုတေသန ပူးပေါင်းဆောင်ရွက်မှုများကို တိုးမြှင့်လုပ်ဆောင်လျက်ရှိပါသည်။
+                 <br><br>
+                မန္တလေးနည်းပညာတက္ကသိုလ် (MTU) သည်လည်း စာတွေ့လက်တွေ့ သင်ကြားမှုများနှင့်အတူ ကျောင်းသား/သူများ၏ အနာဂတ် အင်ဂျင်နီယာလုပ်ငန်းခွင်နှင့် ပညာရေးတိုးတက်မှုများအတွက် အောက်ပါ အခွင့်အလမ်းများကို ဖန်တီးပေးလျက်ရှိပါသည်-<br>
+                <ul type="square">
+                  <li>နိုင်ငံတကာ ပညာသင်ဆုနှင့် လဲလှယ်ရေးအစီအစဉ်များ: ဂျပန်၊ ကိုရီးယား၊ အာဆီယံနှင့် ဥရောပ မိတ်ဖက်တက္ကသိုလ်များသို့ Student Exchange များနှင့် Scholarships များ ရရှိနိုင်ခြင်း။</li>
+                  <li>သူများနှင့် ဆရာ/မများ လက်တွေ့လုပ်ဆောင်နိုင်ရန်နှင့် သုတေသနပြုရန်အတွက် ခေတ်မီအင်ဂျင်နီယာ ဓာတ်ခွဲခန်းများနှင့် အလုပ်ရशाला (Workshops) များကို ဖွဲစည်းထားရှိပါသည်။</li>
+                  <li>်ဂျင်နီယာများအနေဖြင့် ပြည်တွင်းပြည်ပ နည်းပညာကုမ္ပဏီကြီးများ၊ စက်ရုံအလုပ်ရုံများနှင့် အစိုးရဌာနဆိုင်ရာ အင်ဂျင်နီယာဌာနများတွင် ချက်ချင်းလုပ်ကိုင်နိုင်ရန် လက်တွေ့အခြေပြု သင်ကြားမှုများကို ပံ့ပိုးပေးပါသည်။</li>
+                  <li>နိုင်ငံတကာနှင့် ပြည်တွင်း အင်ဂျင်နီယာ Design Competitions များ၊ Robotics ပြိုင်ပွဲများနှင့် Innovation Hackathons များတွင် ပါဝင်ယှဉ်ပြိုင်ခွင့်။</li>
+                  <li>အင်ဂျင်နီယာဆိုင်ရာ ကလပ်များ၊ စာပေ၊ အားကစားနှင့် နည်းပညာအသင်းအဖွဲများမှတစ်ဆင့် ကျောင်းသား/သူများ၏ ခေါင်းဆောင်မှုအရည်အချင်းနှင့် Soft Skills များကို မြှင့်တင်ပေးပါသည်။
+
+                  </li>
+                </ul>
+              </p>
+
+              <div class="cards-grid" style="margin-top: 15px;">
+                <div class="member-card">
+                  <div class="member-name"></div>
+                  <p style="font-size: 0.85rem; color: var(--muted); margin: 0;">p
+                </div>
+                <div class="member-card">
+                  <div class="member-name">Nothing</div>
+                  <p style="font-size: 0.85rem; color: var(--muted); margin: 0;">Nothing</p>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Opportunities Section -->
+          <section class="detail-section" id="opportunities">
+            <div class="intro-card">
+              <h3>Qualification</h3>
+              <p> ကျောင်းသား/သူများ၏ (၄) ဘာသာ (အင်္ဂလိပ်၊ သင်္ချာ၊ ဓာတု၊ ရူပ) စုစုပေါင်းရမှတ် အနည်း/အများအပေါ် မူတည်၍ အဆင့်လိုက် ဝင်ခွင့်ပေးခြင်းဖြစ်သည်။</p>
+                  တက္ကသိုလ်ဝင်တန်းစာမေးပွဲတွင် မြန်မာတစ်နိုင်ငံလုံးရှိ စာစစ်ဌာနများမှ သင်္ချာ၊ ဓာတု၊ ရူပ ပါဝင်သည့် ဘာသာတွဲတစ်ခုခုဖြင့် အောင်မြင်ထားသူဖြစ်ရမည်။
+                </p>
+                <h3>2024 နှင့် 2025ခုနှစ်၏ နောက်ဆုံးဖြတ်မှတ်မျာ </h3>
+                <p>၂မန္တလေးနည်းပညာတက္ကသိုလ် (MTU) ၏ ၂၀၂၄ နှင့် ၂၀၂၅ ခုနှစ် ဝင်ခွင့်များအတွက် "ဘာသာစုံစုစုပေါင်းရမှတ် ဖြတ်မှတ် (Total Cut-off Mark)" ဆိုပြီး တရားဝင် သတ်မှတ်ထားသော ကိန်းဂဏန်း (ဥပမာ - ၄၅၀ မှတ် သို့မဟုတ် ၅၀၀ မှတ် စသဖြင့်) လုံးဝ မရှိပါ။ </p>
+                <br>
+               
+            </div>
+          
+
+        
+      </section>
+        <!-- Contact Area -->
+        <div class="intro-card" style="margin-top: 24px;">
+          <h3>ဘယ်လိုလူတွေ တက်ရောက်သင့်သလဲ</h3>
+          <p>
+           မန္တလေးနည်းပညာတက္ကသိုလ် (MTU) သည် တက္ကသိုလ်ဝင်တန်း အောင်မြင်ပြီး အင်ဂျင်နီယာပညာရပ်များကို ထူးချွန်စွာ လေ့လာလိုကာ အနာဂတ်တွင် ထင်ရှားသော အင်ဂျင်နီယာပညာရှင်တစ်ဦး ဖြစ်လာရန် ရည်မှန်းထားသော ကျောင်းသားကျောင်းသူများအတွက် အထူးသင့်တော်ဆုံးသော တက္ကသိုလ်တစ်ခု ဖြစ်ပါသည်။
+          </p>
+          <p> တက္ကသိုလ်အကြောင်း ပိုမိုသိရှိလိုပါက:
+            <button
+              style="background: var(--primary); color: white; border: none; padding: 6px 12px; border-radius: 8px; cursor: pointer; margin-left: 6px; justify-self: center;"
+              onclick="window.open('https://mtu.edu.mm/page297.do')"> UCSY Official website 
+              </button>            
+          </p>
+        </div>
+    
+
+        <!-- Footer (Right Column ထဲတွင်သာ ပေါ်မည်) -->
+        <footer class="site-footer">
+          <div class="footer-content">
+            <div class="footer-logo">🗽 UniFindex</div>
+            <p class="footer-desc">
+              We are just a smooth and better reader for people who love to read about Universities from internets. 
+            </p>
+            <div class="footer-disclaimer">
+              <strong>Copy Right Claim:</strong> <p>
+            ဤ Website တွင် ဖော်ပြထားသော အချက်အလက်များကို ယုံကြည်စိတ်ချရသော ရင်းမြစ်များမှ ကိုးကား၍
+            စုစည်းဖော်ပြထားခြင်းဖြစ်ပါသည်။
+            <br>
+            အချက်အလက်များကို မှန်ကန်ပြည့်စုံစေရန် အတတ်နိုင်ဆုံး ကြိုးပမ်းထားသော်လည်း မရည်ရွယ်ဘဲ လိုအပ်ချက်များ၊
+            မှားယွင်းမှုများ သို့မဟုတ် ခေတ်မမီတော့သော အချက်အလက်အချို့ ပါဝင်နိုင်ပါသည်။ ထိုသို့ ဖြစ်ပေါ်ခဲ့ပါက အနူးအညွတ်
+            တောင်းပန်အပ်ပါသည်။
+            <br>
+            မှားယွင်းမှုများ၊ လိုအပ်ချက်များ တွေ့ရှိပါက သို့မဟုတ် အကြံပြုချက်များက ပေးလိုပါက Contacts သို့သွားကာ
+            ကျွန်ုပ်တို့အား အသိပေးနိုင်ပါသည်။ ထို့အကြံပြုချက်များမှတဆင့် ကျွန်ုပ်တို့သည် Website ကို
+            ပိုမိုတိကျပြည့်စုံပြီး အသုံးဝင်လာစေရန် ဆက်လက်ပြင်ဆင်သွားမည် ဖြစ်ပါသည်။
+            ကျွန်ုပ်တို့၏ Website ကို ဝင်ရောက်ကြည့်ရှုအသုံးပြုပေးသည့်အတွက် အထူးကျေးဇူးတင်ရှိပါသည်။
+          </p>
+            </div>
+            <div class="footer-bottom-bar">
+              <span>&copy; 2026 UniFindex. All rights reserved.</span>
+            </div>
+          </div>
+        </footer>
+
+      </main>
+    </div>
+  </section>
+
+  <!-- JavaScript -->
+  <script>
+    const horizButtons = document.querySelectorAll('.horiz-btn');
+    const detailSections = document.querySelectorAll('.detail-section');
+
+    horizButtons.forEach(button => {
+      button.addEventListener('click', () => {
+        const targetId = button.dataset.target;
+
+        // Button active အပြောင်းအလဲလုပ်ရန်
+        horizButtons.forEach(btn => btn.classList.remove('active'));
+        button.classList.add('active');
+
+        // Section active အပြောင်းအလဲလုပ်ရန်
+        detailSections.forEach(section => {
+          if (section.id === targetId) {
+            section.classList.add('active');
+          } else {
+            section.classList.remove('active');
+          }
+        });
+      });
+    });
+
+    const photocards = document.querySelector('.photocards');
+    if (photocards) {
+      setInterval(() => {
+        if (photocards.scrollLeft + photocards.clientWidth >= photocards.scrollWidth) {
+          photocards.scrollTo({ left: 0, behavior: 'smooth' });
+        } else {
+          photocards.scrollBy({ left: 300, behavior: 'smooth' });
+        }
+      }, 3000);
+    }
+
+    const THEME_STORAGE_KEY = 'theme';
+    const LEGACY_THEME_STORAGE_KEY = 'siteTheme';
+    const root = document.documentElement;
+    const themeSwitches = document.querySelectorAll('.theme-switch');
+
+    function applyTheme(theme) {
+      root.setAttribute('data-theme', theme);
+
+      themeSwitches.forEach((button) => {
+        const isDark = theme === 'dark';
+        button.setAttribute('aria-pressed', String(isDark));
+        button.classList.toggle('is-dark', isDark);
+        const knob = button.querySelector('.switch-knob');
+        if (knob) knob.textContent = isDark ? '🌙' : '☀';
+      });
+
+      localStorage.setItem(THEME_STORAGE_KEY, theme);
+      localStorage.removeItem(LEGACY_THEME_STORAGE_KEY);
+    }
+
+    const savedTheme = localStorage.getItem(THEME_STORAGE_KEY) || localStorage.getItem(LEGACY_THEME_STORAGE_KEY) || 'dark';
+    applyTheme(savedTheme);
+
+    themeSwitches.forEach((button) => {
+      button.addEventListener('click', () => {
+        const nextTheme = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+        applyTheme(nextTheme);
+      });
+    });
+  </script>
+</body>
+
+</html>
