@@ -48,19 +48,19 @@ const pageSections = {
 const universityData = [
   
   { name: 'Yangon Technological University (YTU)', type: ['technology', 'computer'], region: ['Yangon'],
-    url: 'YTU/ytu.html',
+    url: 'ytu.html',
   image: 'https://tse4.mm.bing.net/th/id/OIP.AYFHAclvQ7mj__IZCnSVIQHaE7?r=0&rs=1&pid=ImgDetMain&o=7&rm=3'
    },
   { name: 'Mandalay Technological University (MTU)', type: ['technology'], region: ['Mandalay'],
-  url: 'MTU/mtu.html',
+  url: 'mtu.html',
   image: 'https://images.squarespace-cdn.com/content/v1/5aa92cacec4eb7d0913878ce/1595477158967-F60ZPJLGM8J6CN5X6JGW/MTU_Mandalay_Technological+University.png'
    },
   { name: 'University of Information Technology (UIT)', type: ['technology', 'computer'], region: ['Yangon'],
-  url: 'UIT/uit.html',
+  url: 'uit.html',
   image: 'https://tse3.mm.bing.net/th/id/OIP.OFx0m5xST3tQSSOn1CGldAHaGo?r=0&rs=1&pid=ImgDetMain&o=7&rm=3'
    },
   { name: 'University of Computer Studies, Yangon (UCSY)', type: ['computer', 'technology'], region: ['Yangon'],
-    url: 'UCSY/ucsy1.html',
+    url: 'ucsy1.html',
   image: 'https://ucsy.edu.mm/img/ucsylogo.png'
    },
   { name: 'Yezin Agricultural University (YAU)', type: ['agriculture'], region: ['Naypyidaw'],
@@ -71,7 +71,7 @@ const universityData = [
   image: 'https://cdn.imgbin.com/16/5/11/imgbin-university-of-yangon-university-of-medicine-2-yangon-university-of-medicine-taunggyi-university-of-medicine-mandalay-medical-universities-foreign-certificates-dstsZZ9rKSZnBJsmRpzEJcyZt.jpg'
    },
   { name: 'University of Medicine 2, Yangon', type: ['medicine'], region: ['Yangon'],
-  url: 'Medicine2/med2.html',
+  url: 'med2.html',
   image: 'https://cdn.imgbin.com/16/5/11/imgbin-university-of-yangon-university-of-medicine-2-yangon-university-of-medicine-taunggyi-university-of-medicine-mandalay-medical-universities-foreign-certificates-dstsZZ9rKSZnBJsmRpzEJcyZt.jpg'
    },
   { name: 'University of Medicine, Mandalay', type: ['medicine'], region: ['Mandalay'],
@@ -84,11 +84,11 @@ const universityData = [
   image: 'https://www.udmmandalay.info/wp-content/uploads/2021/01/cropped-udmm-new-logo-wavy-moto-2020-copy.png'
    },
   { name: 'University of Pharmacy, Yangon', type: ['medicine'], region: ['Yangon'],
-  url: 'UOP/uop1.html',
+  url: 'uop1.html',
   image: 'https://tse4.mm.bing.net/th/id/OIP.wwqwR1AoUTESGN1XfpRq7gHaHa?r=0&rs=1&pid=ImgDetMain&o=7&rm=3'
    },
   { name: 'University of Pharmacy, Mandalay', type: ['medicine'], region: ['Mandalay'],
-    url: 'UOP/uop1.html',
+    url: 'uop1.html',
     image: 'https://tse4.mm.bing.net/th/id/OIP.wwqwR1AoUTESGN1XfpRq7gHaHa?r=0&rs=1&pid=ImgDetMain&o=7&rm=3'
    },
   { name: 'University of Nursing, Yangon', type: ['medicine'], region: ['Yangon'], 
@@ -103,7 +103,7 @@ const universityData = [
   image: 'https://www.igroupnet.com/wp-content/uploads/2021/04/C-University-of-Mandalay.png'
    },
   { name: 'University of Yangon', type: ['general'], region: ['Yangon'],
-  url: 'YU/yu.html',
+  url: 'yu.html',
   image: 'https://www.iro-su.edu.la/wp-content/uploads/2022/04/Picture6.jpg'
    },
 ];
