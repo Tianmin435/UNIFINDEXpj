@@ -106,6 +106,14 @@ const universityData = [
   url: 'yu.html',
   image: 'https://www.iro-su.edu.la/wp-content/uploads/2022/04/Picture6.jpg'
    },
+   { name: 'University of Econormics', type: ['Econormics'], region: ['Yangon'],
+  url: 'YUE.html',
+  image: 'https://th.bing.com/th/id/OIP.y7gKTARmecZlymbcijSpDwAAAA?r=0&o=7rm=3&rs=1&pid=ImgDetMain&o=7&rm=3'
+   },
+   { name: 'University of Foreign Languages', type: ['general'], region: ['Yangon'],
+  url: 'YUFL.html',
+  image: 'https://tse4.mm.bing.net/th/id/OIP.VOUFIGJsaeZkBKOmeaUyWQHaHa?r=0&rs=1&pid=ImgDetMain&o=7&rm=3'
+   },
 ];
 
 const locationPoints = [
