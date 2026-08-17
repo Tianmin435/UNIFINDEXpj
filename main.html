@@ -25,20 +25,22 @@
               </span>
             </button>
           </div>
+
           <nav class="nav-list">
-            <button class="nav-btn active" data-page="dashboard" id="dashh">Dashboard</button>
-            <button class="nav-btn" data-page="recommended" id="recomm">Recommended</button>
-            <button class="nav-btn" data-page="universities" id="alll">All Universities</button>
-            <button class="nav-btn" data-page="locations" id="locc">Locations</button>
+            <button class="nav-btn active" data-page="origin" id="originNav">မူလစာမျက်နှာ</button>
+            <button class="nav-btn" data-page="dashboard" id="dashh">တက္ကသိုလ်များ ရှာဖွေရန်</button>
+            <button class="nav-btn" data-page="recommended" id="recomm">ကိုက်ညီသော တက္ကသိုလ်များ</button>
+            <button class="nav-btn" data-page="universities" id="alll">အားလုံးသော တက္ကသိုလ်များ</button>
+            <button class="nav-btn" data-page="locations" id="locc">တည်နေရာပြ မြေပုံ</button>
           </nav>
         </aside>
 
         <main class="content-area">
-          <section class="page-section active" id="dashboardPage">
-            <input id="searchInput" class="search-box" type="text" placeholder="Search University..." />
 
-            <div class="intro-card">
-              <h3>About This Website</h3>
+           <section class="page-section active" id="originPage">
+            <div class="cards-grid origin-grid">
+               <div class="intro-card">
+              <h3 style="text-align: center;">ဤဝပ်ဘ်ဆိုက်အကြောင်း</h3>
               <p>
                 UniFindex သည် မြန်မာနိုင်ငံရှိ တက္ကသိုလ်များအကြောင်း
                 အချက်အလက်များကို တစ်နေရာတည်းတွင် စုစည်းပေးထားပြီး ကျောင်းသား၊ ကျောင်းသူများအနေဖြင့် မိမိတို့နှင့် သင့်တော်နိုင်မည့် တက္ကသိုလ်များကို လွယ်ကူစွာ ရှာဖွေ၊ လေ့လာ၊ နှိုင်းယှဉ်နိုင်ရန် ရည်ရွယ်ဖန်တီးထားသော University Information and Recommendation Website တစ်ခုဖြစ်ပါသည်။
@@ -60,17 +62,28 @@ Website တွင် တက္ကသိုလ်များကို ရှာ�
             </div>
 
             <div class="intro-card">
-              <h3>How To Use</h3>
+              <h3>ကိုက်ညီသော တက္ကသိုလ်များကို ဘယ်လိုရှာဖွေရမလဲ</h3>
               <ol class="step-list">
                 <li>ပထမဦးစွာ တက္ကသိုလ်ဝင်တန်းစာမေးပွဲတွင် ရရှိခဲ့သော မိမိ၏ အမှတ်ကိုထည့်သွင်းပေးပါ။</li>
                 <li>ထို့နောက် မိမိတက်ရောက်ချင်သော သင်ကြားလိုသည့် ဘာသာရပ်နယ်ပယ်ကို ထည့်သွင်းပေးပါ။</li>
                 <li>တက်ရောက်ချင်သည့် နယ်မြေအား ရွေးချယ်ပေးပါ။</li>
                 <li>အချက်အလက်များကို ထည့်သွင်းပြီးပါက မိမိနှင့် ကိုက်ညီသော တက္ကသိုလ်များကို ရှာဖွေနိုင်ပြီ ဖြစ်ပါသည်။</li>
               </ol>
+              <br><br>
+              <div style="align-items: center; justify-items: center; width: 100%;">
+              <a href="index.html"><input style="border: 2px solid black; border-radius: 15px; margin-left: 30%; margin-right: 30%; background-color: rgb(26, 44, 207); height: 40px;" type="submit" value="မိမိနှင့်ကိုက်ညီသော တက္ကသိုလ်များကို စတင်ရှာဖွေရန် နှိပ်ပါ။"></a>
+              </div>
             </div>
 
+            </div>
+          </section>
+
+          <section class="page-section active" id="dashboardPage">
+            <input id="searchInput" class="search-box" type="text" placeholder="Search University..." />
+
+           
             <div class="intro-card">
-              <h3>Explore Universities</h3>
+              <h3>တက္ကသိုလ်များကို ရှာဖွေပါ။</h3>
               <div id="dashboardResults" class="cards-grid"></div>
             </div>
           </section>

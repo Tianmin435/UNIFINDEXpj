@@ -27,7 +27,7 @@
         <form id="recommendationForm">
           <div class="form-group">
             <label for="score">Grade-12 တွင် ရရှိခဲ့သောအမှတ် (0-600)</label>
-            <input id="score" class="form-input" type="number" min="0" max="600" placeholder="Enter your score" required />
+            <input id="score" class="form-input" type="number" min="0" max="600" placeholder="သင်၏ Grade-12 ရမှတ်များကို ထည့်သွင်းပေးပါ။" required />
           </div>
 
           <div class="form-group">
@@ -45,19 +45,24 @@
           <div class="form-group">
             <label for="region">တက်ရောက်ချင်သည့် နယ်မြေ</label>
             <select id="region" class="form-select" required>
-              <option value="">-- Select region --</option>
+              <option value="">-- ဤတွင် ရွှေးချယ်ပါ --</option>
               <option value="Yangon">ရန်ကုန်တိုင်းဒေသကြီး</option>
               <option value="Mandalay">မန္တလေးတိုင်းဒေသကြီး</option>
               <option value="Naypyidaw">နေပြည်တော်</option>
-              <option value="Other">Other regions of Myanmar</option>
+              <option value="Other">မည်သည့်နေရာတွင်မဆို</option>
             </select>
           </div>
 
           <div class="button-row">
-            <button type="reset" class="btn btn-reset">အစကနေ ပြန်ရေးမည်</button>
             <button type="submit" class="btn btn-submit">တက္ကသိုလ်များကို ရှာဖွေမည်</button>
+            <button type="reset" class="btn btn-reset">အစကနေ ပြန်ရေးမည်</button>
+            
           </div>
         </form>
+        <br><br>
+        <div style="align-items: center; justify-items: center; width: 100%;">
+              <a href="main.html"><input style="border: 2px solid black; border-radius: 30px; margin-left: 30%; margin-right: 30%;" type="submit" value="ဝပ်ဆိုက်၏ မူလစာမျက်နှာသို့ ပြန်သွားမည်။" class="btn btn-submit"></a>
+              </div>
       </div>
     </section>
 

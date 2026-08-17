@@ -39,6 +39,7 @@ const form = document.getElementById('recommendationForm');
 const searchInput = document.getElementById('searchInput');
 const navButtons = Array.from(document.querySelectorAll('.nav-btn'));
 const pageSections = {
+  origin: document.getElementById('originPage'),
   dashboard: document.getElementById('dashboardPage'),
   recommended: document.getElementById('recommendedPage'),
   universities: document.getElementById('universitiesPage'),
@@ -67,7 +68,7 @@ const universityData = [
   image: 'https://tse3.mm.bing.net/th/id/OIP.X-ThP6csnY-2HSt6AgcbfAAAAA?r=0&rs=1&pid=ImgDetMain&o=7&rm=3'
    },
   { name: 'University of Medicine 1, Yangon', type: ['medicine'], region: ['Yangon'],
-  url: 'Medicine1/med1.html',
+  url: 'med1.html',
   image: 'https://cdn.imgbin.com/16/5/11/imgbin-university-of-yangon-university-of-medicine-2-yangon-university-of-medicine-taunggyi-university-of-medicine-mandalay-medical-universities-foreign-certificates-dstsZZ9rKSZnBJsmRpzEJcyZt.jpg'
    },
   { name: 'University of Medicine 2, Yangon', type: ['medicine'], region: ['Yangon'],
@@ -335,9 +336,11 @@ navButtons.forEach(button => {
   });
 });
 
-const initialPage = localStorage.getItem(ACTIVE_PAGE_STORAGE_KEY) || 'dashboard';
+const initialPage = localStorage.getItem(ACTIVE_PAGE_STORAGE_KEY) || 'origin';
 if (pageSections[initialPage]) {
   switchPage(initialPage);
+} else {
+  switchPage('origin');
 }
 
 const locationSearchInput = document.getElementById('locationSearch');
