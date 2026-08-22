@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="my">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>UniFindex's Input Webpage</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <main class="landing-page" id="landingPage">
+      <div class="ambient ambient-one"></div>
+      <div class="ambient ambient-two"></div>
+      <section class="hero-card">
+        <header class="hero-header">
+          <a class="brand" href="index.html"><span class="brand-icon"><img src="photo_2026-08-22_18-56-51.jpg" alt="UniFindex logo"></span><span>Uni<span>Findex</span></span></a>
+          <button type="button" class="theme-switch" aria-label="အလင်းနှင့်အမှောင် mode ပြောင်းရန်" aria-pressed="false">
+            <span class="switch-track"><span class="switch-knob"><span class="switch-icon sun">☀</span><span class="switch-icon moon">☾</span></span></span>
+          </button>
+          <button type="button" class="account-button" id="accountButton" aria-haspopup="dialog" aria-controls="accountModal"><span class="account-icon" aria-hidden="true">◉</span><span id="accountButtonLabel">Sign in</span></button>
+        </header>
+        <div class="hero-copy">
+          <span class="eyebrow">PERSONALISED UNIVERSITY FINDER</span>
+          <h1>သင့်အနာဂတ်အတွက်<br /><em>မှန်ကန်သော</em> ရွေးချယ်မှု</h1>
+          <p class="hero-subtitle">သင်၏ Grade-12 အမှတ်၊ စိတ်ဝင်စားမှုနှင့် တက်ရောက်လိုသည့်ဒေသကို ဖြည့်စွက်ပြီး သင့်အတွက် သင့်တော်သော တက္ကသိုလ်များကို ရှာဖွေလိုက်ပါ။</p>
+        </div>
+        <form id="recommendationForm">
+          <div class="progress"><span class="progress-step active">01 <small>အချက်အလက်</small></span><i></i><span class="progress-step">02 <small>ရလဒ်</small></span></div>
+          <div class="form-group"><label for="score">Grade-12 တွင် ရရှိခဲ့သောအမှတ် <small>0 – 600</small></label><div class="input-wrap"><span>✦</span><input id="score" class="form-input" type="number" min="0" max="600" placeholder="ဥပမာ - 450" required /></div></div>
+          <div class="form-group"><label>စိတ်ဝင်စားသော တက္ကသိုလ်အမျိုးအစားများ <small>တစ်ခုထက်ပို ရွေးချယ်နိုင်သည်</small></label><div class="checkbox-grid"><label class="checkbox-item"><input type="checkbox" value="medicine" /><span class="checkmark">✓</span><span>ဆေးတက္ကသိုလ်များ</span></label><label class="checkbox-item"><input type="checkbox" value="technology" /><span class="checkmark">✓</span><span>နည်းပညာတက္ကသိုလ်များ</span></label><label class="checkbox-item"><input type="checkbox" value="computer" /><span class="checkmark">✓</span><span>ကွန်ပျူတာတက္ကသိုလ်များ</span></label><label class="checkbox-item"><input type="checkbox" value="economics" /><span class="checkmark">✓</span><span>စီးပွားရေးတက္ကသိုလ်များ</span></label><label class="checkbox-item"><input type="checkbox" value="education" /><span class="checkmark">✓</span><span>ပညာရေးတက္ကသိုလ်များ</span></label><label class="checkbox-item"><input type="checkbox" value="other" /><span class="checkmark">✓</span><span>အခြားတက္ကသိုလ်များ</span></label></div></div>
+          <div class="form-group"><label for="region">တက်ရောက်ချင်သည့် နယ်မြေ</label><div class="select-wrap"><span>⌖</span><select id="region" class="form-select" required><option value="">-- ဤတွင် ရွေးချယ်ပါ --</option><option value="Yangon">ရန်ကုန်တိုင်းဒေသကြီး</option><option value="Mandalay">မန္တလေးတိုင်းဒေသကြီး</option><option value="Naypyidaw">နေပြည်တော်</option><option value="Other">မည်သည့်နေရာတွင်မဆို</option></select></div></div>
+          <div class="button-row"><button type="submit" class="btn btn-submit">တက္ကသိုလ်များကို ရှာဖွေမည် <span>→</span></button><button type="reset" class="btn btn-reset">အစကနေ ပြန်ရေးမည်</button></div>
+        </form>
+        <a class="back-link" href="index.html">← ဝပ်ဆိုက်၏ မူလစာမျက်နှာသို့ ပြန်သွားမည်</a>
+      </section>
+      <aside class="side-note"><span class="spark">✧</span><strong>သင့်အိပ်မက်ကို<br />ရှာဖွေရန် အဆင့်တစ်ဆင့်</strong><p>UniFindex က သင့်အတွက် ပိုမိုလွယ်ကူသော တက္ကသိုလ်ရွေးချယ်မှုကို ဖန်တီးပေးပါသည်။</p></aside>
+    </main>
+
+    <script src="script.js"></script>
+    <script src="account-ui.js"></script>
+  </body>
+</html>

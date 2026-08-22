@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="my" data-theme="light">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>UniFindex | About Us</title>
+    <style>
+        :root {
+            --bg: #f4f7fc;
+            --surface: #fff;
+            --text: #172744;
+            --muted: #687790;
+            --line: #e3e9f3;
+            --blue: #3d6fe8;
+            --blue-dark: #2450bd;
+            --soft: #eef4ff;
+            --navy: #101d38;
+            --shadow: 0 22px 65px rgba(32, 59, 111, .12);
+            font-family: "Noto Sans Myanmar", "Myanmar Text", "Pyidaungsu", system-ui, sans-serif
+        }
+
+        * {
+            box-sizing: border-box
+        }
+
+        body {
+            margin: 0;
+            color: var(--text);
+            background: var(--bg);
+            line-height: 1.6
+        }
+
+        .page {
+            min-height: 100vh;
+            padding: 25px 7%;
+            background: radial-gradient(circle at 4% 7%, #e2ebff 0, transparent 26%), radial-gradient(circle at 95% 91%, #e9e3ff 0, transparent 24%), var(--bg)
+        }
+
+        .navbar {
+            max-width: 1180px;
+            margin: auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--text);
+            text-decoration: none;
+            font-size: 1.2rem;
+            font-weight: 800;
+            letter-spacing: -.04em
+        }
+
+        .brand b {
+            color: var(--blue)
+        }
+
+        .brand-mark {
+            display: grid;
+            place-items: center;
+            width: 35px;
+            height: 35px;
+            color: #fff;
+            border-radius: 11px;
+            background: linear-gradient(135deg, var(--blue), #819bff);
+            font-family: Georgia, serif
+        }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px
+        }
+
+        .home-link {
+            padding: 9px 15px;
+            border: 1px solid var(--line);
+            border-radius: 10px;
+            color: var(--muted);
+            background: rgba(255, 255, 255, .6);
+            font-size: .76rem;
+            text-decoration: none
+        }
+
+        .theme-switch {
+            border: 0;
+            padding: 0;
+            background: transparent;
+            cursor: pointer
+        }
+
+        .switch-track {
+            display: block;
+            width: 49px;
+            height: 28px;
+            padding: 3px;
+            border-radius: 25px;
+            background: #e2e8f3
+        }
+
+        .switch-knob {
+            display: grid;
+            place-items: center;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: #fff;
+            color: #dc9c37;
+            box-shadow: 0 2px 7px #bcc5d6;
+            transition: .25s;
+            font-size: .78rem
+        }
+
+        .theme-switch[aria-pressed=true] .switch-track {
+            background: #263b60
+        }
+
+        .theme-switch[aria-pressed=true] .switch-knob {
+            transform: translateX(21px);
+            color: #c7d8ff
+        }
+
+        .hero {
+            max-width: 1180px;
+            margin: 65px auto 30px;
+            display: grid;
+            grid-template-columns: 1.15fr .85fr;
+            gap: 45px;
+            align-items: center
+        }
+
+        .eyebrow,
+        .kicker {
+            color: var(--blue);
+            font-size: .66rem;
+            font-weight: 800;
+            letter-spacing: .17em
+        }
+
+        .hero h1 {
+            margin: 12px 0 17px;
+            font-size: clamp(2.3rem, 5vw, 4rem);
+            line-height: 1.2;
+            letter-spacing: -.06em
+        }
+
+        .hero h1 em {
+            font-style: normal;
+            color: var(--blue)
+        }
+
+        .hero p {
+            max-width: 610px;
+            color: var(--muted);
+            font-size: .93rem;
+            line-height: 2
+        }
+
+        .hero-visual {
+            position: relative;
+            min-height: 300px;
+            display: grid;
+            place-items: center
+        }
+
+        .orb {
+            width: 250px;
+            height: 250px;
+            border-radius: 50%;
+            background: linear-gradient(145deg, #4d78e9, #a1b6ff);
+            box-shadow: 0 25px 55px rgba(61, 111, 232, .3);
+            position: relative
+        }
+
+        .orb:before {
+            content: "U";
+            position: absolute;
+            inset: 24px;
+            display: grid;
+            place-items: center;
+            border: 1px solid rgba(255, 255, 255, .5);
+            border-radius: 50%;
+            color: #fff;
+            font: 7rem Georgia, serif
+        }
+
+        .orbit {
+            position: absolute;
+            width: 340px;
+            height: 115px;
+            border: 1px solid #9cb5f5;
+            border-radius: 50%;
+            transform: rotate(-28deg)
+        }
+
+        .orbit.two {
+            width: 380px;
+            height: 145px;
+            transform: rotate(32deg);
+            border-color: #c5b9f4
+        }
+
+        .floating {
+            position: absolute;
+            padding: 11px 15px;
+            border: 1px solid rgba(255, 255, 255, .8);
+            border-radius: 13px;
+            color: var(--blue-dark);
+            background: rgba(255, 255, 255, .8);
+            box-shadow: 0 12px 30px rgba(43, 72, 130, .1);
+            font-size: .73rem;
+            font-weight: 700
+        }
+
+        .float-one {
+            left: 4%;
+            top: 24%
+        }
+
+        .float-two {
+            right: 0;
+            bottom: 18%
+        }
+
+        .content-grid {
+            max-width: 1180px;
+            margin: 30px auto;
+            display: grid;
+            grid-template-columns: 1.15fr .85fr;
+            gap: 20px
+        }
+
+        .card {
+            padding: 30px;
+            border: 1px solid var(--line);
+            border-radius: 23px;
+            background: rgba(255, 255, 255, .88);
+            box-shadow: var(--shadow)
+        }
+
+        .card h2 {
+            margin: 8px 0 13px;
+            font-size: 1.45rem;
+            letter-spacing: -.04em
+        }
+
+        .card p {
+            margin: 0;
+            color: var(--muted);
+            font-size: .81rem;
+            line-height: 1.95
+        }
+
+        .vision-card {
+            background: linear-gradient(135deg, #173d91, #4b72df);
+            color: #fff
+        }
+
+        .vision-card .kicker {
+            color: #bdd0ff
+        }
+
+        .vision-card p {
+            color: #e2eaff
+        }
+
+        .quote {
+            margin-top: 22px;
+            padding: 16px 17px;
+            border-left: 3px solid #a8c0ff;
+            color: #e7edff;
+            font-size: .85rem
+        }
+
+        .members-section {
+            max-width: 1180px;
+            margin: 28px auto
+        }
+
+        .section-heading {
+            display: flex;
+            justify-content: space-between;
+            align-items: end;
+            margin-bottom: 15px
+        }
+
+        .section-heading h2 {
+            margin: 5px 0 0;
+            font-size: 1.45rem
+        }
+
+        .group-badge {
+            padding: 7px 12px;
+            border-radius: 999px;
+            color: var(--blue-dark);
+            background: var(--soft);
+            font-size: .7rem;
+            font-weight: 800
+        }
+
+        .members {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 14px
+        }
+
+        .member {
+            padding: 20px 17px;
+            border: 1px solid var(--line);
+            border-radius: 18px;
+            background: var(--surface);
+            box-shadow: 0 9px 25px rgba(32, 59, 111, .06);
+            transition: .2s
+        }
+
+        .member:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 17px 35px rgba(32, 59, 111, .12)
+        }
+
+        .avatar {
+            display: grid;
+            place-items: center;
+            width: 48px;
+            height: 48px;
+            margin-bottom: 14px;
+            border-radius: 15px;
+            color: #fff;
+            background: linear-gradient(135deg, var(--blue), #849dff);
+            font-family: Georgia, serif;
+            font-size: 1.2rem
+        }
+
+        .member h3 {
+            margin: 0 0 4px;
+            font-size: .84rem;
+            line-height: 1.5
+        }
+
+        .member p {
+            margin: 0;
+            color: var(--muted);
+            font-size: .68rem
+        }
+
+        .footer {
+            max-width: 1180px;
+            margin: 30px auto 0;
+            padding: 20px 0;
+            border-top: 1px solid var(--line);
+            color: var(--muted);
+            font-size: .72rem
+        }
+
+        .footer strong {
+            color: var(--blue)
+        }
+
+        [data-theme=dark] {
+            --bg: #0d1729;
+            --surface: #14243c;
+            --text: #edf3ff;
+            --muted: #aab8ce;
+            --line: #2b3e5d;
+            --soft: #1d3353;
+            --shadow: 0 22px 65px rgba(0, 0, 0, .25)
+        }
+
+        [data-theme=dark] .page {
+            background: radial-gradient(circle at 4% 7%, #1a3158 0, transparent 28%), var(--bg)
+        }
+
+        [data-theme=dark] .home-link {
+            background: #162942
+        }
+
+        [data-theme=dark] .card {
+            background: rgba(20, 36, 60, .9)
+        }
+
+        [data-theme=dark] .member {
+            background: var(--surface)
+        }
+
+        @media(max-width:850px) {
+
+            .hero,
+            .content-grid {
+                grid-template-columns: 1fr;
+                gap: 22px
+            }
+
+            .hero {
+                margin-top: 45px
+            }
+
+            .hero-visual {
+                min-height: 260px
+            }
+
+            .members {
+                grid-template-columns: repeat(2, 1fr)
+            }
+        }
+
+        @media(max-width:520px) {
+            .page {
+                padding: 20px 15px
+            }
+
+            .home-link {
+                font-size: 0
+            }
+
+            .home-link:after {
+                content: "⌂";
+                font-size: 1rem
+            }
+
+            .hero h1 {
+                font-size: 2.35rem
+            }
+
+            .hero-visual {
+                transform: scale(.82);
+                margin: -24px 0
+            }
+
+            .card {
+                padding: 23px
+            }
+
+            .members {
+                grid-template-columns: 1fr 1fr;
+                gap: 10px
+            }
+
+            .member {
+                padding: 15px 12px
+            }
+
+            .member h3 {
+                font-size: .75rem
+            }
+
+            .section-heading {
+                align-items: start;
+                gap: 10px;
+                flex-direction: column
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="page">
+        <nav class="navbar"><a class="brand" href="main.html"><span
+                    class="brand-mark">U</span><span>Uni<b>Findex</b></span></a>
+            <div class="nav-actions"><a class="home-link" href="index.html">မူလစာမျက်နှာသို့ပြန်သွားရန်</a><button class="theme-switch"
+                        type="button" aria-label="Toggle theme" aria-pressed="false"><span class="switch-track"><span
+                            class="switch-knob">☼</span></span></button><button type="button" class="account-button" id="accountButton" aria-haspopup="dialog" aria-controls="accountModal"><span class="account-icon">◉</span><span id="accountButtonLabel">Sign in</span></button></div>
+        </nav>
+        <section class="hero">
+            <div><span class="eyebrow">ကျွန်ုပ်တို့ GROUP 07၏ ဤProjectအကြောင်း </span>
+                <h1>ကျွန်ုပ်တို့၏<br /><em>UniFindex</em> အကြောင်း</h1>
+                <p>UniFindex သည် တက္ကသိုလ်တက်ရောက်ရန် ပြင်ဆင်နေသော ကျောင်းသား၊ ကျောင်းသူများအတွက် သင့်တော်သော
+                    တက္ကသိုလ်ကို ပိုမိုလွယ်ကူစွာ ရှာဖွေနိုင်စေရန် ဖန်တီးထားသော Uni Project တစ်ခု ဖြစ်ပါသည်။</p>
+            </div>
+            <div class="hero-visual">
+                <div class="orbit"></div>
+                <div class="orbit two"></div>
+                <div class="orb"></div><span class="floating float-one">Student First</span><span
+                    class="floating float-two">Find Your Future</span>
+            </div>
+        </section>
+        <section class="content-grid">
+            <article class="card"><span class="kicker">ရည်ရွယ်ချက်</span>
+                <h2>ကျွန်ုပ်တို့ ဘာကြောင့် ဖန်တီးခဲ့သလဲ။</h2>
+                <p>တက္ကသိုလ်ရွေးချယ်ရာတွင် သတင်းအချက်အလက်များ မပြည့်စုံခြင်း၊ ရှာဖွေရန် ခက်ခဲခြင်းနှင့် မိမိအတွက်
+                    သင့်တော်မည့် လမ်းကြောင်းကို မသေချာခြင်းတို့ကို ကျောင်းသားများ ကြုံတွေ့ရနိုင်ပါသည်။ ထိုအခက်အခဲများကို
+                    လျှော့ချပေးရန်အတွက် တက္ကသိုလ်အချက်အလက်များကို တစ်နေရာတည်းတွင် စုစည်းပြီး ရှာဖွေ၊ လေ့လာ၊
+                    နှိုင်းယှဉ်နိုင်သည့် platform တစ်ခုကို ဖန်တီးခဲ့ခြင်း ဖြစ်ပါသည်။</p>
+            </article>
+            <article class="card vision-card"><span class="kicker">ကျွန်ုပ်တို့၏အမြင်</span>
+                <h2>အနာဂတ်ကို ပိုမိုယုံကြည်စွာ ရွေးချယ်နိုင်ရန်</h2>
+                <p>ကျောင်းသားတိုင်း မိမိ၏ အမှတ်၊ စိတ်ဝင်စားမှု၊ ဝါသနာနှင့် ရည်မှန်းချက်များနှင့် ကိုက်ညီသော တက္ကသိုလ်ကို
+                    ရှာဖွေနိုင်စေရန် ရိုးရှင်းပြီး အသုံးပြုရလွယ်ကူသော အတွေ့အကြုံကို ပေးအပ်ရန် ကျွန်ုပ်တို့ ရည်ရွယ်ပါသည်။
+                </p>
+                <div class="quote">“သင့်တော်သော အချက်အလက်က သင့်အနာဂတ်အတွက် ပိုမိုကောင်းမွန်သော ဆုံးဖြတ်ချက်ကို
+                    ဖန်တီးပေးနိုင်သည်။”</div>
+            </article>
+        </section>
+        <section class="members-section">
+            <div class="section-heading">
+                <div><span class="kicker"></span>
+                    <h2>Group No. 7 အဖွဲ့ဝင်များ</h2>
+                </div><span class="group-badge">4 Members · 1 Vision</span>
+            </div>
+            <div class="members">
+                <article class="member">
+                    <div class="avatar">A</div>
+                    <h3>Aung Bhone Htet Kyaw</h3>
+                    <p>Project Team Member</p>
+                </article>
+                <article class="member">
+                    <div class="avatar">Z</div>
+                    <h3>Zaw Ye Aung</h3>
+                    <p>Project Team Member</p>
+                </article>
+                <article class="member">
+                    <div class="avatar">J</div>
+                    <h3>Jue Jue Htet Naing</h3>
+                    <p>Project Team Member</p>
+                </article>
+                <article class="member">
+                    <div class="avatar">H</div>
+                    <h3>Hein Lin Htet</h3>
+                    <p>Project Team Member</p>
+                </article>
+            </div>
+        </section>
+        <footer class="footer"><strong>UniFindex</strong> · Group No. 7 Uni Project <span> | အားလုံး၏                အဖွဲ့လိုက်ကြိုးပမ်းမှုဖြင့် တည်ဆောက်ထားပါသည်။</span></footer>
+    </div>
+    <script>const root = document.documentElement, switcher = document.querySelector('.theme-switch'); function setTheme(t) { root.dataset.theme = t; switcher.setAttribute('aria-pressed', String(t === 'dark')); switcher.querySelector('.switch-knob').textContent = t === 'dark' ? '☾' : '☼'; localStorage.setItem('unifindex-theme', t) } setTheme(localStorage.getItem('unifindex-theme') || 'light'); switcher.addEventListener('click', () => setTheme(root.dataset.theme === 'dark' ? 'light' : 'dark'));</script>
+    <script src="account-ui.js"></script>
+</body>
+
+</html>

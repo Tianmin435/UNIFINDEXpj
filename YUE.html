@@ -5,6 +5,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>University Detail View</title>
+    <link rel="stylesheet" href="style.css" />
     <style>
         :root {
             --bg: #f5f7fb;
@@ -388,18 +389,24 @@
             }
         }
     </style>
+    <link rel="stylesheet" href="detail-theme.css" />
 </head>
 
 <body>
+  <header class="topbar">
+    <a class="topbar-brand" href="index.html#originPage" aria-label="UniFindex မူလစာမျက်နှာ"><span class="brand-mark"><img src="photo_2026-08-22_18-56-51.jpg" alt="UniFindex logo"></span><span>Uni<span>Findex</span></span></a>
+    <div class="topbar-actions"><span class="topbar-note">သင့်အနာဂတ်အတွက် သင့်တော်ရာကို ရှာဖွေပါ</span><button type="button" class="theme-switch" aria-label="အလင်းနှင့်အမှောင် mode ပြောင်းရန်" aria-pressed="false"><span class="switch-track"><span class="switch-knob">☀</span></span></button><button type="button" class="account-button" id="accountButton" aria-haspopup="dialog" aria-controls="accountModal"><span class="account-icon">◉</span><span id="accountButtonLabel">Sign in</span></button></div>
+  </header>
     <section class="main-app">
         <div class="app-shell">
 
             <!-- Left Column (Sidebar with href="#" links) -->
             <aside class="sidebar">
-                <div class="brand">
+              <input class="sidebar-toggle" type="checkbox" id="yueSidebarToggle" />
+              <label class="sidebar-toggle-button" for="yueSidebarToggle" aria-label="ဖုန်းမီနူးဖွင့်ရန်"><span></span><span></span><span></span></label>
+                <div class="brand sidebar-brand">
                     <div class="brand-main">
-                        <div class="brand-icon">🗽</div>
-                        <div>UniFindex</div>
+                        <div class="brand-icon"><img src="photo_2026-08-22_18-56-51.jpg" alt="UniFindex logo"></div>
                     </div>
                     <button type="button" class="theme-switch" aria-label="Toggle theme" aria-pressed="false">
                         <span class="switch-track">
@@ -410,13 +417,13 @@
                         </span>
                     </button>
                 </div>
-                <nav class="nav-list">
-          <a href="../main.html#originNav" class="nav-btn active">မူလစာမျက်နှာ</a>
-          <a href="../main.html#dashh" class="nav-btn active">တက္ကသိုလ်များ ရှာဖွေရန်</a>
-          <a href="../main.html#recomm" class="nav-btn">ကိုက်ညီသော တက္ကသိုလ်များ</a>
-          <a href="../main.html#alll" class="nav-btn">အားလုံးသော တက္ကသိုလ်များ</a>
-          <a href="../main.html#locc" class="nav-btn">တည်နေရာပြ မြေပုံ</a>
+                <nav class="nav-list" aria-label="အဓိက navigation">
+          <a href="index.html#originPage" class="nav-btn">မူလစာမျက်နှာ</a>
+          <a href="index.html#dashboardPage" class="nav-btn active">တက္ကသိုလ်များ ရှာဖွေရန်</a>
+          <a href="index.html#recommendedPage" class="nav-btn">ကိုက်ညီသော တက္ကသိုလ်များ</a>
+          <a href="index.html#locationsPage" class="nav-btn">တည်နေရာပြ မြေပုံ</a>
         </nav>
+        <div class="sidebar-footer"><span class="status-dot"></span><span>သင့်အနာဂတ်ကို ယနေ့စတင်ပါ</span></div>
             </aside>
 
 
@@ -1118,6 +1125,7 @@ B.Econ / B.Com (သာမန်ဘွဲ့)၊<br>
             syncTheme();
         });
     </script>
+  <script src="account-ui.js"></script>
 </body>
 
 </html>

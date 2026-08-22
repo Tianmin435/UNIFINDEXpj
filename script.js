@@ -1,9 +1,70 @@
-
 const THEME_STORAGE_KEY = 'theme';
 const LEGACY_THEME_STORAGE_KEY = 'siteTheme';
 const ACTIVE_PAGE_STORAGE_KEY = 'activePage';
 const root = document.documentElement;
 const themeSwitches = document.querySelectorAll('.theme-switch');
+const accountButton = document.getElementById('accountButton');
+const accountButtonLabel = document.getElementById('accountButtonLabel');
+const accountModal = document.getElementById('accountModal');
+const accountForm = document.getElementById('accountForm');
+const signInTab = document.getElementById('signInTab');
+const signUpTab = document.getElementById('signUpTab');
+const accountSubmit = document.getElementById('accountSubmit');
+const accountConfirmField = document.getElementById('accountConfirmField');
+const accountConfirmPassword = document.getElementById('accountConfirmPassword');
+const accountStatus = document.getElementById('accountStatus');
+
+let accountMode = 'signin';
+
+function setAccountMode(mode) {
+  accountMode = mode;
+  const isSignUp = mode === 'signup';
+  signInTab?.classList.toggle('active', !isSignUp);
+  signUpTab?.classList.toggle('active', isSignUp);
+  signInTab?.setAttribute('aria-selected', String(!isSignUp));
+  signUpTab?.setAttribute('aria-selected', String(isSignUp));
+  if (accountConfirmField) accountConfirmField.hidden = !isSignUp;
+  if (accountConfirmPassword) accountConfirmPassword.required = isSignUp;
+  if (accountSubmit) accountSubmit.innerHTML = `${isSignUp ? 'Create account' : 'Sign in'} <span aria-hidden="true">→</span>`;
+  if (accountStatus) accountStatus.textContent = '';
+}
+
+function setAccountModal(open) {
+  if (!accountModal) return;
+  accountModal.classList.toggle('is-open', open);
+  accountModal.setAttribute('aria-hidden', String(!open));
+  document.body.classList.toggle('account-modal-open', open);
+  if (open) document.getElementById('accountEmail')?.focus();
+}
+
+accountButton?.addEventListener('click', () => {
+  const isSignedIn = localStorage.getItem('demoAccountSignedIn') === 'true';
+  if (isSignedIn) {
+    localStorage.removeItem('demoAccountSignedIn');
+    accountButtonLabel.textContent = 'Sign in';
+    return;
+  }
+  setAccountMode('signin');
+  setAccountModal(true);
+});
+
+document.querySelectorAll('[data-close-account]').forEach(element => element.addEventListener('click', () => setAccountModal(false)));
+signInTab?.addEventListener('click', () => setAccountMode('signin'));
+signUpTab?.addEventListener('click', () => setAccountMode('signup'));
+
+accountForm?.addEventListener('submit', event => {
+  event.preventDefault();
+  if (accountMode === 'signup' && accountConfirmPassword?.value !== document.getElementById('accountPassword')?.value) {
+    accountStatus.textContent = 'Passwords do not match.';
+    return;
+  }
+  localStorage.setItem('demoAccountSignedIn', 'true');
+  accountButtonLabel.textContent = 'Sign out';
+  accountStatus.textContent = accountMode === 'signup' ? 'Account created for this demo.' : 'Signed in for this demo.';
+  setTimeout(() => setAccountModal(false), 700);
+});
+
+if (localStorage.getItem('demoAccountSignedIn') === 'true' && accountButtonLabel) accountButtonLabel.textContent = 'Sign out';
 
 function applyTheme(theme) {
   root.setAttribute('data-theme', theme);
@@ -42,106 +103,95 @@ const pageSections = {
   origin: document.getElementById('originPage'),
   dashboard: document.getElementById('dashboardPage'),
   recommended: document.getElementById('recommendedPage'),
-  universities: document.getElementById('universitiesPage'),
   locations: document.getElementById('locationsPage')
 };
 
 const universityData = [
-  
-  { name: 'Yangon Technological University (YTU)', type: ['technology', 'computer'], region: ['Yangon'],
-    url: 'ytu.html',
-  image: 'https://tse4.mm.bing.net/th/id/OIP.AYFHAclvQ7mj__IZCnSVIQHaE7?r=0&rs=1&pid=ImgDetMain&o=7&rm=3'
-   },
-  { name: 'Mandalay Technological University (MTU)', type: ['technology'], region: ['Mandalay'],
-  url: 'mtu.html',
-  image: 'https://images.squarespace-cdn.com/content/v1/5aa92cacec4eb7d0913878ce/1595477158967-F60ZPJLGM8J6CN5X6JGW/MTU_Mandalay_Technological+University.png'
-   },
-  { name: 'University of Information Technology (UIT)', type: ['technology', 'computer'], region: ['Yangon'],
-  url: 'uit.html',
-  image: 'https://tse3.mm.bing.net/th/id/OIP.OFx0m5xST3tQSSOn1CGldAHaGo?r=0&rs=1&pid=ImgDetMain&o=7&rm=3'
-   },
-  { name: 'University of Computer Studies, Yangon (UCSY)', type: ['computer', 'technology'], region: ['Yangon'],
-    url: 'ucsy1.html',
-  image: 'https://ucsy.edu.mm/img/ucsylogo.png'
-   },
-  { name: 'Yezin Agricultural University (YAU)', type: ['agriculture'], region: ['Naypyidaw'],
-  image: 'https://tse3.mm.bing.net/th/id/OIP.X-ThP6csnY-2HSt6AgcbfAAAAA?r=0&rs=1&pid=ImgDetMain&o=7&rm=3'
-   },
-  { name: 'University of Medicine 1, Yangon', type: ['medicine'], region: ['Yangon'],
-  url: 'med1.html',
-  image: 'https://cdn.imgbin.com/16/5/11/imgbin-university-of-yangon-university-of-medicine-2-yangon-university-of-medicine-taunggyi-university-of-medicine-mandalay-medical-universities-foreign-certificates-dstsZZ9rKSZnBJsmRpzEJcyZt.jpg'
-   },
-  { name: 'University of Medicine 2, Yangon', type: ['medicine'], region: ['Yangon'],
-  url: 'med2.html',
-  image: 'https://cdn.imgbin.com/16/5/11/imgbin-university-of-yangon-university-of-medicine-2-yangon-university-of-medicine-taunggyi-university-of-medicine-mandalay-medical-universities-foreign-certificates-dstsZZ9rKSZnBJsmRpzEJcyZt.jpg'
-   },
-  { name: 'University of Medicine, Mandalay', type: ['medicine'], region: ['Mandalay'],
-  image: 'https://tse2.mm.bing.net/th/id/OIP.IYnjW52N-cYXvhnSodkTtQAAAA?r=0&rs=1&pid=ImgDetMain&o=7&rm=3'
-   },
-  { name: 'University of Dental Medicine, Yangon', type: ['medicine'], region: ['Yangon'],
-  image: 'https://media.licdn.com/dms/image/v2/C560BAQEfqZ0IMaQqEw/company-logo_200_200/company-logo_200_200/0/1630647112162?e=2147483647&v=beta&t=of3Ayt-UHEpcW8gidRloopwpNsbiO5K-ZD1jq3d6OJQ'
-   },
-  { name: 'University of Dental Medicine, Mandalay', type: ['medicine'], region: ['Mandalay'],
-  image: 'https://www.udmmandalay.info/wp-content/uploads/2021/01/cropped-udmm-new-logo-wavy-moto-2020-copy.png'
-   },
-  { name: 'University of Pharmacy, Yangon', type: ['medicine'], region: ['Yangon'],
-  url: 'uop1.html',
-  image: 'https://tse4.mm.bing.net/th/id/OIP.wwqwR1AoUTESGN1XfpRq7gHaHa?r=0&rs=1&pid=ImgDetMain&o=7&rm=3'
-   },
-  { name: 'University of Pharmacy, Mandalay', type: ['medicine'], region: ['Mandalay'],
-    url: 'uop1.html',
-    image: 'https://tse4.mm.bing.net/th/id/OIP.wwqwR1AoUTESGN1XfpRq7gHaHa?r=0&rs=1&pid=ImgDetMain&o=7&rm=3'
-   },
-  { name: 'University of Nursing, Yangon', type: ['medicine'], region: ['Yangon'], 
-  url: '#',
-  image: 'https://tse1.explicit.bing.net/th/id/OIP.fWJWgYKKluplCAeWgLDW6gHaKj?r=0&rs=1&pid=ImgDetMain&o=7&rm=3'
-  },
-  { name: 'University of Nursing, Mandalay', type: ['medicine'], region: ['Mandalay'], 
-  url: '#',
-  image: 'https://e7.pngegg.com/pngimages/286/225/png-clipart-university-of-nursing-mandalay-university-of-nursing-yangon-mandalay-university-university-of-yangon-school-text-logo-thumbnail.png'
-  },
-  { name: 'Mandalay University', type: ['general'], region: ['Mandalay'],
-  image: 'https://www.igroupnet.com/wp-content/uploads/2021/04/C-University-of-Mandalay.png'
-   },
-  { name: 'University of Yangon', type: ['general'], region: ['Yangon'],
-  url: 'yu.html',
-  image: 'https://www.iro-su.edu.la/wp-content/uploads/2022/04/Picture6.jpg'
-   },
-   { name: 'University of Econormics', type: ['Econormics'], region: ['Yangon'],
-  url: 'YUE.html',
-  image: 'https://th.bing.com/th/id/OIP.y7gKTARmecZlymbcijSpDwAAAA?r=0&o=7rm=3&rs=1&pid=ImgDetMain&o=7&rm=3'
-   },
-   { name: 'University of Foreign Languages', type: ['general'], region: ['Yangon'],
-  url: 'YUFL.html',
-  image: 'https://tse4.mm.bing.net/th/id/OIP.VOUFIGJsaeZkBKOmeaUyWQHaHa?r=0&rs=1&pid=ImgDetMain&o=7&rm=3'
-   },
+  { name: 'Yangon Technological University (YTU)', type: ['technology', 'computer'], region: ['Yangon'], url: 'ytu.html', image: 'https://tse4.mm.bing.net/th/id/OIP.AYFHAclvQ7mj__IZCnSVIQHaE7?r=0&rs=1&pid=ImgDetMain&o=7&rm=3' },
+  { name: 'Mandalay Technological University (MTU)', type: ['technology'], region: ['Mandalay'], url: 'mtu.html', image: 'https://images.squarespace-cdn.com/content/v1/5aa92cacec4eb7d0913878ce/1595477158967-F60ZPJLGM8J6CN5X6JGW/MTU_Mandalay_Technological+University.png' },
+  { name: 'University of Information Technology (UIT)', type: ['technology', 'computer'], region: ['Yangon'], url: 'uit.html', image: 'https://tse3.mm.bing.net/th/id/OIP.OFx0m5xST3tQSSOn1CGldAHaGo?r=0&rs=1&pid=ImgDetMain&o=7&rm=3' },
+  { name: 'University of Computer Studies, Yangon (UCSY)', type: ['computer', 'technology'], region: ['Yangon'], url: 'ucsy1.html', image: 'https://ucsy.edu.mm/img/ucsylogo.png' },
+  { name: 'Yezin Agricultural University (YAU)', type: ['agriculture'], region: ['Naypyidaw'], image: 'https://tse3.mm.bing.net/th/id/OIP.X-ThP6csnY-2HSt6AgcbfAAAAA?r=0&rs=1&pid=ImgDetMain&o=7&rm=3' },
+  { name: 'University of Medicine 1, Yangon', type: ['medicine'], region: ['Yangon'], url: 'med1.html', image: 'https://cdn.imgbin.com/16/5/11/imgbin-university-of-yangon-university-of-medicine-2-yangon-university-of-medicine-taunggyi-university-of-medicine-mandalay-medical-universities-foreign-certificates-dstsZZ9rKSZnBJsmRpzEJcyZt.jpg' },
+  { name: 'University of Medicine 2, Yangon', type: ['medicine'], region: ['Yangon'], url: 'med2.html', image: 'https://cdn.imgbin.com/16/5/11/imgbin-university-of-yangon-university-of-medicine-2-yangon-university-of-medicine-taunggyi-university-of-medicine-mandalay-medical-universities-foreign-certificates-dstsZZ9rKSZnBJsmRpzEJcyZt.jpg' },
+  { name: 'University of Medicine, Mandalay', type: ['medicine'], region: ['Mandalay'], image: 'https://tse2.mm.bing.net/th/id/OIP.IYnjW52N-cYXvhnSodkTtQAAAA?r=0&rs=1&pid=ImgDetMain&o=7&rm=3' },
+  { name: 'University of Dental Medicine, Yangon', type: ['medicine'], region: ['Yangon'], image: 'https://media.licdn.com/dms/image/v2/C560BAQEfqZ0IMaQqEw/company-logo_200_200/company-logo_200_200/0/1630647112162?e=2147483647&v=beta&t=of3Ayt-UHEpcW8gidRloopwpNsbiO5K-ZD1jq3d6OJQ' },
+  { name: 'University of Dental Medicine, Mandalay', type: ['medicine'], region: ['Mandalay'], image: 'https://www.udmmandalay.info/wp-content/uploads/2021/01/cropped-udmm-new-logo-wavy-moto-2020-copy.png' },
+  { name: 'University of Pharmacy, Yangon', type: ['medicine'], region: ['Yangon'], url: 'uop1.html', image: 'https://tse4.mm.bing.net/th/id/OIP.wwqwR1AoUTESGN1XfpRq7gHaHa?r=0&rs=1&pid=ImgDetMain&o=7&rm=3' },
+  { name: 'University of Pharmacy, Mandalay', type: ['medicine'], region: ['Mandalay'], url: 'uop1.html', image: 'https://tse4.mm.bing.net/th/id/OIP.wwqwR1AoUTESGN1XfpRq7gHaHa?r=0&rs=1&pid=ImgDetMain&o=7&rm=3' },
+  { name: 'University of Nursing, Yangon', type: ['medicine'], region: ['Yangon'], url: '#', image: 'https://tse1.explicit.bing.net/th/id/OIP.fWJWgYKKluplCAeWgLDW6gHaKj?r=0&rs=1&pid=ImgDetMain&o=7&rm=3' },
+  { name: 'University of Nursing, Mandalay', type: ['medicine'], region: ['Mandalay'], url: '#', image: 'https://e7.pngegg.com/pngimages/286/225/png-clipart-university-of-nursing-mandalay-university-of-nursing-yangon-mandalay-university-university-of-yangon-school-text-logo-thumbnail.png' },
+  { name: 'Mandalay University', type: ['general'], region: ['Mandalay'], image: 'https://www.igroupnet.com/wp-content/uploads/2021/04/C-University-of-Mandalay.png' },
+  { name: 'University of Yangon', type: ['general'], region: ['Yangon'], url: 'yu.html', image: 'https://www.iro-su.edu.la/wp-content/uploads/2022/04/Picture6.jpg' },
+  { name: 'University of Econormics', type: ['econormics', 'economics'], region: ['Yangon'], url: 'YUE.html', image: 'https://th.bing.com/th/id/OIP.y7gKTARmecZlymbcijSpDwAAAA?r=0&o=7rm=3&rs=1&pid=ImgDetMain&o=7&rm=3' },
+  { name: 'University of Foreign Languages', type: ['language'], region: ['Yangon'], url: 'YUFL.html', image: 'https://tse4.mm.bing.net/th/id/OIP.VOUFIGJsaeZkBKOmeaUyWQHaHa?r=0&rs=1&pid=ImgDetMain&o=7&rm=3' },
+  { name: 'Myanmar Maritime University', type: ['technology'], region: ['Yangon'], url: 'mmu.html', image: 'https://tse4.mm.bing.net/th/id/OIP.BFp38_9i9jqqjR2wdXb3vQHaKC?r=0&rs=1&pid=ImgDetMain&o=7&rm=3' }
 ];
 
 const locationPoints = [
-  { name: 'Yangon Technological University (YTU)', coords: [16.8072, 96.1489], description: 'YTU, Yangon' },
-  { name: 'Mandalay Technological University (MTU)', coords: [21.9366, 96.0581], description: 'MTU, Mandalay' },
-  { name: 'University of Information Technology (UIT)', coords: [16.8247, 96.1488], description: 'UIT, Yangon' },
-  { name: 'University of Computer Studies, Yangon (UCSY)', coords: [16.8075, 96.1255], description: 'UCSY, Yangon' },
-  { name: 'Yezin Agricultural University (YAU)', coords: [19.7545, 96.1189], description: 'YAU, Yesagyo / Naypyidaw' },
-  { name: 'University of Medicine 1, Yangon', coords: [16.8017, 96.1320], description: 'Medicine 1, Yangon' },
-  { name: 'University of Medicine 2, Yangon', coords: [16.8209, 96.1377], description: 'Medicine 2, Yangon' },
-  { name: 'University of Medicine, Mandalay', coords: [21.9848, 96.0964], description: 'Medicine, Mandalay' },
-  { name: 'University of Dental Medicine, Yangon', coords: [16.8255, 96.1318], description: 'Dental Medicine, Yangon' },
-  { name: 'University of Dental Medicine, Mandalay', coords: [21.9614, 96.0805], description: 'Dental Medicine, Mandalay' },
-  { name: 'University of Pharmacy, Yangon', coords: [16.8289, 96.1411], description: 'Pharmacy, Yangon' },
-  { name: 'University of Pharmacy, Mandalay', coords: [21.9785, 96.1008], description: 'Pharmacy, Mandalay' },
-  { name: 'University of Nursing, Yangon', coords: [16.7991, 96.1369], description: 'Nursing, Yangon' },
-  { name: 'University of Nursing, Mandalay', coords: [21.9704, 96.0802], description: 'Nursing, Mandalay' },
-  { name: 'Yangon University of Foreign Languages', coords: [16.8079, 96.1383], description: 'YUFL, Yangon' },
-  { name: 'Yangon University of Economics', coords: [16.8020, 96.1477], description: 'YUE, Yangon' },
-  { name: 'Myanmar Maritime University', coords: [16.7928, 96.1478], description: 'MMU, Thanlyin, Yangon' },
-  { name: 'University of Yangon', coords: [16.7969, 96.1475], description: 'University of Yangon' },
-  { name: 'Mandalay University', coords: [21.9581, 96.0831], description: 'Mandalay University' }
+  { name: 'University of Yangon', coords: [16.8292, 96.1305], description: 'University of Yangon' },
+  { name: 'Mandalay University', coords: [21.9570, 96.0950], description: 'Mandalay University, Mandalay' },
+  { name: 'Yangon Technological University (YTU)', coords: [16.8830, 96.1040], description: 'YTU, Yangon' },
+  { name: 'Mandalay Technological University (MTU)', coords: [22.0110, 96.1130], description: 'MTU, Mandalay' },
+  { name: 'University of Information Technology (UIT)', coords: [16.8524, 96.1287], description: 'UIT, Yangon' },
+  { name: 'University of Computer Studies, Yangon (UCSY)', coords: [16.9940, 96.0750], description: 'UCSY, Yangon' },
+  { name: 'Yezin Agricultural University (YAU)', coords: [19.8360, 96.2730], description: 'YAU, Naypyidaw' },
+  { name: 'University of Medicine 1, Yangon', coords: [16.7970, 96.1320], description: 'Medicine 1, Yangon' },
+  { name: 'University of Medicine 2, Yangon', coords: [16.8930, 96.1600], description: 'Medicine 2, Yangon' },
+  { name: 'University of Medicine, Mandalay', coords: [21.9750, 96.0980], description: 'Medicine, Mandalay' },
+  { name: 'University of Dental Medicine, Yangon', coords: [16.8370, 96.1840], description: 'Dental Medicine, Yangon' },
+  { name: 'University of Dental Medicine, Mandalay', coords: [21.9440, 96.0920], description: 'Dental Medicine, Mandalay' },
+  { name: 'University of Pharmacy, Yangon', coords: [16.9200, 96.1460], description: 'Pharmacy, Yangon' },
+  { name: 'University of Pharmacy, Mandalay', coords: [21.9420, 96.1100], description: 'Pharmacy, Mandalay' },
+  { name: 'University of Nursing, Yangon', coords: [16.7800, 96.1480], description: 'Nursing, Yangon' },
+  { name: 'University of Nursing, Mandalay', coords: [21.9410, 96.1100], description: 'Nursing, Mandalay' },
+  { name: 'Yangon University of Foreign Languages (YUFL)', coords: [16.8250, 96.1410], description: 'YUFL, Yangon' },
+  { name: 'Yangon University of Economics', coords: [16.8310, 96.1400], description: 'YUE, Yangon' },
+  { name: 'Myanmar Maritime University (MMU)', coords: [16.7210, 96.3470], description: 'MMU, Yangon' }
 ];
 
 let locationMap;
 let mapMarkers = [];
 let locationMapInitialized = false;
+
+const locationNameAliases = {
+  'Yangon University of Economics': 'University of Econormics',
+  'Yangon University of Foreign Languages': 'University of Foreign Languages',
+  'Yangon University of Foreign Languages (YUFL)': 'University of Foreign Languages',
+  'Myanmar Maritime University (MMU)': 'Myanmar Maritime University'
+};
+
+function getUniversityLogo(locationName) {
+  const universityName = locationNameAliases[locationName] || locationName;
+  const university = universityData.find(item => item.name === universityName);
+  return university && university.image ? university.image : getUniversityImage(locationName);
+}
+
+function getUniversityPageUrl(locationName) {
+  const universityName = locationNameAliases[locationName] || locationName;
+  const university = universityData.find(item => item.name === universityName);
+  return university && university.url && university.url !== '#' ? university.url : null;
+}
+
+function askToOpenUniversityPage(locationName) {
+  const pageUrl = getUniversityPageUrl(locationName);
+  if (!pageUrl) return;
+
+  const shouldOpen = window.confirm('ထိုတက္ကသိုလ်၏စာမျက်နှာသို့ သွားချင်ပါသလား');
+  if (shouldOpen) window.location.href = pageUrl;
+}
+
+function createMapIcon(locationName) {
+  const pageUrl = getUniversityPageUrl(locationName) || '#';
+
+  return L.divIcon({
+    className: 'university-map-icon-wrapper',
+    html: `<a class="university-map-link" href="${pageUrl}" aria-label="${locationName} detail page"><img class="university-map-icon" src="${getUniversityLogo(locationName)}" alt="${locationName} logo"></a>`,
+    iconSize: [48, 48],
+    iconAnchor: [24, 48],
+    popupAnchor: [0, -48]
+  });
+}
 
 function initLocationMap() {
   if (locationMapInitialized) return;
@@ -157,9 +207,21 @@ function initLocationMap() {
   }).addTo(locationMap);
 
   locationPoints.forEach((location, index) => {
-    const marker = L.marker(location.coords).addTo(locationMap);
+    const marker = L.marker(location.coords, { icon: createMapIcon(location.name) }).addTo(locationMap);
+    const markerLink = marker.getElement()?.querySelector('.university-map-link');
+    if (markerLink) {
+      markerLink.addEventListener('click', event => {
+        event.preventDefault();
+        event.stopPropagation();
+        highlightLocationItem(index);
+        askToOpenUniversityPage(location.name);
+      });
+    }
     marker.bindPopup(`<strong>${location.name}</strong><br>${location.description}`);
-    marker.on('click', () => highlightLocationItem(index));
+    marker.on('click', () => {
+      highlightLocationItem(index);
+      askToOpenUniversityPage(location.name);
+    });
     mapMarkers.push(marker);
   });
 
@@ -232,8 +294,6 @@ function createCard(university, isLink) {
   const card = document.createElement('article');
   card.className = 'university-card';
   const linkUrl = university.url || '#';
-  
- //condition...if there is no img, display default
   const imgSrc = university.image || getUniversityImage(university.name);
 
   card.innerHTML = `
@@ -245,29 +305,45 @@ function createCard(university, isLink) {
 
 function filterUniversities(score, selectedTypes, region) {
   const normalizedTypes = selectedTypes.map(type => type.toLowerCase());
-  const matching = universityData.filter(university => {
-    const typeMatch = normalizedTypes.length === 0 || normalizedTypes.some(type => university.type.includes(type));
-    const regionMatch = !region || region === 'Other' || university.region.includes(region);
-    let scoreMatch = true;
 
-    if (normalizedTypes.includes('medicine')) {
-      scoreMatch = score >= 450;
-    } else if (normalizedTypes.includes('technology') || normalizedTypes.includes('computer')) {
-      scoreMatch = score >= 350;
-    } else if (normalizedTypes.includes('economics')) {
-      scoreMatch = score >= 300;
-    } else if (normalizedTypes.includes('agriculture')) {
-      scoreMatch = score >= 320;
+  const standardUnis = universityData.filter(uni => !uni.type.includes('general'));
+  const generalUnis = universityData.filter(uni => uni.type.includes('general'));
+
+  const matchedStandardUnis = standardUnis.filter(university => {
+    let isScorePass = false;
+
+    if (university.type.includes('medicine')) {
+      if (score >= 450) isScorePass = true;
+    } else if (university.type.includes('technology') || university.type.includes('computer')) {
+      if (score >= 350) isScorePass = true;
+    } else if (university.type.includes('agriculture')) {
+      if (score >= 320) isScorePass = true;
+    } else if (university.type.includes('econormics') || university.type.includes('economics')) {
+      if (score >= 300) isScorePass = true;
+    } else {
+      if (score >= 240) isScorePass = true;
     }
 
-    return typeMatch && regionMatch && scoreMatch;
+    if (isScorePass) {
+      const isTypeMatch = normalizedTypes.length === 0 || normalizedTypes.some(type => university.type.includes(type));
+
+      if (isTypeMatch) {
+        const isRegionMatch = !region || region === 'Other' || university.region.includes(region);
+
+        if (isRegionMatch) {
+          return true;
+        } else {
+          return false;
+        }
+      } else {
+        return false;
+      }
+    } else {
+      return false;
+    }
   });
 
-  if (matching.length === 0) {
-    return universityData.filter(university => university.region.includes(region) || region === 'Other' || region === '');
-  }
-
-  return matching;
+  return [...matchedStandardUnis, ...generalUnis];
 }
 
 function renderList(container, universities, isLink = false) {
@@ -315,7 +391,7 @@ if (form) {
     const recommended = filterUniversities(score, selectedTypes, region);
     localStorage.setItem('recommendedUniversities', JSON.stringify(recommended));
     localStorage.setItem(ACTIVE_PAGE_STORAGE_KEY, 'recommended');
-    window.location.href = 'main.html';
+    window.location.href = 'index.html#recommendedPage';
   });
 
   form.addEventListener('reset', function () {
@@ -336,7 +412,12 @@ navButtons.forEach(button => {
   });
 });
 
-const initialPage = localStorage.getItem(ACTIVE_PAGE_STORAGE_KEY) || 'origin';
+document.querySelectorAll('[data-page]:not(.nav-btn)').forEach(button => {
+  button.addEventListener('click', () => switchPage(button.dataset.page));
+});
+
+const pageFromHash = window.location.hash === '#recommendedPage' ? 'recommended' : 'origin';
+const initialPage = window.location.hash ? pageFromHash : 'origin';
 if (pageSections[initialPage]) {
   switchPage(initialPage);
 } else {
@@ -359,14 +440,11 @@ if (searchInput) {
 }
 
 const recResults = document.getElementById('recommendedResults');
-const allUniResults = document.getElementById('allUniversitiesResults');
 const dashResults = document.getElementById('dashboardResults');
 
-if (allUniResults) renderList(allUniResults, universityData, true);
 if (dashResults) renderList(dashResults, universityData, true);
 
 if (recResults) {
   const savedRecs = JSON.parse(localStorage.getItem('recommendedUniversities')) || universityData;
   renderList(recResults, savedRecs, true);
 }
-
