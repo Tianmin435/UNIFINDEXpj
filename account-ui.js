@@ -49,9 +49,9 @@
 
     .account-modal { display:none; position:fixed; inset:0; z-index:1000; align-items:center; justify-content:center; padding:16px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
     .account-modal.is-open { display:flex; }
-    .account-modal-backdrop { position:absolute; inset:0; background:rgba(0,0,0,0.5); backdrop-filter:blur(2px); }
+    .account-modal-backdrop { position:absolute; inset:0; z-index:0; background:rgba(0,0,0,0.5); backdrop-filter:blur(2px); }
     
-    .account-dialog { position:relative; width:min(100%, 420px); max-height:90vh; overflow-y:auto; padding:30px 24px; border:none; border-radius:12px; background:#fff; color:#333; box-shadow:0 8px 32px rgba(0,0,0,0.2); box-sizing:border-box; }
+    .account-dialog { position:relative; z-index:1; width:min(100%, 420px); max-height:90vh; overflow-y:auto; padding:30px 24px; border:none; border-radius:12px; background:#fff; color:#333; box-shadow:0 8px 32px rgba(0,0,0,0.2); box-sizing:border-box; touch-action:manipulation; }
     .account-close { position:absolute; top:16px; right:16px; border:0; background:transparent; color:#777; font-size:1.6rem; cursor:pointer; font-weight:300; }
     .account-close:hover { color:#000; }
     
@@ -74,7 +74,7 @@
     .account-form label { display:block; margin:0 0 6px; font-size:.88rem; font-weight:600; color:#333; }
     .account-form input[type="email"],
     .account-form input[type="text"],
-    .account-form input[type="password"] { width:100%; padding:12px 14px; border:1px solid #ccc; border-radius:8px; background:#fff; color:#333; font:inherit; font-size:0.95rem; box-sizing:border-box; transition:border-color .2s; }
+    .account-form input[type="password"] { width:100%; padding:12px 14px; border:1px solid #ccc; border-radius:8px; background:#fff; color:#333; font:inherit; font-size:0.95rem; box-sizing:border-box; transition:border-color .2s; touch-action:manipulation; }
     .account-form input:focus { outline:none; border-color:#3b82f6; }
     
     .password-toggle { position:absolute; right:14px; top:40px; background:transparent; border:none; cursor:pointer; color:#787878; font-size:1rem; }
@@ -97,6 +97,7 @@
     
     @media (max-width:720px) { 
       .account-dialog { padding:20px 16px; width:95%; } 
+      .account-form input[type="email"], .account-form input[type="text"], .account-form input[type="password"] { font-size:16px; }
     }
   `;
   document.head.appendChild(style);
