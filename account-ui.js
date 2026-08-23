@@ -78,7 +78,7 @@
     .account-form input[type="email"], .account-form input[type="text"] { min-height:46px; font-size:16px; touch-action:manipulation; -webkit-user-select:text; user-select:text; }
     .account-form input:focus { outline:none; border-color:#3b82f6; }
     
-    .password-toggle { position:absolute; z-index:2; right:8px; top:32px; width:40px; height:40px; border-radius:8px; background:transparent; border:none; cursor:pointer; color:#787878; font-size:1rem; touch-action:manipulation; }
+    .password-toggle { position:absolute; z-index:2; right:8px; top:32px; min-width:48px; height:40px; padding:0 8px; border-radius:8px; background:transparent; border:none; cursor:pointer; color:#2563eb; font:inherit; font-size:.78rem; font-weight:700; touch-action:manipulation; }
     .account-options { display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; font-size:0.88rem; }
     .account-options a { color:#3b82f6; text-decoration:none; }
     .account-options a:hover { text-decoration:underline; }
@@ -173,7 +173,7 @@
           <div class="input-group">
             <label for="accountPassword">Password</label>
             <input id="accountPassword" type="password" required minlength="6" autocomplete="current-password">
-            <button type="button" class="password-toggle" id="togglePasswordBtn" aria-label="Show password" aria-pressed="false">👁️</button>
+            <button type="button" class="password-toggle" id="togglePasswordBtn" aria-label="Show password" aria-pressed="false">Show</button>
           </div>
           <button class="account-submit" type="submit" id="accountSubmit">Sign In</button>
           <p class="account-status" id="accountStatus" role="status"></p>
@@ -364,14 +364,12 @@
     if (input) setTimeout(() => input.focus(), 0);
   });
 
-  togglePasswordBtn.addEventListener('click', (event) => {
-    event.preventDefault();
-    const isVisible = passwordInput.type === 'password';
-    passwordInput.type = isVisible ? 'text' : 'password';
-    togglePasswordBtn.textContent = isVisible ? '🙈' : '👁️';
-    togglePasswordBtn.setAttribute('aria-label', isVisible ? 'Hide password' : 'Show password');
-    togglePasswordBtn.setAttribute('aria-pressed', String(isVisible));
-    passwordInput.focus();
+  togglePasswordBtn.addEventListener('click', () => {
+    const showPassword = passwordInput.type === 'password';
+    passwordInput.type = showPassword ? 'text' : 'password';
+    togglePasswordBtn.textContent = showPassword ? 'Hide' : 'Show';
+    togglePasswordBtn.setAttribute('aria-label', showPassword ? 'Hide password' : 'Show password');
+    togglePasswordBtn.setAttribute('aria-pressed', String(showPassword));
   });
 
   modal.querySelectorAll('[data-social-provider]').forEach(btn => {
