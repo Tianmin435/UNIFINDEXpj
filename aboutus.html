@@ -527,7 +527,10 @@
         <footer class="footer"><strong>UniFindex</strong> · Group No. 7 Uni Project <span> | အားလုံး၏                အဖွဲ့လိုက်ကြိုးပမ်းမှုဖြင့် တည်ဆောက်ထားပါသည်။</span></footer>
     </div>
     <script>const root = document.documentElement, switcher = document.querySelector('.theme-switch'); function setTheme(t) { root.dataset.theme = t; switcher.setAttribute('aria-pressed', String(t === 'dark')); switcher.querySelector('.switch-knob').textContent = t === 'dark' ? '☾' : '☼'; localStorage.setItem('unifindex-theme', t) } setTheme(localStorage.getItem('unifindex-theme') || 'light'); switcher.addEventListener('click', () => setTheme(root.dataset.theme === 'dark' ? 'light' : 'dark'));</script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase-config.js"></script>
     <script src="account-ui.js"></script>
+    <script src="contact-ui.js"></script>
 </body>
 
 </html>
