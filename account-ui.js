@@ -51,7 +51,7 @@
     .account-modal.is-open { display:flex; pointer-events:auto; }
     .account-modal-backdrop { position:absolute; inset:0; z-index:0; background:rgba(0,0,0,0.5); backdrop-filter:blur(2px); }
     
-    .account-dialog { position:relative; z-index:1; width:min(100%, 420px); max-height:90vh; overflow-y:auto; padding:30px 24px; border:none; border-radius:12px; background:#fff; color:#333; box-shadow:0 8px 32px rgba(0,0,0,0.2); box-sizing:border-box; touch-action:manipulation; -webkit-overflow-scrolling:touch; }
+    .account-dialog { position:relative; z-index:1; width:min(100%, 420px); max-height:90vh; overflow-y:auto; padding:30px 24px; border:none; border-radius:12px; background:#fff; color:#333; box-shadow:0 8px 32px rgba(0,0,0,0.2); box-sizing:border-box; pointer-events:auto; touch-action:auto; -webkit-overflow-scrolling:touch; }
     .account-close { position:absolute; top:16px; right:16px; border:0; background:transparent; color:#777; font-size:1.6rem; cursor:pointer; font-weight:300; }
     .account-close:hover { color:#000; }
     
@@ -74,11 +74,11 @@
     .account-form label { display:block; margin:0 0 6px; font-size:.88rem; font-weight:600; color:#333; }
     .account-form input[type="email"],
     .account-form input[type="text"],
-    .account-form input[type="password"] { width:100%; min-height:46px; padding:12px 50px 12px 14px; border:1px solid #ccc; border-radius:8px; background:#fff; color:#333; font:inherit; font-size:16px; box-sizing:border-box; transition:border-color .2s; touch-action:manipulation; -webkit-user-select:text; user-select:text; }
-    .account-form input[type="email"], .account-form input[type="text"] { min-height:46px; font-size:16px; touch-action:manipulation; -webkit-user-select:text; user-select:text; }
+    .account-form input[type="password"] { width:100%; min-height:46px; padding:12px 50px 12px 14px; border:1px solid #ccc; border-radius:8px; background:#fff; color:#333; font:inherit; font-size:16px; box-sizing:border-box; transition:border-color .2s; pointer-events:auto; touch-action:auto; -webkit-user-select:text; user-select:text; }
+    .account-form input[type="email"], .account-form input[type="text"] { min-height:46px; font-size:16px; pointer-events:auto; touch-action:auto; -webkit-user-select:text; user-select:text; }
     .account-form input:focus { outline:none; border-color:#3b82f6; }
     
-    .password-toggle { position:absolute; z-index:2; right:8px; top:32px; min-width:48px; height:40px; padding:0 8px; border-radius:8px; background:transparent; border:none; cursor:pointer; color:#2563eb; font:inherit; font-size:.78rem; font-weight:700; touch-action:manipulation; }
+    .password-toggle { position:absolute; z-index:2; right:8px; top:32px; min-width:48px; height:40px; padding:0 8px; border-radius:8px; background:transparent; border:none; cursor:pointer; color:#2563eb; font:inherit; font-size:.78rem; font-weight:700; pointer-events:auto; touch-action:auto; }
     .account-options { display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; font-size:0.88rem; }
     .account-options a { color:#3b82f6; text-decoration:none; }
     .account-options a:hover { text-decoration:underline; }
@@ -357,11 +357,6 @@
     if (!modeLink) return;
     event.preventDefault();
     setAuthMode(modeLink.dataset.accountMode);
-  });
-
-  modal.addEventListener('pointerdown', (event) => {
-    const input = event.target.closest('input');
-    if (input) setTimeout(() => input.focus(), 0);
   });
 
   togglePasswordBtn.addEventListener('click', () => {
