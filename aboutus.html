@@ -65,10 +65,16 @@
             place-items: center;
             width: 35px;
             height: 35px;
-            color: #fff;
             border-radius: 11px;
-            background: linear-gradient(135deg, var(--blue), #819bff);
-            font-family: Georgia, serif
+            overflow: hidden;
+            background: #fff
+        }
+
+        .brand-mark img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block
         }
 
         .nav-actions {
@@ -460,7 +466,7 @@
 <body>
     <div class="page">
         <nav class="navbar"><a class="brand" href="main.html"><span
-                    class="brand-mark">U</span><span>Uni<b>Findex</b></span></a>
+                    class="brand-mark"><img src="photo_2026-08-22_18-56-51.jpg" alt="UniFindex logo" /></span><span>Uni<b>Findex</b></span></a>
             <div class="nav-actions"><a class="home-link" href="index.html">မူလစာမျက်နှာသို့ပြန်သွားရန်</a><button class="theme-switch"
                         type="button" aria-label="Toggle theme" aria-pressed="false"><span class="switch-track"><span
                             class="switch-knob">☼</span></span></button><button type="button" class="account-button" id="accountButton" aria-haspopup="dialog" aria-controls="accountModal"><span class="account-icon">◉</span><span id="accountButtonLabel">Sign in</span></button></div>

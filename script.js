@@ -106,7 +106,7 @@ const pageSections = {
   locations: document.getElementById('locationsPage')
 };
 
-const universityData = [
+let universityData = [
   { name: 'Yangon Technological University (YTU)', type: ['technology', 'computer'], region: ['Yangon'], url: 'ytu.html', image: 'https://tse4.mm.bing.net/th/id/OIP.AYFHAclvQ7mj__IZCnSVIQHaE7?r=0&rs=1&pid=ImgDetMain&o=7&rm=3' },
   { name: 'Mandalay Technological University (MTU)', type: ['technology'], region: ['Mandalay'], url: 'mtu.html', image: 'https://images.squarespace-cdn.com/content/v1/5aa92cacec4eb7d0913878ce/1595477158967-F60ZPJLGM8J6CN5X6JGW/MTU_Mandalay_Technological+University.png' },
   { name: 'University of Information Technology (UIT)', type: ['technology', 'computer'], region: ['Yangon'], url: 'uit.html', image: 'https://tse3.mm.bing.net/th/id/OIP.OFx0m5xST3tQSSOn1CGldAHaGo?r=0&rs=1&pid=ImgDetMain&o=7&rm=3' },
@@ -448,3 +448,28 @@ if (recResults) {
   const savedRecs = JSON.parse(localStorage.getItem('recommendedUniversities')) || universityData;
   renderList(recResults, savedRecs, true);
 }
+
+// Database entries added by an admin extend (or override) the built-in list.
+async function loadAdminManagedUniversities() {
+  if (!dashResults || !window.supabase || !window.UNIFINDEX_SUPABASE_URL || !window.UNIFINDEX_SUPABASE_ANON_KEY) return;
+  try {
+    const client = window.supabase.createClient(window.UNIFINDEX_SUPABASE_URL, window.UNIFINDEX_SUPABASE_ANON_KEY);
+    const { data, error } = await client.from('universities').select('name, types, regions, page_url, image_url');
+    if (error) throw error;
+    if (!data?.length) return;
+    const managed = data.map(item => ({
+      name: item.name,
+      type: item.types || [],
+      region: item.regions || [],
+      url: item.page_url || '#',
+      image: item.image_url || ''
+    }));
+    const managedNames = new Set(managed.map(item => item.name));
+    universityData = [...universityData.filter(item => !managedNames.has(item.name)), ...managed];
+    renderList(dashResults, universityData, true);
+  } catch (error) {
+    // The public site keeps working with its built-in data until SQL setup is complete.
+    console.info('Admin-managed university data is not available yet.', error.message);
+  }
+}
+loadAdminManagedUniversities();
